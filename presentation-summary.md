@@ -262,9 +262,17 @@ Markdown instructions here.
 - Key flags: `--max-budget-usd`, `--output-format json`, `--effort low|medium|high|max`, `--fallback-model`
 
 ### Agent Teams (Swarm Mode)
-- Team Lead → plan → worker agents in independent worktrees → mailbox communication → synthesize
-- Patterns: **Leader** (default), **Swarm** (peer comms), **Pipeline** (sequential), **Watchdog** (monitoring)
-- Enable: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+- **Architecture**: Team Lead agent plans & delegates (never writes code). Specialist agents (Frontend, Backend, Testing, Docs, Architecture) each get their own git worktree + 1M-token context.
+- **Workflow**: Lead creates plan → spawns specialist agents in isolated worktrees → agents work in parallel, coordinate via task board with dependencies + mailbox/@mentions → lead synthesizes results and resolves conflicts.
+- **Enable**: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.json or environment variable.
+- **Team Patterns**:
+  - **Leader** (default): Delegate & synthesize — most tasks
+  - **Swarm**: Peer-to-peer comms, shared discovery — large refactors
+  - **Pipeline**: Sequential handoff — code → test → review
+  - **Watchdog**: Long-running with quality gates — CI monitoring, compliance
+- **Token cost**: 4–15× more tokens than single agent. Reserve for high-value complex tasks.
+- **Best use cases**: Large refactors across many files, multi-layer features (frontend + backend + tests simultaneously), debugging with competing hypotheses, research tasks with parallel exploration.
+- **Technical**: Powered by TeammateTool with 13 operations for spawning, lifecycle management, coordination, and synchronization.
 
 ### Worktrees
 - `claude --worktree [name]` — isolated git worktree per session

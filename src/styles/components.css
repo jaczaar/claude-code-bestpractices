@@ -285,6 +285,30 @@
   color: var(--color-accent);
 }
 
+/* ── Terminal mockup ── */
+.terminal-mockup {
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+  margin: 0.4rem 0;
+  font-family: var(--font-mono);
+  font-size: calc(var(--text-small) - 0.06rem);
+  color: #8b949e;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.terminal-mockup .t-green { color: #3fb950; }
+.terminal-mockup .t-cyan { color: #58a6ff; }
+.terminal-mockup .t-yellow { color: #d29922; }
+.terminal-mockup .t-red { color: #f85149; }
+.terminal-mockup .t-purple { color: #bc8cff; }
+.terminal-mockup .t-orange { color: #d4845a; }
+.terminal-mockup .t-white { color: #e6edf3; }
+.terminal-mockup .t-muted { color: #484f58; }
+
 /* ── Collapsible details ── */
 .collapsible {
   background: var(--color-surface);
