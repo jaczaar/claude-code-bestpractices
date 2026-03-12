@@ -30,12 +30,6 @@
 - Ecosystem: official repo (`anthropics/skills`), `/plugin` browser, community marketplaces (SkillsMP, SkillHub)
 - Top skills: Frontend Design (277K+ installs), Simplify, CLAUDE.md Improver, Skill Creator, Planning with Files
 
-### Slash Commands
-- **Built-in** (zero token cost): `/help`, `/clear`, `/compact`, `/context`, `/cost`, `/model`, `/init`, `/review`, `/doctor`
-- **Skill-based**: `/commit`, `/review-pr`, `/simplify`, `/loop`, `/batch`, `/frontend-design`, `/claude-api`, `/gsd:*`
-- **Custom**: `.claude/commands/<name>.md` → `/project:<name>` | `~/.claude/commands/<name>.md` → `/user:<name>`
-  - Supports `$ARGUMENTS` placeholder for flexible reuse
-
 ### Additional Mechanisms
 - **Rules Directory** (`.claude/rules/`): Path-scoped instructions with YAML frontmatter — activate only when matching files are touched. Use for file-type-specific guidelines (e.g., API rules for API files, test conventions for test files). Zero context cost until relevant.
 - **Settings** (`settings.json` / `settings.local.json`): Permissions, model choice, allowed/denied tools, hooks config. Zero context cost (config only). Three levels: user (`~/.claude/settings.json`), project (`.claude/settings.json`), local (`.claude/settings.local.json`, gitignored).
@@ -48,21 +42,36 @@
 User Input → Slash Commands (CLI) → Skills (prompt bundles) → Built-in Tools + MCP Tools → Subagents
 ```
 
-### Decision Framework (10 mechanisms)
+### Additional Mechanisms (cont.)
+- **Plugins** (`/plugin` or `--plugin-dir`): Installable extensions that add tools, modify behavior, or integrate with external services. Still maturing; use for org-specific tooling. Ecosystem overlaps with Skills.
+- **Worktrees** (`--worktree` flag): Isolated git working directories per agent session. Each worktree gets independent builds/tests. Agent Teams use worktrees internally. Requires git; manual cleanup needed.
+
+### Slash Commands (3 types — they look the same but work differently)
+- **Built-in** (zero token cost, no model involvement): `/help`, `/clear`, `/compact`, `/context`, `/cost`, `/model`, `/init`, `/review`, `/doctor`, `/config`, `/vim`, `/login`, `/logout`
+- **Skill-based** (loads prompt + tools into context on demand): `/commit`, `/review-pr`, `/simplify`, `/loop`, `/batch`, `/plugin`, `/frontend-design`, `/claude-api`, `/gsd:*`, `/keybindings-help`
+- **Custom** (injects full markdown template as prompt): `.claude/commands/<name>.md` → `/project:<name>` | `~/.claude/commands/<name>.md` → `/user:<name>`
+  - Supports `$ARGUMENTS` placeholder for flexible reuse
+  - The difference matters: built-in = free, skill-based = context cost when loaded, custom = entire file injected
+
+### Decision Framework
 - Project-wide instructions that every session needs? → **CLAUDE.md**
 - File-type-specific guidelines (e.g., only for API files)? → **Rules** (`.claude/rules/`)
 - Control permissions, model, or allowed tools? → **Settings** (`settings.json`)
+- Hide irrelevant files from context? → **`.claudeignore`**
 - Quick repeatable prompt for your team? → **Custom Command** (`.claude/commands/`)
 - Reusable workflow with specialized prompting? → **Skill**
 - Need external system/API? → **MCP Server**
 - Must enforce behavior deterministically (linting, gates)? → **Hooks**
+- Org-specific tooling or custom approval flows? → **Plugins**
 - Heavy/parallel subtask that would pollute context? → **Subagent**
 - Large-scale coordinated parallel work? → **Agent Teams**
 - Consistent review/audit persona? → **Custom Agent**
+- Safe parallel edits without file conflicts? → **Worktrees**
 
 ### The Key Architectural Insight
 - **MCP** extends what Claude *can do* (new tools)
 - **Hooks** enforce what Claude *must do* (deterministic — the only one)
+- **Settings** + **`.claudeignore`** control what Claude *can see and touch*
 - **Everything else** (CLAUDE.md, rules, skills, commands, agents) *guides* what Claude should do (advisory)
 
 ---

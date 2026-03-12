@@ -272,13 +272,14 @@
       </div>
     </section>
 
-    <!-- ── 4.1 · Toolbox — The Full Picture ── -->
+    <!-- ── 4.1 · Toolbox — Configuration & Instructions ── -->
     <section class="slide" data-chapter="4">
       <div class="slide-content">
         <span class="slide-label">04 — The Toolbox</span>
-        <h2 class="slide-title">The Full Picture</h2>
+        <h2 class="slide-title">Everything in One Place</h2>
         <div class="slide-body">
-          <p class="slide-desc">Claude Code has <strong>10 extension mechanisms</strong>. Understanding what each one does — and doesn't do — is the key to configuring it well.</p>
+          <p class="slide-desc">Claude Code has a lot of moving parts. This is the complete map — <strong>what each piece does, when it fires, and what it costs you</strong>.</p>
+          <h3 class="slide-section">Configuration &amp; Instructions</h3>
           <table class="info-table">
             <thead>
               <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
@@ -306,12 +307,72 @@
                 <td>Permissions &amp; guardrails</td>
               </tr>
               <tr>
-                <td><strong>Custom Commands</strong></td>
-                <td>Markdown templates → <code>/project:name</code></td>
-                <td>User (<code>/command</code>)</td>
-                <td>On demand only</td>
-                <td>Quick repeatable prompts</td>
+                <td><strong><code>.claudeignore</code></strong></td>
+                <td>Gitignore-syntax file controlling what Claude sees</td>
+                <td>Automatic (startup)</td>
+                <td>Zero (filter only)</td>
+                <td>Hiding irrelevant files from context</td>
               </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.2 · Toolbox — Slash Commands ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Slash Commands (3 Types)</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Slash commands look the same but work very differently under the hood.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Type</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Examples</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Built-in Commands</strong></td>
+                <td>CLI actions — no model involvement at all</td>
+                <td>User types <code>/command</code></td>
+                <td>Zero</td>
+                <td><code>/clear</code> <code>/compact</code> <code>/cost</code> <code>/model</code> <code>/init</code> <code>/doctor</code></td>
+              </tr>
+              <tr>
+                <td><strong>Skill-Based Commands</strong></td>
+                <td>Invoke the Skill tool → loads specialized prompt + tools</td>
+                <td>User types <code>/command</code></td>
+                <td>On demand (when invoked)</td>
+                <td><code>/commit</code> <code>/review-pr</code> <code>/simplify</code> <code>/loop</code> <code>/batch</code></td>
+              </tr>
+              <tr>
+                <td><strong>Custom Commands</strong></td>
+                <td>Markdown templates in <code>.claude/commands/</code></td>
+                <td>User types <code>/project:name</code></td>
+                <td>On demand (full template injected)</td>
+                <td><code>/project:fix-lint</code> <code>/user:standup</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            <strong class="accent">The difference matters:</strong> Built-in commands are free. Skill-based commands load instructions into context (tokens). Custom commands inject their entire markdown file as a prompt.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.3 · Toolbox — Extension Mechanisms ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Extension Mechanisms</h2>
+        <div class="slide-body">
+          <p class="slide-desc">These add capabilities, connect to external systems, or package reusable workflows.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
               <tr>
                 <td><strong>Skills</strong></td>
                 <td>Prompt + tool bundles (the package ecosystem)</td>
@@ -334,6 +395,31 @@
                 <td>Auto-format, gates, logging</td>
               </tr>
               <tr>
+                <td><strong>Plugins</strong></td>
+                <td>Installable extensions (<code>/plugin</code> or <code>--plugin-dir</code>)</td>
+                <td>Session startup</td>
+                <td>Varies by plugin</td>
+                <td>Org-specific tooling &amp; custom approval flows</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.4 · Toolbox — Agents & Execution ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Agents &amp; Execution</h2>
+        <div class="slide-body">
+          <p class="slide-desc">These control <em>how work gets done</em> — delegation, parallelism, and isolation.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+              <tr>
                 <td><strong>Subagents</strong></td>
                 <td>Child agents with isolated context</td>
                 <td>Model (Task tool)</td>
@@ -342,7 +428,7 @@
               </tr>
               <tr>
                 <td><strong>Agent Teams</strong></td>
-                <td>Multi-agent coordination with worktrees &amp; mailbox</td>
+                <td>Multi-agent coordination with mailbox communication</td>
                 <td>Model or user request</td>
                 <td>1M per agent (isolated)</td>
                 <td>Large-scale parallel refactors</td>
@@ -354,38 +440,46 @@
                 <td>Prompt overhead only</td>
                 <td>Consistent review / audit roles</td>
               </tr>
+              <tr>
+                <td><strong>Worktrees</strong></td>
+                <td>Isolated git working directories per agent</td>
+                <td>User (<code>--worktree</code>) or Agent Teams</td>
+                <td>Zero (filesystem only)</td>
+                <td>Safe parallel edits without conflicts</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ── 4.2 · Toolbox — When to Use What ── -->
+    <!-- ── 4.5 · Toolbox — When to Use What ── -->
     <section class="slide" data-chapter="4">
       <div class="slide-content">
         <span class="slide-label">04 — The Toolbox</span>
         <h2 class="slide-title">When to Use What</h2>
         <div class="slide-body">
-          <p class="slide-desc">Each mechanism has a distinct role. Here's the mental model.</p>
+          <p class="slide-desc">The mental model: three layers, one key distinction.</p>
           <div class="two-col">
             <div>
               <h3 class="slide-section">Guide Behavior (Advisory)</h3>
               <ul class="bullets">
-                <li><strong>CLAUDE.md</strong> — what Claude should <em>always know</em> about your project</li>
-                <li><strong>Rules</strong> — what Claude should know <em>when touching specific files</em></li>
+                <li><strong>CLAUDE.md</strong> — what Claude should <em>always know</em></li>
+                <li><strong>Rules</strong> — what Claude should know <em>per file type</em></li>
                 <li><strong>Custom Commands</strong> — reusable prompts <em>you trigger</em></li>
-                <li><strong>Skills</strong> — richer workflows with tool access (the ecosystem)</li>
-                <li><strong>Custom Agents</strong> — specialized personas for recurring roles</li>
+                <li><strong>Skills</strong> — richer workflows (the ecosystem)</li>
+                <li><strong>Custom Agents</strong> — specialized personas</li>
               </ul>
             </div>
             <div>
-              <h3 class="slide-section">Extend &amp; Enforce (Deterministic)</h3>
+              <h3 class="slide-section">Extend &amp; Enforce</h3>
               <ul class="bullets">
-                <li><strong>Settings</strong> — what Claude is <em>allowed to do</em> (permissions, model)</li>
-                <li><strong>Hooks</strong> — what <em>must happen</em> before/after tool use (the only deterministic one)</li>
-                <li><strong>MCP Servers</strong> — what Claude <em>can reach</em> (new tools &amp; data)</li>
-                <li><strong>Subagents</strong> — how work is <em>delegated</em> (context isolation)</li>
-                <li><strong>Agent Teams</strong> — how work is <em>parallelized</em> (coordinated multi-agent)</li>
+                <li><strong>Settings</strong> — what Claude is <em>allowed to do</em></li>
+                <li><strong>Hooks</strong> — what <em>must happen</em> (only deterministic one)</li>
+                <li><strong>MCP Servers</strong> — what Claude <em>can reach</em></li>
+                <li><strong>Plugins</strong> — org-specific extensions</li>
+                <li><strong>Subagents / Agent Teams</strong> — how work is <em>split</em></li>
+                <li><strong>Worktrees</strong> — how work is <em>isolated</em></li>
               </ul>
             </div>
           </div>
@@ -394,6 +488,7 @@
             MCP extends what Claude <em>can do</em> (new tools).
             Hooks enforce what Claude <em>must do</em> (deterministic).
             Everything else <em>guides</em> what Claude should do (advisory).
+            <code>.claudeignore</code> and Settings control what Claude <em>can see and touch</em>.
           </div>
         </div>
       </div>
