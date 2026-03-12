@@ -35,7 +35,9 @@
 - **Settings** (`settings.json` / `settings.local.json`): Permissions, model choice, allowed/denied tools, hooks config. Zero context cost (config only). Three levels: user (`~/.claude/settings.json`), project (`.claude/settings.json`), local (`.claude/settings.local.json`, gitignored).
 - **Agent Teams (Swarm Mode)**: Multi-agent coordination with planning, dependency tracking, mailbox communication. Each agent gets own worktree + 1M context. Experimental: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Patterns: Leader, Swarm, Pipeline, Watchdog. Released Feb 2026.
 - **Custom Agents** (`.claude/agents/` or `--agent` flag): Named personas with specialized prompts and restricted tool access. Use for consistent code review, security auditing, or documentation roles.
-- **`.claudeignore`**: Controls which files Claude includes in context. Follows `.gitignore` syntax. Note: use `settings.json` deny rules for true access restrictions, not `.claudeignore`.
+- **Memory / MEMORY.md**: Auto-saved notes from corrections and preferences. First 200 lines loaded at startup; topic files on demand. Toggle via `/memory` or `autoMemoryEnabled` setting. Stored in `~/.claude/projects/<project>/memory/MEMORY.md`.
+- **LSP Servers** (via plugins): Language Server Protocol integration for real-time code intelligence (type checking, diagnostics, go-to-definition). Configured via `.lsp.json` in plugins. Pre-built plugins for TypeScript, Python, Rust.
+- **Note on `.claudeignore`**: Despite community expectations, `.claudeignore` is NOT an officially supported file. Use `permissions.deny` rules in `settings.json` for access restrictions instead.
 
 ### How They Interact
 ```
@@ -43,26 +45,30 @@ User Input → Slash Commands (CLI) → Skills (prompt bundles) → Built-in Too
 ```
 
 ### Additional Mechanisms (cont.)
-- **Plugins** (`/plugin` or `--plugin-dir`): Installable extensions that add tools, modify behavior, or integrate with external services. Still maturing; use for org-specific tooling. Ecosystem overlaps with Skills.
+- **Plugins** (`/plugin` or `--plugin-dir`): Distribution packages that bundle skills + agents + hooks + MCP servers + LSP servers. Plugin manifest at `.claude-plugin/plugin.json`. Skills namespaced as `/plugin-name:skill-name`. Official marketplace at `claude.ai/settings/plugins/submit`.
 - **Worktrees** (`--worktree` flag): Isolated git working directories per agent session. Each worktree gets independent builds/tests. Agent Teams use worktrees internally. Requires git; manual cleanup needed.
+- **Hooks** (12+ lifecycle events): Not just pre/post tool — also SessionStart, SessionEnd, Stop, SubagentStart, SubagentStop, Compaction, InstructionsLoaded, WorktreeCreate, WorktreeRemove, TeammateIdle, TaskCompleted. Four handler types: command (shell), HTTP, prompt (LLM-powered), MCP tool.
 
 ### Slash Commands (3 types — they look the same but work differently)
-- **Built-in** (zero token cost, no model involvement): `/help`, `/clear`, `/compact`, `/context`, `/cost`, `/model`, `/init`, `/review`, `/doctor`, `/config`, `/vim`, `/login`, `/logout`
-- **Skill-based** (loads prompt + tools into context on demand): `/commit`, `/review-pr`, `/simplify`, `/loop`, `/batch`, `/plugin`, `/frontend-design`, `/claude-api`, `/gsd:*`, `/keybindings-help`
-- **Custom** (injects full markdown template as prompt): `.claude/commands/<name>.md` → `/project:<name>` | `~/.claude/commands/<name>.md` → `/user:<name>`
+- **Built-in** (zero token cost, no model involvement, 30+ commands): `/help`, `/clear`, `/compact`, `/context`, `/cost`, `/model`, `/init`, `/doctor`, `/config`, `/vim`, `/login`, `/logout`, `/memory`, `/permissions`, `/mcp`, `/hooks`, `/status`, `/agents`, `/add-dir`, `/bug`, `/exit`, `/export`, `/ide`, `/install-github-app`, `/output-style`, `/plugin`, `/reload-plugins`, `/rewind`, `/sandbox`
+- **Bundled skills** (ship with Claude Code, load prompt + tools on demand): `/simplify`, `/batch`, `/debug`, `/loop`, `/claude-api`
+- **Installed skills** (added via `/plugin` or marketplace): `/commit`, `/review-pr`, `/frontend-design`, `/gsd:*`, `/keybindings-help`, etc.
+- **Custom** (your own — `.claude/commands/` or `.claude/skills/`): `/project:<name>` | `/user:<name>`
   - Supports `$ARGUMENTS` placeholder for flexible reuse
+  - Legacy `.claude/commands/` still works but `.claude/skills/` with SKILL.md is the recommended approach
   - The difference matters: built-in = free, skill-based = context cost when loaded, custom = entire file injected
 
 ### Decision Framework
 - Project-wide instructions that every session needs? → **CLAUDE.md**
 - File-type-specific guidelines (e.g., only for API files)? → **Rules** (`.claude/rules/`)
+- Persistent learning from corrections across sessions? → **Memory** (`MEMORY.md`)
 - Control permissions, model, or allowed tools? → **Settings** (`settings.json`)
-- Hide irrelevant files from context? → **`.claudeignore`**
-- Quick repeatable prompt for your team? → **Custom Command** (`.claude/commands/`)
-- Reusable workflow with specialized prompting? → **Skill**
+- Quick repeatable prompt for your team? → **Custom Command / Skill**
+- Reusable workflow with specialized prompting? → **Skill** (SKILL.md)
 - Need external system/API? → **MCP Server**
-- Must enforce behavior deterministically (linting, gates)? → **Hooks**
-- Org-specific tooling or custom approval flows? → **Plugins**
+- Real-time code intelligence (types, diagnostics)? → **LSP Server** (via plugin)
+- Must enforce behavior deterministically (linting, gates)? → **Hooks** (12+ events)
+- Bundle and distribute a full extension? → **Plugin** (skills + agents + hooks + MCP + LSP)
 - Heavy/parallel subtask that would pollute context? → **Subagent**
 - Large-scale coordinated parallel work? → **Agent Teams**
 - Consistent review/audit persona? → **Custom Agent**
@@ -70,9 +76,11 @@ User Input → Slash Commands (CLI) → Skills (prompt bundles) → Built-in Too
 
 ### The Key Architectural Insight
 - **MCP** extends what Claude *can do* (new tools)
+- **LSP** gives Claude real-time *code intelligence* (types, diagnostics)
 - **Hooks** enforce what Claude *must do* (deterministic — the only one)
-- **Settings** + **`.claudeignore`** control what Claude *can see and touch*
-- **Everything else** (CLAUDE.md, rules, skills, commands, agents) *guides* what Claude should do (advisory)
+- **Settings** control what Claude *can see and touch*
+- **Everything else** (CLAUDE.md, rules, memory, skills, commands, agents) *guides* what Claude should do (advisory)
+- **Plugins** are the *distribution layer* — they bundle any combination of the above
 
 ---
 

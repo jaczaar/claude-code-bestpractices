@@ -307,11 +307,11 @@
                 <td>Permissions &amp; guardrails</td>
               </tr>
               <tr>
-                <td><strong><code>.claudeignore</code></strong></td>
-                <td>Gitignore-syntax file controlling what Claude sees</td>
-                <td>Automatic (startup)</td>
-                <td>Zero (filter only)</td>
-                <td>Hiding irrelevant files from context</td>
+                <td><strong>Memory</strong> <code>MEMORY.md</code></td>
+                <td>Auto-saved notes from corrections &amp; preferences</td>
+                <td>Automatic (first 200 lines at startup; rest on demand)</td>
+                <td>~200–500 tok</td>
+                <td>Persistent cross-session learning</td>
               </tr>
             </tbody>
           </table>
@@ -333,22 +333,22 @@
             <tbody>
               <tr>
                 <td><strong>Built-in Commands</strong></td>
-                <td>CLI actions — no model involvement at all</td>
+                <td>CLI actions — no model involvement at all. 30+ commands.</td>
                 <td>User types <code>/command</code></td>
                 <td>Zero</td>
-                <td><code>/clear</code> <code>/compact</code> <code>/cost</code> <code>/model</code> <code>/init</code> <code>/doctor</code></td>
+                <td><code>/clear</code> <code>/compact</code> <code>/cost</code> <code>/model</code> <code>/init</code> <code>/doctor</code> <code>/memory</code> <code>/permissions</code> <code>/mcp</code> <code>/hooks</code> <code>/status</code></td>
               </tr>
               <tr>
                 <td><strong>Skill-Based Commands</strong></td>
-                <td>Invoke the Skill tool → loads specialized prompt + tools</td>
+                <td>Invoke the Skill tool → loads specialized prompt + tools into context</td>
                 <td>User types <code>/command</code></td>
                 <td>On demand (when invoked)</td>
-                <td><code>/commit</code> <code>/review-pr</code> <code>/simplify</code> <code>/loop</code> <code>/batch</code></td>
+                <td><code>/commit</code> <code>/review-pr</code> <code>/simplify</code> <code>/loop</code> <code>/batch</code> <code>/debug</code> <code>/claude-api</code></td>
               </tr>
               <tr>
-                <td><strong>Custom Commands</strong></td>
-                <td>Markdown templates in <code>.claude/commands/</code></td>
-                <td>User types <code>/project:name</code></td>
+                <td><strong>Custom Commands / Skills</strong></td>
+                <td>Markdown templates (<code>.claude/commands/</code> or <code>.claude/skills/</code>)</td>
+                <td>User types <code>/project:name</code> or auto-match</td>
                 <td>On demand (full template injected)</td>
                 <td><code>/project:fix-lint</code> <code>/user:standup</code></td>
               </tr>
@@ -389,17 +389,24 @@
               </tr>
               <tr>
                 <td><strong>Hooks</strong></td>
-                <td>Shell callbacks on lifecycle events</td>
-                <td>Automatic (pre/post tool)</td>
+                <td>Deterministic scripts on 12+ lifecycle events (command, HTTP, prompt, MCP tool)</td>
+                <td>Automatic (SessionStart, PreToolUse, PostToolUse, Stop, Compaction, WorktreeCreate, etc.)</td>
                 <td>Zero</td>
-                <td>Auto-format, gates, logging</td>
+                <td>Auto-format, gates, logging, validation</td>
               </tr>
               <tr>
                 <td><strong>Plugins</strong></td>
-                <td>Installable extensions (<code>/plugin</code> or <code>--plugin-dir</code>)</td>
-                <td>Session startup</td>
+                <td>Distribution packages bundling skills + agents + hooks + MCP + LSP</td>
+                <td>Session startup (<code>/plugin</code> or <code>--plugin-dir</code>)</td>
                 <td>Varies by plugin</td>
-                <td>Org-specific tooling &amp; custom approval flows</td>
+                <td>Distributing full extension packages</td>
+              </tr>
+              <tr>
+                <td><strong>LSP Servers</strong></td>
+                <td>Language Server Protocol for real-time code intelligence</td>
+                <td>Via plugins (<code>.lsp.json</code>)</td>
+                <td>Minimal</td>
+                <td>Type checking, diagnostics, go-to-definition</td>
               </tr>
             </tbody>
           </table>
@@ -466,8 +473,8 @@
               <ul class="bullets">
                 <li><strong>CLAUDE.md</strong> — what Claude should <em>always know</em></li>
                 <li><strong>Rules</strong> — what Claude should know <em>per file type</em></li>
-                <li><strong>Custom Commands</strong> — reusable prompts <em>you trigger</em></li>
-                <li><strong>Skills</strong> — richer workflows (the ecosystem)</li>
+                <li><strong>Memory</strong> — what Claude <em>learned</em> across sessions</li>
+                <li><strong>Commands / Skills</strong> — reusable prompts &amp; workflows</li>
                 <li><strong>Custom Agents</strong> — specialized personas</li>
               </ul>
             </div>
@@ -477,9 +484,9 @@
                 <li><strong>Settings</strong> — what Claude is <em>allowed to do</em></li>
                 <li><strong>Hooks</strong> — what <em>must happen</em> (only deterministic one)</li>
                 <li><strong>MCP Servers</strong> — what Claude <em>can reach</em></li>
-                <li><strong>Plugins</strong> — org-specific extensions</li>
-                <li><strong>Subagents / Agent Teams</strong> — how work is <em>split</em></li>
-                <li><strong>Worktrees</strong> — how work is <em>isolated</em></li>
+                <li><strong>LSP Servers</strong> — real-time <em>code intelligence</em></li>
+                <li><strong>Plugins</strong> — full extension packages (skills + agents + hooks + MCP + LSP)</li>
+                <li><strong>Subagents / Agent Teams / Worktrees</strong> — how work is <em>split &amp; isolated</em></li>
               </ul>
             </div>
           </div>
@@ -487,8 +494,8 @@
             <strong class="accent">Key insight:</strong>
             MCP extends what Claude <em>can do</em> (new tools).
             Hooks enforce what Claude <em>must do</em> (deterministic).
+            Settings control what Claude <em>can see and touch</em>.
             Everything else <em>guides</em> what Claude should do (advisory).
-            <code>.claudeignore</code> and Settings control what Claude <em>can see and touch</em>.
           </div>
         </div>
       </div>
