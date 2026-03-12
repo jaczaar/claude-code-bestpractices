@@ -361,60 +361,7 @@
       </div>
     </section>
 
-    <!-- ── 4.3 · Toolbox — Extension Mechanisms ── -->
-    <section class="slide" data-chapter="4">
-      <div class="slide-content">
-        <span class="slide-label">04 — The Toolbox</span>
-        <h2 class="slide-title">Extension Mechanisms</h2>
-        <div class="slide-body">
-          <p class="slide-desc">These add capabilities, connect to external systems, or package reusable workflows.</p>
-          <table class="info-table">
-            <thead>
-              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Skills</strong></td>
-                <td>Prompt + tool bundles (the package ecosystem)</td>
-                <td>User or auto-match</td>
-                <td>On demand only</td>
-                <td>Reusable workflows</td>
-              </tr>
-              <tr>
-                <td><strong>MCP Servers</strong></td>
-                <td>External tools via JSON-RPC protocol</td>
-                <td>Model (tool call)</td>
-                <td>1.5K–17K <em>per server</em></td>
-                <td>External APIs &amp; integrations</td>
-              </tr>
-              <tr>
-                <td><strong>Hooks</strong></td>
-                <td>Deterministic scripts on 12+ lifecycle events (command, HTTP, prompt, MCP tool)</td>
-                <td>Automatic (SessionStart, PreToolUse, PostToolUse, Stop, Compaction, WorktreeCreate, etc.)</td>
-                <td>Zero</td>
-                <td>Auto-format, gates, logging, validation</td>
-              </tr>
-              <tr>
-                <td><strong>Plugins</strong></td>
-                <td>Distribution packages bundling skills + agents + hooks + MCP + LSP</td>
-                <td>Session startup (<code>/plugin</code> or <code>--plugin-dir</code>)</td>
-                <td>Varies by plugin</td>
-                <td>Distributing full extension packages</td>
-              </tr>
-              <tr>
-                <td><strong>LSP Servers</strong></td>
-                <td>Language Server Protocol for real-time code intelligence</td>
-                <td>Via plugins (<code>.lsp.json</code>)</td>
-                <td>Minimal</td>
-                <td>Type checking, diagnostics, go-to-definition</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── 4.4 · Toolbox — Agents & Execution ── -->
+    <!-- ── 4.3 · Toolbox — Agents & Execution ── -->
     <section class="slide" data-chapter="4">
       <div class="slide-content">
         <span class="slide-label">04 — The Toolbox</span>
