@@ -17,7 +17,7 @@ export function initTocController(): void {
 
   function updateSidebarVisibility(): void {
     const chapter = slides[currentIndex].dataset.chapter;
-    const isIntroOrFinal = chapter === '0' || chapter === '10';
+    const isIntroOrFinal = chapter === '0' || chapter === '11';
     document.body.classList.toggle('intro-active', isIntroOrFinal);
   }
 
