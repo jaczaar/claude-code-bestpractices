@@ -777,7 +777,57 @@
       </div>
     </section>
 
-    <!-- ── 9.3 · Multi-Agent — Choosing the Right Tool ── -->
+    <!-- ── 9.3 · Multi-Agent — Swarm Mode in Practice ── -->
+    <section class="slide" data-chapter="9">
+      <div class="slide-content">
+        <span class="slide-label">09 — Multi-Agent</span>
+        <h2 class="slide-title">Swarm Mode in Practice</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Custom Agents + Context Architecture</h3>
+              <div class="flow-diagram">🤖 <span class="accent">Claude Code</span>
+    │
+    ├─ 👷 <span class="accent">shadcn-expert</span>          .claude/
+    │  ├ shadcn theme MCP        ├─ Task/
+    │  └ shadcn component MCP    │  └─ <span class="accent">context_01.md</span>
+    │                            │
+    ├─ 🔒 <span class="accent">vercel-ai-sdk-expert</span>  ├─ Doc/
+    │  └ latest vercel ai sdk    │  ├─ ui-implementation.md
+    │    v5 docs                 │  ├─ vercel-ai-sdk-plan.md
+    │                            │  └─ stripe-integration-plan.md
+    ├─ 🎨 <span class="accent">stripe-expert</span>         │
+    │  └ latest stripe docs      │
+    │                            │
+    └─ 📚 <span class="accent">context7</span>              │</div>
+              <p class="slide-desc muted" style="margin-top: 0.4rem;">Each agent has specialised MCP servers and writes context files for the team.</p>
+            </div>
+            <div>
+              <h3 class="slide-section">Agent Teams Terminal UI</h3>
+              <div class="terminal-mockup"><span class="t-green">Background tasks</span>
+<span class="t-muted">12 agents</span>
+
+<span class="t-white">❯ @team-lead</span>
+  Team: x-dl-web-interface (12)
+  <span class="t-cyan">@tester</span>: Reading 5 files…
+  <span class="t-yellow">@config-setup</span>: Reading ~/x-dl
+  <span class="t-red">@styler</span>: Editing web/src/App.css
+  <span class="t-purple">@app-integrator</span>: working
+  <span class="t-cyan">@component-creator</span>: Running Verify all components
+  <span class="t-white">@api-server</span>: Running List all task dirs
+  <span class="t-yellow">@vite-setup</span>: idle
+  <span class="t-green">@qa-tester</span>: Reading web/vite.config.ts
+  <span class="t-purple">@backend-builder</span>: Reading 4 files…
+  <span class="t-orange">@component-builder</span>: Reading 3 files…
+  <span class="t-red">@frontend-builder</span>: Running env | grep CLAUDE_CODE</div>
+              <p class="slide-desc muted" style="margin-top: 0.4rem;">Real-time view: 12 specialist agents working in parallel, each with its own worktree.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9.4 · Multi-Agent — Choosing the Right Tool ── -->
     <section class="slide" data-chapter="9">
       <div class="slide-content">
         <span class="slide-label">09 — Multi-Agent</span>
