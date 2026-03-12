@@ -36,17 +36,34 @@
 - **Custom**: `.claude/commands/<name>.md` → `/project:<name>` | `~/.claude/commands/<name>.md` → `/user:<name>`
   - Supports `$ARGUMENTS` placeholder for flexible reuse
 
+### Additional Mechanisms
+- **Rules Directory** (`.claude/rules/`): Path-scoped instructions with YAML frontmatter — activate only when matching files are touched. Use for file-type-specific guidelines (e.g., API rules for API files, test conventions for test files). Zero context cost until relevant.
+- **Settings** (`settings.json` / `settings.local.json`): Permissions, model choice, allowed/denied tools, hooks config. Zero context cost (config only). Three levels: user (`~/.claude/settings.json`), project (`.claude/settings.json`), local (`.claude/settings.local.json`, gitignored).
+- **Agent Teams (Swarm Mode)**: Multi-agent coordination with planning, dependency tracking, mailbox communication. Each agent gets own worktree + 1M context. Experimental: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Patterns: Leader, Swarm, Pipeline, Watchdog. Released Feb 2026.
+- **Custom Agents** (`.claude/agents/` or `--agent` flag): Named personas with specialized prompts and restricted tool access. Use for consistent code review, security auditing, or documentation roles.
+- **`.claudeignore`**: Controls which files Claude includes in context. Follows `.gitignore` syntax. Note: use `settings.json` deny rules for true access restrictions, not `.claudeignore`.
+
 ### How They Interact
 ```
 User Input → Slash Commands (CLI) → Skills (prompt bundles) → Built-in Tools + MCP Tools → Subagents
 ```
 
-### Decision Framework
-- Need external system/API? → **MCP Server**
-- User-facing shortcut for common action? → **Slash Command** (backed by Skill)
+### Decision Framework (10 mechanisms)
+- Project-wide instructions that every session needs? → **CLAUDE.md**
+- File-type-specific guidelines (e.g., only for API files)? → **Rules** (`.claude/rules/`)
+- Control permissions, model, or allowed tools? → **Settings** (`settings.json`)
+- Quick repeatable prompt for your team? → **Custom Command** (`.claude/commands/`)
 - Reusable workflow with specialized prompting? → **Skill**
+- Need external system/API? → **MCP Server**
+- Must enforce behavior deterministically (linting, gates)? → **Hooks**
 - Heavy/parallel subtask that would pollute context? → **Subagent**
-- Otherwise → main agent with built-in tools
+- Large-scale coordinated parallel work? → **Agent Teams**
+- Consistent review/audit persona? → **Custom Agent**
+
+### The Key Architectural Insight
+- **MCP** extends what Claude *can do* (new tools)
+- **Hooks** enforce what Claude *must do* (deterministic — the only one)
+- **Everything else** (CLAUDE.md, rules, skills, commands, agents) *guides* what Claude should do (advisory)
 
 ---
 

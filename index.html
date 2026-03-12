@@ -272,13 +272,13 @@
       </div>
     </section>
 
-    <!-- ── 4 · Toolbox — Extension Mechanisms at a Glance ── -->
+    <!-- ── 4.1 · Toolbox — The Full Picture ── -->
     <section class="slide" data-chapter="4">
       <div class="slide-content">
         <span class="slide-label">04 — The Toolbox</span>
-        <h2 class="slide-title">Extension Mechanisms at a Glance</h2>
+        <h2 class="slide-title">The Full Picture</h2>
         <div class="slide-body">
-          <p class="slide-desc">Claude Code has <strong>six ways</strong> to extend its behavior. Before we dive in, here's how they compare.</p>
+          <p class="slide-desc">Claude Code has <strong>10 extension mechanisms</strong>. Understanding what each one does — and doesn't do — is the key to configuring it well.</p>
           <table class="info-table">
             <thead>
               <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
@@ -290,6 +290,20 @@
                 <td>Automatic (startup)</td>
                 <td>~500–1,500 tok</td>
                 <td>Project conventions &amp; rules</td>
+              </tr>
+              <tr>
+                <td><strong>Rules</strong> <code>.claude/rules/</code></td>
+                <td>Path-scoped instructions (YAML frontmatter + markdown)</td>
+                <td>Automatic (when matching files are touched)</td>
+                <td>On demand only</td>
+                <td>File-type-specific guidelines</td>
+              </tr>
+              <tr>
+                <td><strong>Settings</strong> <code>settings.json</code></td>
+                <td>Permissions, model choice, hooks config, allowed/denied tools</td>
+                <td>Automatic (startup)</td>
+                <td>Zero (config only)</td>
+                <td>Permissions &amp; guardrails</td>
               </tr>
               <tr>
                 <td><strong>Custom Commands</strong></td>
@@ -314,7 +328,7 @@
               </tr>
               <tr>
                 <td><strong>Hooks</strong></td>
-                <td>Shell callbacks on tool events</td>
+                <td>Shell callbacks on lifecycle events</td>
                 <td>Automatic (pre/post tool)</td>
                 <td>Zero</td>
                 <td>Auto-format, gates, logging</td>
@@ -326,12 +340,60 @@
                 <td>Own window (isolated)</td>
                 <td>Heavy research &amp; parallel work</td>
               </tr>
+              <tr>
+                <td><strong>Agent Teams</strong></td>
+                <td>Multi-agent coordination with worktrees &amp; mailbox</td>
+                <td>Model or user request</td>
+                <td>1M per agent (isolated)</td>
+                <td>Large-scale parallel refactors</td>
+              </tr>
+              <tr>
+                <td><strong>Custom Agents</strong></td>
+                <td>Named personas with specialized prompts</td>
+                <td>User (<code>--agent</code> flag)</td>
+                <td>Prompt overhead only</td>
+                <td>Consistent review / audit roles</td>
+              </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.2 · Toolbox — When to Use What ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">When to Use What</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Each mechanism has a distinct role. Here's the mental model.</p>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Guide Behavior (Advisory)</h3>
+              <ul class="bullets">
+                <li><strong>CLAUDE.md</strong> — what Claude should <em>always know</em> about your project</li>
+                <li><strong>Rules</strong> — what Claude should know <em>when touching specific files</em></li>
+                <li><strong>Custom Commands</strong> — reusable prompts <em>you trigger</em></li>
+                <li><strong>Skills</strong> — richer workflows with tool access (the ecosystem)</li>
+                <li><strong>Custom Agents</strong> — specialized personas for recurring roles</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Extend &amp; Enforce (Deterministic)</h3>
+              <ul class="bullets">
+                <li><strong>Settings</strong> — what Claude is <em>allowed to do</em> (permissions, model)</li>
+                <li><strong>Hooks</strong> — what <em>must happen</em> before/after tool use (the only deterministic one)</li>
+                <li><strong>MCP Servers</strong> — what Claude <em>can reach</em> (new tools &amp; data)</li>
+                <li><strong>Subagents</strong> — how work is <em>delegated</em> (context isolation)</li>
+                <li><strong>Agent Teams</strong> — how work is <em>parallelized</em> (coordinated multi-agent)</li>
+              </ul>
+            </div>
+          </div>
           <div class="callout callout--compact" style="margin-top: 0.6rem;">
-            <strong class="accent">Key insight:</strong> Commands &amp; Skills shape <em>what Claude does</em>.
-            MCP &amp; Hooks shape <em>what Claude can reach</em>.
-            Subagents shape <em>how work is split</em>.
+            <strong class="accent">Key insight:</strong>
+            MCP extends what Claude <em>can do</em> (new tools).
+            Hooks enforce what Claude <em>must do</em> (deterministic).
+            Everything else <em>guides</em> what Claude should do (advisory).
           </div>
         </div>
       </div>
