@@ -433,6 +433,42 @@ Run `/init` to generate a starter CLAUDE.md from codebase analysis. Always revie
 
 ---
 
+## 9. Claude Code Desktop App
+
+### Desktop-Exclusive Features
+The Code tab in Claude Desktop runs the same engine as the CLI with a visual layer on top.
+
+- **Visual diff review** — review changes file-by-file with inline commenting before creating PRs
+- **Embedded app preview** — Claude starts dev servers and opens an embedded browser to verify changes; takes screenshots, inspects the DOM, auto-verifies after every edit
+- **PR monitoring** — CI status bar with **auto-fix** (Claude fixes failing checks) and **auto-merge** (squash-merges when all checks pass)
+- **Parallel sessions** — sidebar tabs, each with automatic Git worktree isolation
+- **Scheduled tasks** — recurring tasks (daily code reviews, dependency checks, morning briefings) that fire automatically on your machine
+- **Connectors** — one-click MCP setup for GitHub, Slack, Linear, Notion, Google Calendar — no JSON editing
+- **Remote/cloud sessions** — run on Anthropic's cloud infrastructure, continue even after closing the app; monitor from claude.ai or mobile
+- **SSH sessions** — connect to cloud VMs, dev containers, or remote servers through the desktop UI
+- **File attachments** — drag-and-drop images, PDFs, and other files directly into prompts
+
+### Desktop vs CLI
+
+| Feature | CLI | Desktop |
+|---|---|---|
+| Diff review | text-based | Visual + inline comments |
+| App preview | — | Embedded browser, auto-verify |
+| PR monitoring | Manual | CI bar, auto-fix, auto-merge |
+| Sessions | Separate terminals | Sidebar tabs + auto worktrees |
+| Recurring tasks | cron / CI pipelines | Built-in scheduled tasks |
+| File attachments | — | Images, PDFs, drag-and-drop |
+| Remote / cloud | — | Anthropic-hosted, persist on close |
+| SSH sessions | — | Connect via desktop UI |
+| Scripting | `--print`, Agent SDK | — |
+| Third-party providers | Bedrock, Vertex, Foundry | — |
+| Agent teams | Supported | — |
+
+### Shared Configuration
+Desktop and CLI read the same config files — CLAUDE.md, MCP servers (`.claude.json` / `.mcp.json`), hooks, skills, and settings all carry over. Run `/desktop` in the CLI to move your current session into the app.
+
+---
+
 ## Quick Reference: All Slash Commands
 
 ### Built-in (Zero Token Cost)
