@@ -835,13 +835,14 @@
         <div class="slide-body">
           <table class="info-table">
             <thead>
-              <tr><th></th><th>Subagents</th><th>Agent Teams</th><th>/batch</th></tr>
+              <tr><th></th><th>Subagents</th><th>Agent Teams</th><th>Swarm Mode</th><th>/batch</th></tr>
             </thead>
             <tbody>
-              <tr><td><strong>Coordination</strong></td><td>None</td><td>Dep tracking + mailbox</td><td>None</td></tr>
-              <tr><td><strong>Isolation</strong></td><td>Shared worktree</td><td>Own worktree</td><td>Auto worktree</td></tr>
-              <tr><td><strong>Context</strong></td><td>Parent's</td><td>1M each</td><td>Independent</td></tr>
-              <tr><td><strong>Best for</strong></td><td>Research</td><td>Big refactors</td><td>Similar edits</td></tr>
+              <tr><td><strong>Coordination</strong></td><td>None</td><td>Dep tracking + mailbox</td><td>Peer-to-peer comms</td><td>None</td></tr>
+              <tr><td><strong>Isolation</strong></td><td>Shared worktree</td><td>Own worktree</td><td>Own worktree</td><td>Auto worktree</td></tr>
+              <tr><td><strong>Context</strong></td><td>Parent's</td><td>1M each</td><td>1M each</td><td>Independent</td></tr>
+              <tr><td><strong>Token cost</strong></td><td>Low</td><td>4–15×</td><td>4–15×</td><td>Per-task</td></tr>
+              <tr><td><strong>Best for</strong></td><td>Research</td><td>Coordinated features</td><td>Large refactors</td><td>Similar edits</td></tr>
             </tbody>
           </table>
           <div class="two-col" style="margin-top: 0.8rem;">
