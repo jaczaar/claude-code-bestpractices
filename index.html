@@ -16,12 +16,13 @@
       <li data-chapter="1"><a href="#">CLAUDE.md</a></li>
       <li data-chapter="2"><a href="#">Context</a></li>
       <li data-chapter="3"><a href="#">Memory</a></li>
-      <li data-chapter="4"><a href="#">Commands</a></li>
-      <li data-chapter="5"><a href="#">Skills</a></li>
-      <li data-chapter="6"><a href="#">MCP</a></li>
-      <li data-chapter="7"><a href="#">Loops</a></li>
-      <li data-chapter="8"><a href="#">Multi-Agent</a></li>
-      <li data-chapter="9"><a href="#">GSD</a></li>
+      <li data-chapter="4"><a href="#">Toolbox</a></li>
+      <li data-chapter="5"><a href="#">Commands</a></li>
+      <li data-chapter="6"><a href="#">Skills</a></li>
+      <li data-chapter="7"><a href="#">MCP</a></li>
+      <li data-chapter="8"><a href="#">Loops</a></li>
+      <li data-chapter="9"><a href="#">Multi-Agent</a></li>
+      <li data-chapter="10"><a href="#">GSD</a></li>
     </ol>
   </nav>
 
@@ -271,10 +272,239 @@
       </div>
     </section>
 
-    <!-- ── 4.1 · Commands — Built-in ── -->
+    <!-- ── 4.1 · Toolbox — Configuration & Instructions ── -->
     <section class="slide" data-chapter="4">
       <div class="slide-content">
-        <span class="slide-label">04 — Slash Commands</span>
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Everything in One Place</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Claude Code has a lot of moving parts. This is the complete map — <strong>what each piece does, when it fires, and what it costs you</strong>.</p>
+          <h3 class="slide-section">Configuration &amp; Instructions</h3>
+          <table class="info-table">
+            <thead>
+              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>CLAUDE.md</strong></td>
+                <td>Markdown instructions loaded every session</td>
+                <td>Automatic (startup)</td>
+                <td>~500–1,500 tok</td>
+                <td>Project conventions &amp; rules</td>
+              </tr>
+              <tr>
+                <td><strong>Rules</strong> <code>.claude/rules/</code></td>
+                <td>Path-scoped instructions (YAML frontmatter + markdown)</td>
+                <td>Automatic (when matching files are touched)</td>
+                <td>On demand only</td>
+                <td>File-type-specific guidelines</td>
+              </tr>
+              <tr>
+                <td><strong>Settings</strong> <code>settings.json</code></td>
+                <td>Permissions, model choice, hooks config, allowed/denied tools</td>
+                <td>Automatic (startup)</td>
+                <td>Zero (config only)</td>
+                <td>Permissions &amp; guardrails</td>
+              </tr>
+              <tr>
+                <td><strong>Memory</strong> <code>MEMORY.md</code></td>
+                <td>Auto-saved notes from corrections &amp; preferences</td>
+                <td>Automatic (first 200 lines at startup; rest on demand)</td>
+                <td>~200–500 tok</td>
+                <td>Persistent cross-session learning</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.2 · Toolbox — Slash Commands ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Slash Commands (3 Types)</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Slash commands look the same but work very differently under the hood.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Type</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Examples</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Built-in Commands</strong></td>
+                <td>CLI actions — no model involvement at all. 30+ commands.</td>
+                <td>User types <code>/command</code></td>
+                <td>Zero</td>
+                <td><code>/clear</code> <code>/compact</code> <code>/cost</code> <code>/model</code> <code>/init</code> <code>/doctor</code> <code>/memory</code> <code>/permissions</code> <code>/mcp</code> <code>/hooks</code> <code>/status</code></td>
+              </tr>
+              <tr>
+                <td><strong>Skill-Based Commands</strong></td>
+                <td>Invoke the Skill tool → loads specialized prompt + tools into context</td>
+                <td>User types <code>/command</code></td>
+                <td>On demand (when invoked)</td>
+                <td><code>/commit</code> <code>/review-pr</code> <code>/simplify</code> <code>/loop</code> <code>/batch</code> <code>/debug</code> <code>/claude-api</code></td>
+              </tr>
+              <tr>
+                <td><strong>Custom Commands / Skills</strong></td>
+                <td>Markdown templates (<code>.claude/commands/</code> or <code>.claude/skills/</code>)</td>
+                <td>User types <code>/project:name</code> or auto-match</td>
+                <td>On demand (full template injected)</td>
+                <td><code>/project:fix-lint</code> <code>/user:standup</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            <strong class="accent">The difference matters:</strong> Built-in commands are free. Skill-based commands load instructions into context (tokens). Custom commands inject their entire markdown file as a prompt.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.3 · Toolbox — Extension Mechanisms ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Extension Mechanisms</h2>
+        <div class="slide-body">
+          <p class="slide-desc">These add capabilities, connect to external systems, or package reusable workflows.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Skills</strong></td>
+                <td>Prompt + tool bundles (the package ecosystem)</td>
+                <td>User or auto-match</td>
+                <td>On demand only</td>
+                <td>Reusable workflows</td>
+              </tr>
+              <tr>
+                <td><strong>MCP Servers</strong></td>
+                <td>External tools via JSON-RPC protocol</td>
+                <td>Model (tool call)</td>
+                <td>1.5K–17K <em>per server</em></td>
+                <td>External APIs &amp; integrations</td>
+              </tr>
+              <tr>
+                <td><strong>Hooks</strong></td>
+                <td>Deterministic scripts on 12+ lifecycle events (command, HTTP, prompt, MCP tool)</td>
+                <td>Automatic (SessionStart, PreToolUse, PostToolUse, Stop, Compaction, WorktreeCreate, etc.)</td>
+                <td>Zero</td>
+                <td>Auto-format, gates, logging, validation</td>
+              </tr>
+              <tr>
+                <td><strong>Plugins</strong></td>
+                <td>Distribution packages bundling skills + agents + hooks + MCP + LSP</td>
+                <td>Session startup (<code>/plugin</code> or <code>--plugin-dir</code>)</td>
+                <td>Varies by plugin</td>
+                <td>Distributing full extension packages</td>
+              </tr>
+              <tr>
+                <td><strong>LSP Servers</strong></td>
+                <td>Language Server Protocol for real-time code intelligence</td>
+                <td>Via plugins (<code>.lsp.json</code>)</td>
+                <td>Minimal</td>
+                <td>Type checking, diagnostics, go-to-definition</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.4 · Toolbox — Agents & Execution ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Agents &amp; Execution</h2>
+        <div class="slide-body">
+          <p class="slide-desc">These control <em>how work gets done</em> — delegation, parallelism, and isolation.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Subagents</strong></td>
+                <td>Child agents with isolated context</td>
+                <td>Model (Task tool)</td>
+                <td>Own window (isolated)</td>
+                <td>Heavy research &amp; parallel work</td>
+              </tr>
+              <tr>
+                <td><strong>Agent Teams</strong></td>
+                <td>Multi-agent coordination with mailbox communication</td>
+                <td>Model or user request</td>
+                <td>1M per agent (isolated)</td>
+                <td>Large-scale parallel refactors</td>
+              </tr>
+              <tr>
+                <td><strong>Custom Agents</strong></td>
+                <td>Named personas with specialized prompts</td>
+                <td>User (<code>--agent</code> flag)</td>
+                <td>Prompt overhead only</td>
+                <td>Consistent review / audit roles</td>
+              </tr>
+              <tr>
+                <td><strong>Worktrees</strong></td>
+                <td>Isolated git working directories per agent</td>
+                <td>User (<code>--worktree</code>) or Agent Teams</td>
+                <td>Zero (filesystem only)</td>
+                <td>Safe parallel edits without conflicts</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.5 · Toolbox — When to Use What ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">When to Use What</h2>
+        <div class="slide-body">
+          <p class="slide-desc">The mental model: three layers, one key distinction.</p>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Guide Behavior (Advisory)</h3>
+              <ul class="bullets">
+                <li><strong>CLAUDE.md</strong> — what Claude should <em>always know</em></li>
+                <li><strong>Rules</strong> — what Claude should know <em>per file type</em></li>
+                <li><strong>Memory</strong> — what Claude <em>learned</em> across sessions</li>
+                <li><strong>Commands / Skills</strong> — reusable prompts &amp; workflows</li>
+                <li><strong>Custom Agents</strong> — specialized personas</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Extend &amp; Enforce</h3>
+              <ul class="bullets">
+                <li><strong>Settings</strong> — what Claude is <em>allowed to do</em></li>
+                <li><strong>Hooks</strong> — what <em>must happen</em> (only deterministic one)</li>
+                <li><strong>MCP Servers</strong> — what Claude <em>can reach</em></li>
+                <li><strong>LSP Servers</strong> — real-time <em>code intelligence</em></li>
+                <li><strong>Plugins</strong> — full extension packages (skills + agents + hooks + MCP + LSP)</li>
+                <li><strong>Subagents / Agent Teams / Worktrees</strong> — how work is <em>split &amp; isolated</em></li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            <strong class="accent">Key insight:</strong>
+            MCP extends what Claude <em>can do</em> (new tools).
+            Hooks enforce what Claude <em>must do</em> (deterministic).
+            Settings control what Claude <em>can see and touch</em>.
+            Everything else <em>guides</em> what Claude should do (advisory).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5.1 · Commands — Built-in ── -->
+    <section class="slide" data-chapter="5">
+      <div class="slide-content">
+        <span class="slide-label">05 — Slash Commands</span>
         <h2 class="slide-title">Built-in Commands</h2>
         <div class="slide-body">
           <p class="slide-desc">Handled by the CLI — no model involvement, <strong>zero token cost</strong>.</p>
@@ -294,10 +524,10 @@
       </div>
     </section>
 
-    <!-- ── 4.2 · Commands — Skill-Based & Custom ── -->
-    <section class="slide" data-chapter="4">
+    <!-- ── 5.2 · Commands — Skill-Based & Custom ── -->
+    <section class="slide" data-chapter="5">
       <div class="slide-content">
-        <span class="slide-label">04 — Slash Commands</span>
+        <span class="slide-label">05 — Slash Commands</span>
         <h2 class="slide-title">Skill-Based &amp; Custom</h2>
         <div class="slide-body">
           <div class="two-col">
@@ -334,10 +564,10 @@
       </div>
     </section>
 
-    <!-- ── 5 · Skills ── -->
-    <section class="slide" data-chapter="5">
+    <!-- ── 6 · Skills ── -->
+    <section class="slide" data-chapter="6">
       <div class="slide-content">
-        <span class="slide-label">05 — Skills</span>
+        <span class="slide-label">06 — Skills</span>
         <h2 class="slide-title">Claude's Package Ecosystem</h2>
         <div class="slide-body">
           <ul class="bullets">
@@ -372,10 +602,10 @@
       </div>
     </section>
 
-    <!-- ── 6.1 · MCP — Token Cost ── -->
-    <section class="slide" data-chapter="6">
+    <!-- ── 7.1 · MCP — Token Cost ── -->
+    <section class="slide" data-chapter="7">
       <div class="slide-content">
-        <span class="slide-label">06 — MCP Servers</span>
+        <span class="slide-label">07 — MCP Servers</span>
         <h2 class="slide-title">External Systems via JSON-RPC</h2>
         <div class="slide-body">
           <p class="slide-desc">Servers spawn on startup → tools discovered → schemas injected into system prompt.<br />Every tool schema = <strong>fixed token cost per turn</strong>, whether used or not.</p>
@@ -397,10 +627,10 @@
       </div>
     </section>
 
-    <!-- ── 6.2 · MCP — Optimization ── -->
-    <section class="slide" data-chapter="6">
+    <!-- ── 7.2 · MCP — Optimization ── -->
+    <section class="slide" data-chapter="7">
       <div class="slide-content">
-        <span class="slide-label">06 — MCP Servers</span>
+        <span class="slide-label">07 — MCP Servers</span>
         <h2 class="slide-title">Optimization</h2>
         <div class="slide-body">
           <div class="two-col">
@@ -435,10 +665,10 @@
       </div>
     </section>
 
-    <!-- ── 7.1 · Loops — RALPH ── -->
-    <section class="slide" data-chapter="7">
+    <!-- ── 8.1 · Loops — RALPH ── -->
+    <section class="slide" data-chapter="8">
       <div class="slide-content">
-        <span class="slide-label">07 — Autonomous Loops</span>
+        <span class="slide-label">08 — Autonomous Loops</span>
         <h2 class="slide-title">RALPH — Filesystem as Memory</h2>
         <div class="slide-body">
           <p class="slide-desc">A <code>while</code> loop that invokes Claude with the same prompt. Each iteration = fresh session. State lives on disk.</p>
@@ -475,10 +705,10 @@
       </div>
     </section>
 
-    <!-- ── 7.2 · Loops — /loop & Comparison ── -->
-    <section class="slide" data-chapter="7">
+    <!-- ── 8.2 · Loops — /loop & Comparison ── -->
+    <section class="slide" data-chapter="8">
       <div class="slide-content">
-        <span class="slide-label">07 — Autonomous Loops</span>
+        <span class="slide-label">08 — Autonomous Loops</span>
         <h2 class="slide-title">/loop &amp; When to Use What</h2>
         <div class="slide-body">
           <p class="slide-desc"><code>/loop [interval] &lt;prompt or /command&gt;</code> — default 10m, max 50 concurrent, 3-day expiry. Dies with terminal.</p>
@@ -512,10 +742,10 @@
       </div>
     </section>
 
-    <!-- ── 8.1 · Multi-Agent — Subagents & Teams ── -->
-    <section class="slide" data-chapter="8">
+    <!-- ── 9.1 · Multi-Agent — Subagents & Teams ── -->
+    <section class="slide" data-chapter="9">
       <div class="slide-content">
-        <span class="slide-label">08 — Multi-Agent</span>
+        <span class="slide-label">09 — Multi-Agent</span>
         <h2 class="slide-title">Decompose Across Agents</h2>
         <div class="slide-body">
           <div class="two-col">
@@ -551,10 +781,10 @@
       </div>
     </section>
 
-    <!-- ── 8.2 · Multi-Agent — Choosing the Tool ── -->
-    <section class="slide" data-chapter="8">
+    <!-- ── 9.2 · Multi-Agent — Choosing the Right Tool ── -->
+    <section class="slide" data-chapter="9">
       <div class="slide-content">
-        <span class="slide-label">08 — Multi-Agent</span>
+        <span class="slide-label">09 — Multi-Agent</span>
         <h2 class="slide-title">Choosing the Right Tool</h2>
         <div class="slide-body">
           <table class="info-table">
@@ -589,10 +819,10 @@
       </div>
     </section>
 
-    <!-- ── 9.1 · GSD — Problem & Principles ── -->
-    <section class="slide" data-chapter="9">
+    <!-- ── 10.1 · GSD — Problem & Principles ── -->
+    <section class="slide" data-chapter="10">
       <div class="slide-content">
-        <span class="slide-label">09 — GSD Framework</span>
+        <span class="slide-label">10 — GSD Framework</span>
         <h2 class="slide-title">Solving Context Rot</h2>
         <div class="slide-body">
           <div class="callout">
@@ -613,10 +843,10 @@
       </div>
     </section>
 
-    <!-- ── 9.2 · GSD — The Pattern ── -->
-    <section class="slide" data-chapter="9">
+    <!-- ── 10.2 · GSD — The Pattern ── -->
+    <section class="slide" data-chapter="10">
       <div class="slide-content">
-        <span class="slide-label">09 — GSD Framework</span>
+        <span class="slide-label">10 — GSD Framework</span>
         <h2 class="slide-title">The Lean Orchestrator</h2>
         <div class="slide-body">
           <div class="two-col">
@@ -663,7 +893,7 @@
     </section>
 
     <!-- ── Final Slide ── -->
-    <section class="slide slide--intro" data-chapter="10">
+    <section class="slide slide--intro" data-chapter="11">
       <div class="slide-center" style="max-width: none;">
         <p class="eyebrow">That's it. The rest is practice.</p>
         <h1 class="hero-title" style="white-space: nowrap;">
