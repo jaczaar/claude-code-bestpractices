@@ -177,7 +177,7 @@
               <ul class="bullets">
                 <li><code>/compact [hint]</code> — compress conversation (at ~80%)</li>
                 <li><code>/clear</code> — wipe everything (on topic switch)</li>
-                <li><code>/cost</code> — monitor token usage</li>
+                <li><code>/usage</code> — monitor token usage</li>
               </ul>
               <h3 class="slide-section" style="margin-top: 0.8rem;">Auto-Compaction</h3>
               <p class="slide-desc">Triggers at <strong>83.5%</strong> (~167K). Each pass is lossy:<br /><span class="accent">~80% → ~60% → ~40%</span> fidelity. CLAUDE.md bypasses this — reloaded every turn.</p>
@@ -190,7 +190,7 @@
                 <li><strong>Scope tools tightly</strong> — specific globs, not repo-wide</li>
                 <li><strong>Offload to subagents</strong> — parent gets summary</li>
                 <li><strong>/clear between topics</strong></li>
-                <li><strong>Monitor with /cost</strong></li>
+                <li><strong>Monitor with /usage</strong></li>
               </ol>
             </div>
           </div>
