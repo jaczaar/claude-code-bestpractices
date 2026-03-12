@@ -23,6 +23,7 @@
       <li data-chapter="8"><a href="#">Loops</a></li>
       <li data-chapter="9"><a href="#">Multi-Agent</a></li>
       <li data-chapter="10"><a href="#">GSD</a></li>
+      <li data-chapter="11"><a href="#">Desktop</a></li>
     </ol>
   </nav>
 
@@ -839,8 +840,73 @@
       </div>
     </section>
 
+    <!-- ── 11.1 · Desktop — Claude Code on Desktop ── -->
+    <section class="slide" data-chapter="11">
+      <div class="slide-content">
+        <span class="slide-label">11 — Desktop App</span>
+        <h2 class="slide-title">Claude Code on Desktop</h2>
+        <div class="slide-body">
+          <p class="slide-desc">The Code tab in Claude Desktop runs the same engine as the CLI — with a visual layer on top.</p>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Visual Workflow</h3>
+              <ul class="bullets">
+                <li><strong>Diff review</strong> — review changes file-by-file with inline commenting before creating PRs</li>
+                <li><strong>App preview</strong> — embedded browser; Claude starts dev servers, takes screenshots, and auto-verifies changes</li>
+                <li><strong>PR monitoring</strong> — CI status bar with <strong>auto-fix</strong> (Claude fixes failing checks) and <strong>auto-merge</strong> (squash when green)</li>
+                <li><strong>Connectors</strong> — one-click MCP setup for GitHub, Slack, Linear, Notion — no JSON editing</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Sessions &amp; Environments</h3>
+              <ul class="bullets">
+                <li><strong>Parallel sessions</strong> — sidebar tabs, each with automatic Git worktree isolation</li>
+                <li><strong>Scheduled tasks</strong> — recurring tasks (daily code reviews, dependency checks) that fire automatically</li>
+                <li><strong>Remote/cloud sessions</strong> — run on Anthropic's cloud, continue after closing the app, monitor from web or mobile</li>
+                <li><strong>SSH sessions</strong> — connect to cloud VMs, dev containers, or remote servers through the desktop UI</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            Run <code>/desktop</code> in the CLI to move your current session into the app.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 11.2 · Desktop — Desktop vs CLI ── -->
+    <section class="slide" data-chapter="11">
+      <div class="slide-content">
+        <span class="slide-label">11 — Desktop App</span>
+        <h2 class="slide-title">Desktop vs CLI</h2>
+        <div class="slide-body">
+          <table class="info-table">
+            <thead>
+              <tr><th>Feature</th><th>CLI</th><th>Desktop</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Diff review</strong></td><td>text-based</td><td>Visual + inline comments</td></tr>
+              <tr><td><strong>App preview</strong></td><td>—</td><td>Embedded browser, auto-verify</td></tr>
+              <tr><td><strong>PR monitoring</strong></td><td>Manual</td><td>CI bar, auto-fix, auto-merge</td></tr>
+              <tr><td><strong>Sessions</strong></td><td>Separate terminals</td><td>Sidebar tabs + auto worktrees</td></tr>
+              <tr><td><strong>Recurring tasks</strong></td><td>cron / CI pipelines</td><td>Built-in scheduled tasks</td></tr>
+              <tr><td><strong>File attachments</strong></td><td>—</td><td>Images, PDFs, drag-and-drop</td></tr>
+              <tr><td><strong>Remote / cloud</strong></td><td>—</td><td>Anthropic-hosted, persist on close</td></tr>
+              <tr><td><strong>SSH sessions</strong></td><td>—</td><td>Connect via desktop UI</td></tr>
+              <tr><td><strong>Scripting</strong></td><td><code>--print</code>, Agent SDK</td><td>—</td></tr>
+              <tr><td><strong>Third-party providers</strong></td><td>Bedrock, Vertex, Foundry</td><td>—</td></tr>
+              <tr><td><strong>Agent teams</strong></td><td>Supported</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            <strong class="accent">Shared config:</strong> CLAUDE.md, MCP servers, hooks, skills, and settings all carry over between Desktop and CLI.
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ── Final Slide ── -->
-    <section class="slide slide--intro" data-chapter="11">
+    <section class="slide slide--intro" data-chapter="12">
       <div class="slide-center" style="max-width: none;">
         <p class="eyebrow">That's it. The rest is practice.</p>
         <h1 class="hero-title" style="white-space: nowrap;">
