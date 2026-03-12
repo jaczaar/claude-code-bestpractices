@@ -707,28 +707,77 @@
               <h3 class="slide-section" style="margin-top: 0.8rem;">Agent Teams <span class="muted">(experimental)</span></h3>
               <ul class="bullets">
                 <li>Each agent: own <strong>git worktree</strong> + <strong>1M-token context</strong></li>
-                <li>Planning, dependency tracking, mailbox comms</li>
-                <li><code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code></li>
+                <li>Team Lead plans &amp; delegates; specialists execute in parallel</li>
               </ul>
+              <p class="slide-desc muted" style="margin-top: 0.4rem;">Deep dive on next slide →</p>
             </div>
             <div>
-              <h3 class="slide-section">Team Patterns</h3>
-              <table class="info-table info-table--compact">
-                <thead><tr><th>Pattern</th><th>Use Case</th></tr></thead>
-                <tbody>
-                  <tr><td><strong>Leader</strong></td><td>Default — delegate &amp; synthesize</td></tr>
-                  <tr><td><strong>Swarm</strong></td><td>Large refactors, shared discovery</td></tr>
-                  <tr><td><strong>Pipeline</strong></td><td>Sequential: code → test → review</td></tr>
-                  <tr><td><strong>Watchdog</strong></td><td>Long-running with quality gates</td></tr>
-                </tbody>
-              </table>
+              <h3 class="slide-section">Worktrees</h3>
+              <p class="slide-desc"><code>claude --worktree name</code> (add <code>--tmux</code>)<br />Each gets independent builds, tests, branches.</p>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">When to Use What</h3>
+              <ul class="bullets">
+                <li><strong>Subagents</strong> — research, multi-file reads</li>
+                <li><strong>Agent Teams</strong> — large coordinated refactors</li>
+                <li><strong>Worktrees</strong> — manual parallel sessions</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ── 9.2 · Multi-Agent — Choosing the Right Tool ── -->
+    <!-- ── 9.2 · Multi-Agent — Agent Teams Deep Dive ── -->
+    <section class="slide" data-chapter="9">
+      <div class="slide-content">
+        <span class="slide-label">09 — Multi-Agent</span>
+        <h2 class="slide-title">Agent Teams — Swarm Mode</h2>
+        <div class="slide-body">
+          <div class="callout">
+            <strong>Architecture:</strong> Team Lead <strong class="accent">plans &amp; delegates</strong> (never writes code).
+            Specialist agents (Frontend, Backend, Testing, Docs, Architecture) each get their own
+            <strong>git worktree</strong> + <strong>1M-token context</strong>.
+            Enable: <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>
+          </div>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">How It Works</h3>
+              <ol>
+                <li><strong>Plan</strong> — Lead creates task breakdown with dependencies</li>
+                <li><strong>Spawn</strong> — Specialist agents launched in isolated worktrees</li>
+                <li><strong>Execute</strong> — Agents work in parallel; coordinate via task board + @mentions</li>
+                <li><strong>Synthesize</strong> — Lead merges results and resolves conflicts</li>
+              </ol>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">Best Use Cases</h3>
+              <ul class="bullets">
+                <li>Large refactors across many files</li>
+                <li>Multi-layer features (frontend + backend + tests simultaneously)</li>
+                <li>Debugging with competing hypotheses</li>
+                <li>Research tasks with parallel exploration</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Team Patterns</h3>
+              <table class="info-table info-table--compact">
+                <thead><tr><th>Pattern</th><th>How</th><th>When</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Leader</strong></td><td>Delegate &amp; synthesize</td><td>Default — most tasks</td></tr>
+                  <tr><td><strong>Swarm</strong></td><td>Peer-to-peer comms</td><td>Large refactors</td></tr>
+                  <tr><td><strong>Pipeline</strong></td><td>Sequential handoff</td><td>Code → test → review</td></tr>
+                  <tr><td><strong>Watchdog</strong></td><td>Long-running + gates</td><td>CI monitoring</td></tr>
+                </tbody>
+              </table>
+              <div class="callout" style="margin-top: 0.8rem;">
+                <strong>Token cost:</strong> <strong class="accent">4–15×</strong> more than single agent.<br />
+                Reserve for high-value, complex tasks.<br />
+                <span class="muted">Powered by TeammateTool (13 ops: spawn, lifecycle, coordination, sync).</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9.3 · Multi-Agent — Choosing the Right Tool ── -->
     <section class="slide" data-chapter="9">
       <div class="slide-content">
         <span class="slide-label">09 — Multi-Agent</span>
