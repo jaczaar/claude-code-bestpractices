@@ -1,9 +1,9 @@
 name: Claude Code Lessons (MWF)
 
-# Runs Monday, Wednesday, Friday at 7:00 AM ET (12:00 UTC)
+# Runs Monday, Wednesday, Friday at 7:00 AM ET (11:00 UTC during EDT)
 on:
   schedule:
-    - cron: '0 12 * * 1,3,5'
+    - cron: '0 11 * * 1,3,5'
   workflow_dispatch:
 
 permissions:
