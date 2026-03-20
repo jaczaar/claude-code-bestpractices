@@ -283,19 +283,74 @@
       }
     }
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      .container { padding: 2rem 1rem 3rem; }
-      .lesson-card { grid-template-columns: 1fr; gap: 0.75rem; }
+    /* Responsive — tablet */
+    @media (max-width: 768px) {
+      .container { padding: 2.5rem 1.25rem 3.5rem; }
+
+      .header { margin-bottom: 2.5rem; padding-bottom: 2rem; }
+      .header h1 { font-size: clamp(1.8rem, 1.4rem + 3vw, 2.6rem); }
+      .header p { font-size: 0.95rem; }
+
+      .lesson-card { padding: 1.25rem; gap: 1rem; }
+      .card-body .title { font-size: 1.1rem; }
+      .card-body .summary { font-size: 0.85rem; }
+
+      .footer { margin-top: 3rem; }
+    }
+
+    /* Responsive — mobile */
+    @media (max-width: 480px) {
+      .container { padding: 1.75rem 1rem 3rem; }
+
+      .header { margin-bottom: 2rem; padding-bottom: 1.5rem; }
+      .header-label { font-size: 0.7rem; margin-bottom: 1rem; }
+
+      .stats { gap: 1.25rem; font-size: 0.75rem; }
+
+      .lessons-grid { gap: 0.75rem; }
+
+      .lesson-card {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+        padding: 1.15rem;
+        border-radius: 12px;
+        /* Larger touch target */
+        min-height: 44px;
+      }
+
       .card-number {
         width: auto;
         height: auto;
-        padding: 0.25rem 0.65rem;
+        padding: 0.2rem 0.6rem;
         border-radius: 6px;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         justify-self: start;
       }
-      .stats { gap: 1.5rem; }
+
+      .card-body .date { font-size: 0.7rem; }
+      .card-body .title { font-size: 1.05rem; }
+      .card-body .summary { font-size: 0.84rem; line-height: 1.5; }
+      .card-body .meta { gap: 0.4rem; }
+
+      .tag { font-size: 0.65rem; padding: 0.18rem 0.45rem; }
+
+      .empty-state { padding: 3rem 0.5rem; }
+      .empty-state .icon-wrap { width: 56px; height: 56px; }
+
+      .footer { margin-top: 2.5rem; padding-top: 1.5rem; }
+      .footer a { font-size: 0.8rem; min-height: 44px; display: inline-flex; align-items: center; }
+    }
+
+    /* Prevent horizontal overflow on any screen */
+    html, body { overflow-x: hidden; }
+
+    /* Safe area insets for notched devices */
+    @supports (padding: env(safe-area-inset-bottom)) {
+      .container {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-bottom: max(3rem, env(safe-area-inset-bottom));
+      }
     }
   </style>
 </head>

@@ -361,10 +361,104 @@
       }
     }
 
-    @media (max-width: 600px) {
-      .container { padding: 2rem 1rem 3rem; }
-      .flashcard { padding: 1.5rem; }
-      .key-takeaway { padding: 1.25rem; }
+    /* Responsive — tablet */
+    @media (max-width: 768px) {
+      .container { padding: 2.5rem 1.25rem 3.5rem; }
+
+      .back-link { margin-bottom: 2rem; min-height: 44px; display: inline-flex; align-items: center; }
+
+      .lesson-header { margin-bottom: 2rem; padding-bottom: 1.5rem; }
+
+      .flashcard { padding: 1.5rem; margin: 1.5rem 0 2rem; }
+      .flashcard-front strong { font-size: 1.05rem; }
+
+      .content h2 { font-size: 1.2rem; margin: 2rem 0 0.85rem; }
+      .content h3 { font-size: 1.05rem; }
+
+      .content pre { padding: 1rem 1.15rem; }
+      .content pre code { font-size: 0.82rem; }
+
+      .key-takeaway { padding: 1.35rem; }
+      .nav-footer { margin-top: 2.5rem; padding-top: 1.5rem; }
+    }
+
+    /* Responsive — mobile */
+    @media (max-width: 480px) {
+      .container { padding: 1.75rem 1rem 3rem; }
+
+      .back-link { font-size: 0.75rem; margin-bottom: 1.5rem; }
+
+      .lesson-header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; }
+      .lesson-number { font-size: 0.7rem; margin-bottom: 0.5rem; }
+
+      h1 { margin-bottom: 0.75rem; }
+
+      .meta { font-size: 0.75rem; }
+      .tags { gap: 0.4rem; }
+      .tag { font-size: 0.65rem; padding: 0.18rem 0.45rem; }
+
+      .flashcard {
+        padding: 1.25rem;
+        border-radius: 12px;
+        margin: 1.25rem 0 1.75rem;
+      }
+      .flashcard-label { font-size: 0.65rem; margin-bottom: 0.75rem; }
+      .flashcard-front strong { font-size: 1rem; line-height: 1.4; }
+      .flip-hint { font-size: 0.7rem; margin-top: 1rem; }
+
+      .content p { font-size: 0.92rem; }
+      .content ul, .content ol { padding-left: 1.25rem; }
+      .content li { font-size: 0.92rem; }
+
+      .content code { font-size: 0.84em; padding: 0.12rem 0.35rem; }
+
+      .content pre {
+        padding: 0.85rem 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        /* Allow horizontal scroll for long code on mobile */
+        -webkit-overflow-scrolling: touch;
+      }
+      .content pre code { font-size: 0.78rem; line-height: 1.6; }
+
+      .content blockquote { padding: 0.6rem 0.85rem; font-size: 0.9rem; }
+
+      .content h2 { font-size: 1.15rem; margin: 1.75rem 0 0.75rem; }
+      .content h3 { font-size: 1rem; margin: 1.5rem 0 0.6rem; }
+
+      .key-takeaway {
+        padding: 1.15rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+      }
+      .key-takeaway h3 { font-size: 0.88rem; }
+      .key-takeaway p { font-size: 0.9rem; }
+
+      .nav-footer {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1.25rem;
+      }
+      .nav-footer a {
+        justify-content: center;
+        min-height: 44px;
+        font-size: 0.78rem;
+      }
+    }
+
+    /* Prevent horizontal overflow on any screen */
+    html, body { overflow-x: hidden; }
+
+    /* Safe area insets for notched devices */
+    @supports (padding: env(safe-area-inset-bottom)) {
+      .container {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-bottom: max(3rem, env(safe-area-inset-bottom));
+      }
     }
   </style>
 </head>
