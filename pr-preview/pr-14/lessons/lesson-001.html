@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Teams: Multi-Agent Parallelism with Swarm Mode — Claude Code Lessons</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #d2a8ff;
+      --accent-alt: #79c0ff;
+      --code-bg: #1c2128;
+      --tag-bg: #1f2937;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: var(--accent-alt);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .lesson-number {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0 0.75rem;
+      line-height: 1.3;
+    }
+
+    .meta {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tags { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      background: var(--tag-bg);
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+
+    /* Flashcard */
+    .flashcard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2rem 0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+
+    .flashcard:hover { border-color: var(--accent); }
+
+    .flashcard-front { }
+    .flashcard-back {
+      display: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .flashcard.flipped .flashcard-back { display: block; }
+    .flashcard .flip-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+
+    .flashcard.flipped .flip-hint { display: none; }
+
+    /* Content styles */
+    .content h2 { font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--accent); }
+    .content h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; }
+    .content p { margin-bottom: 1rem; }
+    .content ul, .content ol { margin: 1rem 0; padding-left: 1.5rem; }
+    .content li { margin-bottom: 0.5rem; }
+
+    .content code {
+      background: var(--code-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .content pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .content blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      color: var(--text-muted);
+      margin: 1rem 0;
+    }
+
+    .key-takeaway {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .key-takeaway h3 {
+      color: var(--accent);
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-footer a {
+      color: var(--accent-alt);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .nav-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="index.html">&larr; All Lessons</a>
+
+    <div class="lesson-number">Lesson 001</div>
+    <h1>Agent Teams: Multi-Agent Parallelism with Swarm Mode</h1>
+    <div class="meta">
+      <div>2026-03-20</div>
+      <div class="tags"><span class="tag">new-capability</span> <span class="tag">agent-teams</span> <span class="tag">parallelism</span></div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-front">
+        <strong>How do you enable Agent Teams (Swarm Mode) in Claude Code, and what problem does it solve?</strong>
+        <div class="flip-hint">Click to reveal answer</div>
+      </div>
+      <div class="flashcard-back">
+        Set <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> as an environment variable. Agent Teams lets multiple Claude agents work in parallel on independent subtasks, each in its own git worktree with a full 1M-token context window, coordinating through a mailbox system.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Are Agent Teams?</h2>
+      <p>Released on February 5, 2026 alongside Opus 4.6, <strong>Agent Teams</strong> (also called "Swarm Mode") is an experimental feature that enables multi-agent orchestration in Claude Code. Instead of one agent doing everything sequentially, you can spin up multiple agents that work in parallel — each with its own isolated git worktree and full 1M-token context window.</p>
+
+      <h2>How to Enable It</h2>
+      <p>Agent Teams is gated behind an environment variable:</p>
+      <pre><code>export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code></pre>
+      <p>Set this in your shell profile or before launching Claude Code. Once enabled, the <code>TeammateTool</code> becomes available, allowing the orchestrator agent to spawn and coordinate teammates.</p>
+
+      <h2>Orchestration Patterns</h2>
+      <p>Agent Teams supports four orchestration patterns depending on your task:</p>
+      <ul>
+        <li><strong>Leader</strong> — A single coordinator assigns tasks and collects results. Best for feature implementation where one agent plans and others execute.</li>
+        <li><strong>Swarm</strong> — Peer-to-peer collaboration. Agents communicate directly via mailboxes. Good for broad codebase exploration.</li>
+        <li><strong>Pipeline</strong> — Sequential handoffs from one agent to the next. Ideal for staged workflows like lint, test, then deploy.</li>
+        <li><strong>Watchdog</strong> — One agent monitors and supervises others. Useful for long-running tasks that need oversight.</li>
+      </ul>
+
+      <h2>Key Technical Details</h2>
+      <ul>
+        <li><strong>Independent worktrees:</strong> Each agent gets its own git worktree, preventing file conflicts between parallel agents editing different parts of the codebase.</li>
+        <li><strong>Mailbox system:</strong> Agents communicate through message-passing mailboxes, solving the limitation where basic subagents couldn't talk to each other.</li>
+        <li><strong>Task dependency tracking:</strong> Agents can declare dependencies, and the orchestrator respects execution order — so agent B waits for agent A to finish if needed.</li>
+        <li><strong>1M token context per agent:</strong> Each teammate operates with a full context window, not a shared or reduced one.</li>
+      </ul>
+
+      <h2>When to Use It</h2>
+      <p>Agent Teams shines on large-scale tasks where parallelism provides real speedup:</p>
+      <ul>
+        <li>Implementing a full feature across multiple services in a monorepo</li>
+        <li>Writing comprehensive test suites across different modules simultaneously</li>
+        <li>Multi-service refactors (e.g., updating an API contract across frontend, backend, and docs)</li>
+        <li>Codebase-wide audits where each agent handles a different directory</li>
+      </ul>
+      <blockquote>For simple, single-file tasks, regular subagents via the Task tool are still more efficient. Agent Teams adds overhead that only pays off at scale.</blockquote>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>Key Takeaway</h3>
+      <p>Agent Teams lets you parallelize large Claude Code tasks across multiple agents, each with isolated worktrees and full context — enable it with <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> when you need to divide and conquer.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="index.html">&larr; All Lessons</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LESSON_TITLE — Claude Code Lessons</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #d2a8ff;
+      --accent-alt: #79c0ff;
+      --code-bg: #1c2128;
+      --tag-bg: #1f2937;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: var(--accent-alt);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .lesson-number {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0 0.75rem;
+      line-height: 1.3;
+    }
+
+    .meta {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tags { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      background: var(--tag-bg);
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+
+    /* Flashcard */
+    .flashcard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2rem 0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+
+    .flashcard:hover { border-color: var(--accent); }
+
+    .flashcard-front { }
+    .flashcard-back {
+      display: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .flashcard.flipped .flashcard-back { display: block; }
+    .flashcard .flip-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+
+    .flashcard.flipped .flip-hint { display: none; }
+
+    /* Content styles */
+    .content h2 { font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--accent); }
+    .content h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; }
+    .content p { margin-bottom: 1rem; }
+    .content ul, .content ol { margin: 1rem 0; padding-left: 1.5rem; }
+    .content li { margin-bottom: 0.5rem; }
+
+    .content code {
+      background: var(--code-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .content pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .content blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      color: var(--text-muted);
+      margin: 1rem 0;
+    }
+
+    .key-takeaway {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .key-takeaway h3 {
+      color: var(--accent);
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-footer a {
+      color: var(--accent-alt);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .nav-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="index.html">&larr; All Lessons</a>
+
+    <div class="lesson-number">LESSON_NUMBER</div>
+    <h1>LESSON_TITLE</h1>
+    <div class="meta">
+      <div>LESSON_DATE</div>
+      <div class="tags">LESSON_TAGS</div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-front">
+        <strong>FLASHCARD_QUESTION</strong>
+        <div class="flip-hint">Click to reveal answer</div>
+      </div>
+      <div class="flashcard-back">
+        FLASHCARD_ANSWER
+      </div>
+    </div>
+
+    <div class="content">
+      LESSON_CONTENT
+    </div>
+
+    <div class="key-takeaway">
+      <h3>Key Takeaway</h3>
+      <p>KEY_TAKEAWAY</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="index.html">&larr; All Lessons</a>
+    </div>
+  </div>
+</body>
+</html>
