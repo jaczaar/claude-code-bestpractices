@@ -236,6 +236,20 @@
   z-index: 50;
 }
 
+.toc-lessons-link {
+  display: block;
+  margin-top: 1.25rem;
+  font-size: var(--text-small);
+  color: var(--color-muted);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.toc-lessons-link:hover {
+  opacity: 1;
+}
+
 .toc-sidebar-list {
   list-style: none;
   display: flex;
