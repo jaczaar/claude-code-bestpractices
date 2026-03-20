@@ -1,3 +1,11 @@
 {
-  "lessons": []
+  "lessons": [
+    {
+      "slug": "lesson-001",
+      "title": "Auto Memory: Taming the 200-Line MEMORY.md Limit",
+      "summary": "How to structure Claude Code's auto memory system using topic files and the capture-promote-prune cycle to stay under the 200-line MEMORY.md limit.",
+      "date": "2026-03-20",
+      "tags": ["memory", "auto-memory", "advanced"]
+    }
+  ]
 }
