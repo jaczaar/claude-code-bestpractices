@@ -1,15 +1,19 @@
 {
   "name": "claude-code-bestpractices",
   "version": "1.0.0",
-  "description": "",
+  "description": "Interactive guide to Claude Code best practices — 12-chapter slideshow + automated flashcard lessons",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaczaar/claude-code-bestpractices.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["claude-code", "best-practices", "education", "vite", "typescript"],
+  "author": "Jacques Zaarour",
   "license": "ISC",
   "devDependencies": {
     "typescript": "^5.9.3",
