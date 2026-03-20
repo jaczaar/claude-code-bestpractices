@@ -1,3 +1,11 @@
 {
-  "lessons": []
+  "lessons": [
+    {
+      "slug": "lesson-001",
+      "title": "The /loop Command: Scheduled Autonomous Tasks in Claude Code",
+      "summary": "Learn how to use /loop to schedule recurring prompts and commands — from deploy monitoring to automated code reviews — without leaving your Claude Code session.",
+      "date": "2026-03-20",
+      "tags": ["new-capability", "automation", "slash-commands"]
+    }
+  ]
 }
