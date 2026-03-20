@@ -103,7 +103,7 @@ jobs:
           - "## Flashcard" section with the Q&A
           - "## Lesson" section with the full explanation in markdown (not HTML)
           - "## Key Takeaway" section
-          - A link: "Read on the web: https://jaczaar.github.io/claude-code-bestpractices/lessons/${LESSON_SLUG}.html"
+          - Do NOT include a "Read on the web" link — the PR preview action will add one automatically.
           This will be the PR description — make it clean and shareable.
 
           ### 4. Verify
@@ -147,7 +147,11 @@ jobs:
             echo "New lesson ${NUM}" > "$BODY_FILE"
           fi
 
-          gh pr create \
+          PR_URL=$(gh pr create \
             --title "Lesson ${NUM}: ${TITLE}" \
             --body-file "$BODY_FILE" \
-            --base master
+            --base master)
+
+          # Extract PR number and comment with direct lesson preview link
+          PR_NUM=$(echo "$PR_URL" | grep -o '[0-9]*$')
+          gh pr comment "$PR_NUM" --body "📖 **[Preview this lesson](https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUM}/lessons/${{ steps.meta.outputs.slug }}.html)** (available once the Pages deployment completes)"
