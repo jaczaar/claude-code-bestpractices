@@ -77,15 +77,49 @@ jobs:
           ## Steps
 
           ### 1. Create the lesson HTML
-          Read public/lessons/TEMPLATE.html. Copy it and fill ALL placeholders to create public/lessons/${LESSON_SLUG}.html:
+          Read public/lessons/TEMPLATE.html CAREFULLY — including the design system reference in the HTML comment at the top.
+          Copy it and fill ALL placeholders to create public/lessons/${LESSON_SLUG}.html:
           - LESSON_TITLE: Clear, specific title
           - LESSON_NUMBER: Lesson ${LESSON_NUM}
           - LESSON_DATE: ${LESSON_DATE}
           - LESSON_TAGS: 2-3 <span class="tag"> elements
           - FLASHCARD_QUESTION: One clear question the reader can answer after reading
           - FLASHCARD_ANSWER: Concise 1-3 sentence answer
-          - LESSON_CONTENT: Main body with HTML (h2, h3, p, code, pre, ul/li). 300-500 words max.
+          - LESSON_CONTENT: Main body with rich HTML content. 300-500 words max.
           - KEY_TAKEAWAY: One sentence to remember
+
+          ### CRITICAL: Design System & Visual Quality
+          The lesson pages use a refined Anthropic-inspired design system that MUST be followed precisely.
+          Read the design reference comment at the top of TEMPLATE.html for full details. Key rules:
+
+          **Color palette** (warm, NOT blue/GitHub-style):
+          - Background: #1a1816 (warm dark brown)
+          - Text: #f5f0e8 / #e8e0d4 (warm off-white)
+          - Accent: #d4845a (warm orange)
+          - Never use blue/purple accents or GitHub-style colors
+
+          **Typography**: Manrope font (loaded via Google Fonts). Monospace: SF Mono/Fira Code.
+
+          **Visual richness** — use these component classes in LESSON_CONTENT for visual variety:
+          - <div class="callout"> for important highlighted boxes
+          - <div class="tip-box"><div class="tip-label">Tip</div><p>...</p></div> for tips
+          - <table class="info-table"> for data tables with accent-colored headers
+          - <div class="comparison-grid"><div class="compare-box">...</div></div> for side-by-side comparisons
+          - <pre><code>...</code></pre> for code blocks (styled automatically)
+          - <details class="collapsible"><summary>Title</summary><div class="collapsible-body">...</div></details> for expandable sections
+          - <blockquote> for accent-bordered quotes
+          - <div class="terminal-mockup"> for terminal displays
+
+          **Every lesson MUST include at least 2 visual components** beyond basic text/lists.
+          For example: a table + a tip box, or a comparison grid + a callout, or a diagram + a code block.
+          This makes each lesson feel polished and engaging, not like a plain text article.
+
+          **Entrance animations**: The template includes staggered .animate-in classes. Keep these on all major sections.
+          **Reading progress bar**: Already in the template. Don't remove it.
+          **Grain texture**: Already in the CSS. Don't modify it.
+
+          Do NOT change the CSS in the template. Only fill in the content placeholders.
+          Reference lesson-001.html for a concrete example of the expected output quality.
 
           ### 2. Update the manifest
           Add to public/lessons/lessons.json:
@@ -109,7 +143,7 @@ jobs:
           ### 4. Verify
           - Confirm the HTML file exists and is valid
           - Confirm lessons.json is valid JSON
-          - Do NOT modify any other files
+          - Do NOT modify any other files (especially TEMPLATE.html or index.html)
 
           Write like you're teaching a colleague. Be concise, accurate, practical.
           PROMPT

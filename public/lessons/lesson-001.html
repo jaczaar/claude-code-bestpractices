@@ -3,127 +3,386 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agent Teams: Multi-Agent Parallelism with Swarm Mode — Claude Code Lessons.</title>
+  <title>Agent Teams: Multi-Agent Parallelism with Swarm Mode — Claude Code Lessons</title>
+  <meta name="description" content="How to enable and use Claude Code's experimental Agent Teams feature to parallelize large tasks across multiple agents with isolated git worktrees." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* ══════════════════════════════════════
+       Design Tokens — synced with main site
+       ══════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --accent: #d2a8ff;
-      --accent-alt: #79c0ff;
-      --code-bg: #1c2128;
-      --tag-bg: #1f2937;
+      --color-bg: #1a1816;
+      --color-bg-raised: #1f1d1a;
+      --color-text: #f5f0e8;
+      --color-text-primary: #e8e0d4;
+      --color-accent: #d4845a;
+      --color-accent-soft: rgba(212, 132, 90, 0.12);
+      --color-accent-hover: #e09a74;
+      --color-accent-glow: rgba(212, 132, 90, 0.25);
+      --color-muted: rgba(245, 240, 232, 0.6);
+      --color-subtle: rgba(245, 240, 232, 0.25);
+      --color-surface: rgba(255, 255, 255, 0.035);
+      --color-border: rgba(255, 255, 255, 0.06);
+      --color-border-hover: rgba(255, 255, 255, 0.12);
+      --color-code-bg: rgba(255, 255, 255, 0.04);
+
+      --font-main: 'Manrope', -apple-system, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+      --text-hero: clamp(1.8rem, 1.5rem + 2vw, 2.6rem);
+      --text-heading: clamp(1.3rem, 1.15rem + 1vw, 1.6rem);
+      --text-subhead: clamp(1.05rem, 1rem + 0.4vw, 1.2rem);
+      --text-body: clamp(0.95rem, 0.92rem + 0.25vw, 1.05rem);
+      --text-small: clamp(0.78rem, 0.74rem + 0.2vw, 0.86rem);
+      --text-label: 0.7rem;
+
+      --content-max: 720px;
+      --radius: 12px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: var(--font-main);
+      font-size: var(--text-body);
       line-height: 1.7;
+      color: var(--color-text-primary);
+      background: var(--color-bg);
       min-height: 100vh;
     }
 
-    .container {
-      max-width: 720px;
+    /* Grain texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px;
+    }
+
+    ::selection { background: rgba(212, 132, 90, 0.3); }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 4px; }
+
+    /* ══════════════════════════════════════
+       Reading Progress Bar
+       ══════════════════════════════════════ */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--color-accent);
+      box-shadow: 0 0 10px var(--color-accent-glow);
+      z-index: 1000;
+      transition: width 0.1s linear;
+    }
+
+    /* ══════════════════════════════════════
+       Layout
+       ══════════════════════════════════════ */
+    .page-container {
+      max-width: var(--content-max);
       margin: 0 auto;
-      padding: 3rem 1.5rem;
+      padding: 2.5rem 2rem 4rem;
     }
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 2rem;
-      color: var(--accent-alt);
+    /* ── Back nav ── */
+    .back-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-muted);
       text-decoration: none;
-      font-size: 0.9rem;
+      padding: 0.35rem 0.75rem 0.35rem 0.5rem;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      transition: all 0.25s var(--ease);
+      margin-bottom: 2.5rem;
     }
 
-    .back-link:hover { text-decoration: underline; }
+    .back-nav:hover {
+      color: var(--color-accent);
+      border-color: var(--color-border);
+      background: var(--color-surface);
+    }
 
-    .lesson-number {
-      font-size: 0.85rem;
-      color: var(--accent);
+    .back-nav svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.25s var(--ease);
+    }
+
+    .back-nav:hover svg {
+      transform: translateX(-2px);
+    }
+
+    /* ══════════════════════════════════════
+       Lesson Header
+       ══════════════════════════════════════ */
+    .lesson-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .lesson-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      color: var(--color-accent);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
+      padding: 0.25em 0.7em;
+      background: var(--color-accent-soft);
+      border-radius: 100px;
+      border: 1px solid rgba(212, 132, 90, 0.08);
+      margin-bottom: 1rem;
     }
 
-    h1 {
-      font-size: 2rem;
+    .lesson-title {
+      font-size: var(--text-hero);
       font-weight: 700;
-      margin: 0.5rem 0 0.75rem;
-      line-height: 1.3;
+      color: var(--color-text);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
     }
 
-    .meta {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
 
-    .tags { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .meta-date {
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-subtle);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .meta-date svg {
+      width: 13px;
+      height: 13px;
+      opacity: 0.6;
+    }
+
+    .meta-divider {
+      width: 1px;
+      height: 14px;
+      background: var(--color-border);
+    }
+
+    .lesson-tags {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
     .tag {
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
-      background: var(--tag-bg);
-      border-radius: 999px;
-      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.2em 0.6em;
+      background: var(--color-accent-soft);
+      border: 1px solid rgba(212, 132, 90, 0.06);
+      border-radius: 100px;
+      color: var(--color-accent);
+      letter-spacing: 0.02em;
+      text-transform: lowercase;
     }
 
-    /* Flashcard */
+    /* ══════════════════════════════════════
+       Flashcard
+       ══════════════════════════════════════ */
     .flashcard {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      margin: 2rem 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
       cursor: pointer;
-      transition: border-color 0.2s;
+      transition: all 0.3s var(--ease);
       position: relative;
+      overflow: hidden;
     }
 
-    .flashcard:hover { border-color: var(--accent); }
-
-    .flashcard-front { }
-    .flashcard-back {
-      display: none;
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
+    .flashcard::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), transparent);
+      opacity: 0.5;
     }
 
-    .flashcard.flipped .flashcard-back { display: block; }
-    .flashcard .flip-hint {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 1rem;
+    .flashcard:hover {
+      border-color: var(--color-border-hover);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .flashcard-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .flashcard-label svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .flashcard-question {
+      font-size: var(--text-subhead);
+      font-weight: 600;
+      color: var(--color-text);
+      line-height: 1.45;
+    }
+
+    .flip-hint {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      color: var(--color-subtle);
+      margin-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: opacity 0.3s var(--ease);
     }
 
     .flashcard.flipped .flip-hint { display: none; }
 
-    /* Content styles */
-    .content h2 { font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--accent); }
-    .content h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; }
-    .content p { margin-bottom: 1rem; }
-    .content ul, .content ol { margin: 1rem 0; padding-left: 1.5rem; }
-    .content li { margin-bottom: 0.5rem; }
+    .flashcard-answer {
+      display: none;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+      line-height: 1.7;
+    }
+
+    .flashcard.flipped .flashcard-answer {
+      display: block;
+      animation: fadeSlideIn 0.35s var(--ease) forwards;
+    }
+
+    .flashcard-answer code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      color: var(--color-text);
+      background: var(--color-code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════
+       Content Typography
+       ══════════════════════════════════════ */
+    .content h2 {
+      font-size: var(--text-heading);
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 2.5rem 0 0.75rem;
+      letter-spacing: -0.02em;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .content h2:first-child { margin-top: 0; }
+
+    .content h3 {
+      font-size: var(--text-subhead);
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 1.75rem 0 0.5rem;
+    }
+
+    .content p {
+      margin-bottom: 1rem;
+      color: var(--color-text-primary);
+    }
+
+    .content ul, .content ol {
+      margin: 0.75rem 0 1rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .content li {
+      padding: 0.25em 0 0.25em 1.3em;
+      position: relative;
+      color: var(--color-muted);
+      line-height: 1.65;
+    }
+
+    .content ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      opacity: 0.4;
+    }
+
+    .content li strong {
+      color: var(--color-text);
+      font-weight: 600;
+    }
 
     .content code {
-      background: var(--code-bg);
-      padding: 0.15rem 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      color: var(--color-text);
+      background: var(--color-code-bg);
+      padding: 0.15em 0.4em;
       border-radius: 4px;
-      font-size: 0.9em;
+      border: 1px solid var(--color-border);
     }
 
     .content pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      background: var(--color-code-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
       padding: 1rem 1.25rem;
       overflow-x: auto;
       margin: 1rem 0;
@@ -132,70 +391,434 @@
     .content pre code {
       background: none;
       padding: 0;
+      border: none;
+      font-size: 0.85em;
+      color: var(--color-muted);
+      line-height: 1.7;
     }
 
     .content blockquote {
-      border-left: 3px solid var(--accent);
-      padding-left: 1rem;
-      color: var(--text-muted);
+      border-left: 2px solid var(--color-accent);
+      padding: 0.5rem 0 0.5rem 1.2rem;
+      margin: 1.25rem 0;
+      color: var(--color-muted);
+      font-style: normal;
+    }
+
+    /* ── Callout ── */
+    .callout {
+      background: var(--color-accent-soft);
+      border: 1px solid rgba(212, 132, 90, 0.12);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: var(--text-small);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+    }
+
+    .callout strong { color: var(--color-text); }
+
+    /* ── Tip box ── */
+    .tip-box {
+      background: var(--color-surface);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.75rem 1.1rem;
       margin: 1rem 0;
     }
 
-    .key-takeaway {
-      background: var(--surface);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
+    .tip-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-accent);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-box p {
+      font-size: var(--text-small);
+      color: var(--color-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Info table ── */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-small);
+      margin: 1rem 0;
+    }
+
+    .info-table th,
+    .info-table td {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+      line-height: 1.5;
+    }
+
+    .info-table th {
+      color: var(--color-accent);
+      font-weight: 600;
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .info-table td { color: var(--color-muted); }
+    .info-table td strong { color: var(--color-text); }
+    .info-table tr:last-child td { border-bottom: none; }
+    .info-table code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--color-text);
+      background: var(--color-surface);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+
+    /* ── Architecture diagram ── */
+    .architecture-diagram {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
       padding: 1.5rem;
-      margin: 2rem 0;
+      margin: 1.25rem 0;
+      overflow-x: auto;
     }
 
-    .key-takeaway h3 {
-      color: var(--accent);
-      margin: 0 0 0.5rem;
-      font-size: 1rem;
+    .arch-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
+    .arch-label svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .arch-node {
+      background: var(--color-code-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-text-primary);
+      text-align: center;
+      min-width: 90px;
+    }
+
+    .arch-node--accent {
+      border-color: rgba(212, 132, 90, 0.25);
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
+    }
+
+    .arch-node small {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--color-subtle);
+      margin-top: 0.15rem;
+    }
+
+    .arch-arrow {
+      color: var(--color-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .arch-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* ── Comparison grid ── */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .compare-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .compare-box h4 {
+      font-size: var(--text-label);
+      font-weight: 600;
+      color: var(--color-accent);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .compare-box p, .compare-box li {
+      font-size: var(--text-small);
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ══════════════════════════════════════
+       Key Takeaway
+       ══════════════════════════════════════ */
+    .key-takeaway {
+      background: var(--color-surface);
+      border: 1px solid rgba(212, 132, 90, 0.2);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin: 2.5rem 0 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .key-takeaway::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), transparent 80%);
+    }
+
+    .key-takeaway-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .key-takeaway-label svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .key-takeaway p {
+      color: var(--color-text-primary);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .key-takeaway code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      color: var(--color-text);
+      background: var(--color-code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+    }
+
+    /* ══════════════════════════════════════
+       Navigation Footer
+       ══════════════════════════════════════ */
     .nav-footer {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-top: 3rem;
       padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--color-border);
     }
 
-    .nav-footer a {
-      color: var(--accent-alt);
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-muted);
       text-decoration: none;
-      font-size: 0.9rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      transition: all 0.25s var(--ease);
     }
 
-    .nav-footer a:hover { text-decoration: underline; }
+    .nav-link:hover {
+      color: var(--color-accent);
+      border-color: var(--color-border);
+      background: var(--color-surface);
+    }
+
+    .nav-link svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.25s var(--ease);
+    }
+
+    .nav-link--prev:hover svg { transform: translateX(-2px); }
+
+    /* ══════════════════════════════════════
+       Page Footer
+       ══════════════════════════════════════ */
+    .page-footer {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+    }
+
+    .footer-brand {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-subtle);
+    }
+
+    .footer-brand .accent { color: var(--color-accent); }
+
+    /* ══════════════════════════════════════
+       Entrance Animations
+       ══════════════════════════════════════ */
+    .animate-in {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+
+    .animate-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-in { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ══════════════════════════════════════
+       Responsive
+       ══════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .page-container { padding: 1.5rem 1.25rem 3rem; }
+      .flashcard { padding: 1.25rem 1.5rem; }
+      .lesson-title { font-size: clamp(1.5rem, 1.3rem + 1.5vw, 2rem); }
+      .arch-flow { flex-direction: column; }
+      .arch-arrow { transform: rotate(90deg); }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a class="back-link" href="index.html">&larr; All Lessons</a>
+  <!-- Reading progress -->
+  <div class="reading-progress" id="reading-progress"></div>
 
-    <div class="lesson-number">Lesson 001</div>
-    <h1>Agent Teams: Multi-Agent Parallelism with Swarm Mode</h1>
-    <div class="meta">
-      <div>2026-03-20</div>
-      <div class="tags"><span class="tag">new-capability</span> <span class="tag">agent-teams</span> <span class="tag">parallelism</span></div>
-    </div>
+  <div class="page-container">
 
-    <div class="flashcard" onclick="this.classList.toggle('flipped')">
-      <div class="flashcard-front">
-        <strong>How do you enable Agent Teams (Swarm Mode) in Claude Code, and what problem does it solve?</strong>
-        <div class="flip-hint">Click to reveal answer</div>
+    <!-- Back navigation -->
+    <a class="back-nav animate-in" href="index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 12L6 8l4-4"/>
+      </svg>
+      All Lessons
+    </a>
+
+    <!-- Lesson header -->
+    <header class="lesson-header animate-in" style="transition-delay: 50ms">
+      <div class="lesson-label">Lesson 001</div>
+      <h1 class="lesson-title">Agent Teams: Multi-Agent Parallelism with Swarm Mode</h1>
+      <div class="lesson-meta">
+        <span class="meta-date">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5.5 2v2M10.5 2v2"/>
+          </svg>
+          2026-03-20
+        </span>
+        <span class="meta-divider"></span>
+        <div class="lesson-tags">
+          <span class="tag">new-capability</span>
+          <span class="tag">agent-teams</span>
+          <span class="tag">parallelism</span>
+        </div>
       </div>
-      <div class="flashcard-back">
+    </header>
+
+    <!-- Flashcard -->
+    <div class="flashcard animate-in" style="transition-delay: 100ms" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2.5 1.5"/>
+        </svg>
+        Quick Check
+      </div>
+      <div class="flashcard-question">How do you enable Agent Teams (Swarm Mode) in Claude Code, and what problem does it solve?</div>
+      <div class="flip-hint">Click to reveal answer</div>
+      <div class="flashcard-answer">
         Set <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> as an environment variable. Agent Teams lets multiple Claude agents work in parallel on independent subtasks, each in its own git worktree with a full 1M-token context window, coordinating through a mailbox system.
       </div>
     </div>
 
-    <div class="content">
+    <!-- Main content -->
+    <article class="content animate-in" style="transition-delay: 150ms">
       <h2>What Are Agent Teams?</h2>
       <p>Released on February 5, 2026 alongside Opus 4.6, <strong>Agent Teams</strong> (also called "Swarm Mode") is an experimental feature that enables multi-agent orchestration in Claude Code. Instead of one agent doing everything sequentially, you can spin up multiple agents that work in parallel — each with its own isolated git worktree and full 1M-token context window.</p>
+
+      <!-- Architecture diagram -->
+      <div class="architecture-diagram">
+        <div class="arch-label">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3h4v4H3zM9 3h4v4H9zM6 9h4v4H6z"/>
+          </svg>
+          Architecture
+        </div>
+        <div class="arch-flow">
+          <div class="arch-node arch-node--accent">
+            Orchestrator
+            <small>Plans & assigns</small>
+          </div>
+          <span class="arch-arrow">&rarr;</span>
+          <div class="arch-group">
+            <div class="arch-node">
+              Agent A
+              <small>Worktree 1</small>
+            </div>
+            <div class="arch-node">
+              Agent B
+              <small>Worktree 2</small>
+            </div>
+            <div class="arch-node">
+              Agent C
+              <small>Worktree 3</small>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <h2>How to Enable It</h2>
       <p>Agent Teams is gated behind an environment variable:</p>
@@ -204,12 +827,38 @@
 
       <h2>Orchestration Patterns</h2>
       <p>Agent Teams supports four orchestration patterns depending on your task:</p>
-      <ul>
-        <li><strong>Leader</strong> — A single coordinator assigns tasks and collects results. Best for feature implementation where one agent plans and others execute.</li>
-        <li><strong>Swarm</strong> — Peer-to-peer collaboration. Agents communicate directly via mailboxes. Good for broad codebase exploration.</li>
-        <li><strong>Pipeline</strong> — Sequential handoffs from one agent to the next. Ideal for staged workflows like lint, test, then deploy.</li>
-        <li><strong>Watchdog</strong> — One agent monitors and supervises others. Useful for long-running tasks that need oversight.</li>
-      </ul>
+
+      <table class="info-table">
+        <thead>
+          <tr>
+            <th>Pattern</th>
+            <th>Description</th>
+            <th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Leader</strong></td>
+            <td>Single coordinator assigns tasks and collects results</td>
+            <td>Feature implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Swarm</strong></td>
+            <td>Peer-to-peer collaboration via mailboxes</td>
+            <td>Codebase exploration</td>
+          </tr>
+          <tr>
+            <td><strong>Pipeline</strong></td>
+            <td>Sequential handoffs from one agent to the next</td>
+            <td>Staged workflows</td>
+          </tr>
+          <tr>
+            <td><strong>Watchdog</strong></td>
+            <td>One agent monitors and supervises others</td>
+            <td>Long-running oversight</td>
+          </tr>
+        </tbody>
+      </table>
 
       <h2>Key Technical Details</h2>
       <ul>
@@ -227,17 +876,56 @@
         <li>Multi-service refactors (e.g., updating an API contract across frontend, backend, and docs)</li>
         <li>Codebase-wide audits where each agent handles a different directory</li>
       </ul>
-      <blockquote>For simple, single-file tasks, regular subagents via the Task tool are still more efficient. Agent Teams adds overhead that only pays off at scale.</blockquote>
-    </div>
 
-    <div class="key-takeaway">
-      <h3>Key Takeaway</h3>
+      <div class="tip-box">
+        <div class="tip-label">Tip</div>
+        <p>For simple, single-file tasks, regular subagents via the Task tool are still more efficient. Agent Teams adds overhead that only pays off at scale.</p>
+      </div>
+    </article>
+
+    <!-- Key takeaway -->
+    <div class="key-takeaway animate-in" style="transition-delay: 200ms">
+      <div class="key-takeaway-label">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z"/>
+        </svg>
+        Key Takeaway
+      </div>
       <p>Agent Teams lets you parallelize large Claude Code tasks across multiple agents, each with isolated worktrees and full context — enable it with <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> when you need to divide and conquer.</p>
     </div>
 
-    <div class="nav-footer">
-      <a href="index.html">&larr; All Lessons</a>
-    </div>
+    <!-- Navigation -->
+    <nav class="nav-footer">
+      <a class="nav-link nav-link--prev" href="index.html">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 12L6 8l4-4"/>
+        </svg>
+        All Lessons
+      </a>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <div class="footer-brand">
+        <span class="accent">Claude Code</span> Best Practices
+      </div>
+    </footer>
   </div>
+
+  <script>
+    // Entrance animations
+    document.querySelectorAll('.animate-in').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 80 * i);
+    });
+
+    // Reading progress bar
+    const progressBar = document.getElementById('reading-progress');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = Math.min(progress, 100) + '%';
+    }, { passive: true });
+  </script>
 </body>
 </html>
