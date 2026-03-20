@@ -181,7 +181,20 @@ jobs:
             echo "New lesson ${NUM}" > "$BODY_FILE"
           fi
 
-          gh pr create \
+          PR_URL=$(gh pr create \
             --title "Lesson ${NUM}: ${TITLE}" \
             --body-file "$BODY_FILE" \
-            --base master
+            --base master 2>&1 | tail -1)
+
+          PR_NUMBER=$(echo "$PR_URL" | grep -oP '\d+$')
+
+          # Add a comment with a direct link to the lesson preview
+          gh pr comment "$PR_NUMBER" --body "$(cat <<COMMENT
+          ### Preview
+
+          Once the PR preview deploys, view the lesson directly:
+
+          **Lesson page:** https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUMBER}/lessons/${LESSON_SLUG}.html
+          **Lessons index:** https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUMBER}/lessons/
+          COMMENT
+          )"
