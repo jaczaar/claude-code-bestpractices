@@ -4,18 +4,25 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   preview:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: afc163/surge-preview@v1
+      - uses: actions/setup-node@v4
         with:
-          surge_token: ${{ secrets.SURGE_TOKEN }}
-          dist: dist
-          build: |
-            npm ci
-            npx vite build --base=/
-          teardown: true
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: ./dist

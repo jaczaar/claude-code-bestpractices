@@ -142,9 +142,12 @@ jobs:
           NUM=${{ steps.meta.outputs.padded }}
 
           # Use the shareable markdown body Claude generated
-          PR_BODY=$(cat /tmp/lesson-pr-body.md 2>/dev/null || echo "New lesson ${NUM}")
+          BODY_FILE="/tmp/lesson-pr-body.md"
+          if [ ! -f "$BODY_FILE" ]; then
+            echo "New lesson ${NUM}" > "$BODY_FILE"
+          fi
 
           gh pr create \
             --title "Lesson ${NUM}: ${TITLE}" \
-            --body "${PR_BODY}" \
+            --body-file "$BODY_FILE" \
             --base master
