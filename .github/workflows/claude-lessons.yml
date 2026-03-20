@@ -120,6 +120,33 @@ jobs:
           PROMPT
           )"
 
+      - name: Validate generated lesson
+        run: |
+          SLUG=${{ steps.meta.outputs.slug }}
+          LESSON_FILE="public/lessons/${SLUG}.html"
+
+          # Check lesson file exists
+          if [ ! -f "$LESSON_FILE" ]; then
+            echo "::error::Lesson file ${LESSON_FILE} was not created"
+            exit 1
+          fi
+
+          # Validate lessons.json is valid JSON
+          if ! jq empty public/lessons/lessons.json 2>/dev/null; then
+            echo "::error::lessons.json is not valid JSON"
+            exit 1
+          fi
+
+          # Check for unreplaced template placeholders
+          PLACEHOLDERS="LESSON_TITLE|LESSON_NUMBER|LESSON_DATE|LESSON_TAGS|FLASHCARD_QUESTION|FLASHCARD_ANSWER|LESSON_CONTENT|KEY_TAKEAWAY"
+          if grep -qE "$PLACEHOLDERS" "$LESSON_FILE"; then
+            echo "::error::Unreplaced placeholders found in ${LESSON_FILE}"
+            grep -nE "$PLACEHOLDERS" "$LESSON_FILE"
+            exit 1
+          fi
+
+          echo "Lesson validation passed"
+
       - name: Check for changes
         id: changes
         run: |
@@ -250,6 +277,6 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "New Lesson: ${{ steps.email.outputs.title }}"
-          to: jwzaarour@gmail.com
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
           from: Claude Code Lessons <${{ secrets.SMTP_USERNAME }}>
           html_body: file:///tmp/email-body.html
