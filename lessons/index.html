@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code — Lessons &amp; Tips</title>
+  <meta name="description" content="Bite-sized Claude Code lessons delivered Mon/Wed/Fri. Flashcard-style tips on features, releases, and best practices." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #d2a8ff;
+      --accent-alt: #79c0ff;
+      --tag-bg: #1f2937;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .header h1 .accent { color: var(--accent); }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .stats strong { color: var(--accent); }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: var(--accent-alt);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .lessons-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .lesson-card {
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .lesson-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .lesson-card .number {
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .lesson-card .title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0.25rem 0 0.5rem;
+    }
+
+    .lesson-card .summary {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .lesson-card .meta {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      background: var(--tag-bg);
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../">&larr; Back to Best Practices</a>
+
+    <div class="header">
+      <h1><span class="accent">Claude Code</span> Lessons</h1>
+      <p>Bite-sized tips &amp; insights — delivered Mon / Wed / Fri</p>
+      <div class="stats">
+        <span><strong id="lesson-count">0</strong> lessons</span>
+        <span>Updated <strong id="last-updated">—</strong></span>
+      </div>
+    </div>
+
+    <div id="lessons-container" class="lessons-grid"></div>
+  </div>
+
+  <script>
+    (async () => {
+      const base = window.location.pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+      const res = await fetch(`${base}/lessons.json`);
+      const data = await res.json();
+      const lessons = data.lessons || [];
+
+      document.getElementById('lesson-count').textContent = lessons.length;
+
+      if (lessons.length === 0) {
+        document.getElementById('lessons-container').innerHTML = `
+          <div class="empty-state">
+            <div class="icon">📚</div>
+            <p>First lesson drops soon.<br>Check back Monday, Wednesday, or Friday!</p>
+          </div>`;
+        return;
+      }
+
+      const lastDate = lessons[lessons.length - 1].date;
+      document.getElementById('last-updated').textContent = lastDate;
+
+      // Show newest first
+      const sorted = [...lessons].reverse();
+
+      document.getElementById('lessons-container').innerHTML = sorted.map((l, i) => {
+        const num = lessons.length - i;
+        const tags = (l.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+        return `
+          <a class="lesson-card" href="${l.slug}.html">
+            <div class="number">Lesson ${String(num).padStart(3, '0')} · ${l.date}</div>
+            <div class="title">${l.title}</div>
+            <div class="summary">${l.summary}</div>
+            <div class="meta">${tags}</div>
+          </a>`;
+      }).join('');
+    })();
+  </script>
+</body>
+</html>
