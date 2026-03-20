@@ -1,0 +1,142 @@
+name: Claude Code Lessons (MWF)
+
+# Runs Monday, Wednesday, Friday at 9:00 AM ET (14:00 UTC)
+on:
+  schedule:
+    - cron: '0 14 * * 1,3,5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-lesson:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine lesson number and date
+        id: meta
+        run: |
+          LESSON_COUNT=$(jq '.lessons | length' public/lessons/lessons.json)
+          NEXT_NUM=$((LESSON_COUNT + 1))
+          PADDED_NUM=$(printf "%03d" $NEXT_NUM)
+          TODAY=$(date +%Y-%m-%d)
+          DAY_OF_WEEK=$(date +%A)
+          SLUG="lesson-${PADDED_NUM}"
+
+          echo "num=$NEXT_NUM" >> "$GITHUB_OUTPUT"
+          echo "padded=$PADDED_NUM" >> "$GITHUB_OUTPUT"
+          echo "date=$TODAY" >> "$GITHUB_OUTPUT"
+          echo "day=$DAY_OF_WEEK" >> "$GITHUB_OUTPUT"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "branch=lessons/${SLUG}" >> "$GITHUB_OUTPUT"
+
+      - name: Create lesson branch
+        run: git checkout -b ${{ steps.meta.outputs.branch }}
+
+      - name: Generate lesson with Claude
+        env:
+          LESSON_NUM: ${{ steps.meta.outputs.padded }}
+          LESSON_DATE: ${{ steps.meta.outputs.date }}
+          LESSON_DAY: ${{ steps.meta.outputs.day }}
+          LESSON_SLUG: ${{ steps.meta.outputs.slug }}
+        run: |
+          claude --print --max-turns 15 "$(cat <<'PROMPT'
+          You are a Claude Code educator. Create lesson ${LESSON_NUM} for a flashcard-style learning site.
+
+          ## Task
+          Research and create ONE focused, bite-sized lesson about Claude Code. Teach something specific, practical, and immediately useful.
+
+          ## Topic Selection
+          1. Read public/lessons/lessons.json — DO NOT repeat covered topics.
+          2. Today is ${LESSON_DAY} (${LESSON_DATE}). Pick from:
+             - Monday: A Claude Code feature, command, or setting (deep dive)
+             - Wednesday: A workflow tip, best practice, or productivity technique
+             - Friday: Recent Claude Code releases, changelogs, or new capabilities
+          3. Be SPECIFIC. Not "CLAUDE.md basics" but "Using CLAUDE.md local overrides for per-directory context".
+
+          ## Research
+          - Check https://code.claude.com/docs for official docs
+          - Check https://github.com/anthropics/claude-code/releases for recent releases
+          - Look at research/ directory for inspiration
+          - Information must be ACCURATE and UP TO DATE
+
+          ## Steps
+
+          ### 1. Create the lesson HTML
+          Read public/lessons/TEMPLATE.html. Copy it and fill ALL placeholders to create public/lessons/${LESSON_SLUG}.html:
+          - LESSON_TITLE: Clear, specific title
+          - LESSON_NUMBER: Lesson ${LESSON_NUM}
+          - LESSON_DATE: ${LESSON_DATE}
+          - LESSON_TAGS: 2-3 <span class="tag"> elements
+          - FLASHCARD_QUESTION: One clear question the reader can answer after reading
+          - FLASHCARD_ANSWER: Concise 1-3 sentence answer
+          - LESSON_CONTENT: Main body with HTML (h2, h3, p, code, pre, ul/li). 300-500 words max.
+          - KEY_TAKEAWAY: One sentence to remember
+
+          ### 2. Update the manifest
+          Add to public/lessons/lessons.json:
+          {
+            "slug": "${LESSON_SLUG}",
+            "title": "Your title",
+            "summary": "One-sentence summary",
+            "date": "${LESSON_DATE}",
+            "tags": ["tag1", "tag2"]
+          }
+
+          ### 3. Create a shareable markdown summary
+          Write a file called /tmp/lesson-pr-body.md with this structure:
+          - A 1-2 sentence summary paragraph
+          - "## Flashcard" section with the Q&A
+          - "## Lesson" section with the full explanation in markdown (not HTML)
+          - "## Key Takeaway" section
+          - A link: "Read on the web: https://jaczaar.github.io/claude-code-bestpractices/lessons/${LESSON_SLUG}.html"
+          This will be the PR description — make it clean and shareable.
+
+          ### 4. Verify
+          - Confirm the HTML file exists and is valid
+          - Confirm lessons.json is valid JSON
+          - Do NOT modify any other files
+
+          Write like you're teaching a colleague. Be concise, accurate, practical.
+          PROMPT
+          )"
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/lessons/
+          git commit -m "Add lesson ${{ steps.meta.outputs.padded }} (${{ steps.meta.outputs.date }})"
+          git push -u origin ${{ steps.meta.outputs.branch }}
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE=$(jq -r '.lessons[-1].title' public/lessons/lessons.json)
+          NUM=${{ steps.meta.outputs.padded }}
+
+          # Use the shareable markdown body Claude generated
+          PR_BODY=$(cat /tmp/lesson-pr-body.md 2>/dev/null || echo "New lesson ${NUM}")
+
+          gh pr create \
+            --title "Lesson ${NUM}: ${TITLE}" \
+            --body "${PR_BODY}" \
+            --base master
