@@ -46,7 +46,7 @@ jobs:
           LESSON_DAY: ${{ steps.meta.outputs.day }}
           LESSON_SLUG: ${{ steps.meta.outputs.slug }}
         run: |
-          claude --print --max-turns 30 "$(cat <<PROMPT
+          claude --yes --max-turns 30 "$(cat <<PROMPT
           You are a Claude Code educator. Create lesson ${LESSON_NUM} for a flashcard-style learning site.
 
           ## Task
