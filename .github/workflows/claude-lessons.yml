@@ -37,7 +37,17 @@ jobs:
           echo "branch=lessons/${SLUG}" >> "$GITHUB_OUTPUT"
 
       - name: Create lesson branch
-        run: git checkout -b ${{ steps.meta.outputs.branch }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH=${{ steps.meta.outputs.branch }}
+          # Close any existing PR and delete remote branch from previous failed runs
+          PR_NUM=$(gh pr list --head "$BRANCH" --json number -q '.[0].number' 2>/dev/null || true)
+          if [ -n "$PR_NUM" ]; then
+            gh pr close "$PR_NUM" --delete-branch 2>/dev/null || true
+          fi
+          git push origin --delete "$BRANCH" 2>/dev/null || true
+          git checkout -b "$BRANCH"
 
       - name: Generate lesson with Claude
         env:
