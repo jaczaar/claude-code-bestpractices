@@ -46,7 +46,7 @@ jobs:
           LESSON_DAY: ${{ steps.meta.outputs.day }}
           LESSON_SLUG: ${{ steps.meta.outputs.slug }}
         run: |
-          claude --print --max-turns 15 "$(cat <<'PROMPT'
+          claude --print --max-turns 30 "$(cat <<PROMPT
           You are a Claude Code educator. Create lesson ${LESSON_NUM} for a flashcard-style learning site.
 
           ## Task
@@ -61,8 +61,6 @@ jobs:
           3. Be SPECIFIC. Not "CLAUDE.md basics" but "Using CLAUDE.md local overrides for per-directory context".
 
           ## Research
-          - Check https://code.claude.com/docs for official docs
-          - Check https://github.com/anthropics/claude-code/releases for recent releases
           - Look at research/ directory for inspiration
           - Information must be ACCURATE and UP TO DATE
 
