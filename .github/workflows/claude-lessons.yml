@@ -62,16 +62,21 @@ jobs:
           ## Task
           Research and create ONE focused, bite-sized lesson about Claude Code. Teach something specific, practical, and immediately useful.
 
-          ## Topic Selection
-          1. Read public/lessons/lessons.json — DO NOT repeat covered topics.
-          2. Today is ${LESSON_DAY} (${LESSON_DATE}). Pick from:
-             - Monday: A Claude Code feature, command, or setting (deep dive)
-             - Wednesday: A workflow tip, best practice, or productivity technique
-             - Friday: Recent Claude Code releases, changelogs, or new capabilities
-          3. Be SPECIFIC. Not "CLAUDE.md basics" but "Using CLAUDE.md local overrides for per-directory context".
+          ## Topic Selection (follow this priority order strictly)
+          1. Read public/lessons/lessons.json — note all previously covered topics and their titles so you NEVER repeat one.
+          2. Read ALL files in research/ directory. Each file is a potential lesson source.
+          3. Pick a topic using this priority waterfall:
+             a. **Newest research first (this week):** Sort research files by number (higher = newer). Start with the highest-numbered file. If it contains a topic not already covered in lessons.json, use it.
+             b. **Older research (go back in time):** If all topics from this week's newest files are already covered, work backwards through older research files until you find an uncovered topic.
+             c. **Basics fallback:** If every research file has been fully covered, teach a fundamental Claude Code concept (basic commands, getting started, core workflows) — something a new user would benefit from.
+          4. Within a chosen research file, pick a SPECIFIC sub-topic. Not "CLAUDE.md basics" but "Using CLAUDE.md local overrides for per-directory context".
+          5. Today is ${LESSON_DAY} (${LESSON_DATE}). Use the day to guide the angle:
+             - Monday: Deep-dive into a feature, command, or setting
+             - Wednesday: Workflow tip, best practice, or productivity technique
+             - Friday: Recent capabilities, releases, or advanced techniques
 
           ## Research
-          - Look at research/ directory for inspiration
+          - The research/ directory is your primary source — READ every file before choosing
           - Information must be ACCURATE and UP TO DATE
 
           ## Steps
@@ -155,3 +160,97 @@ jobs:
           # Extract PR number and comment with direct lesson preview link
           PR_NUM=$(echo "$PR_URL" | grep -o '[0-9]*$')
           gh pr comment "$PR_NUM" --body "📖 **[Preview this lesson](https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUM}/lessons/${{ steps.meta.outputs.slug }}.html)** (available once the Pages deployment completes)"
+
+          echo "pr_num=$PR_NUM" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Build email body
+        if: steps.changes.outputs.has_changes == 'true'
+        id: email
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE=$(jq -r '.lessons[-1].title' public/lessons/lessons.json)
+          NUM=${{ steps.meta.outputs.padded }}
+          SLUG=${{ steps.meta.outputs.slug }}
+          PR_NUM=$(gh pr list --head "${{ steps.meta.outputs.branch }}" --json number -q '.[0].number')
+          PREVIEW_URL="https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUM}/lessons/${SLUG}.html"
+          PR_URL="https://github.com/${{ github.repository }}/pull/${PR_NUM}"
+
+          # Read PR body for email content
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body')
+
+          cat > /tmp/email-body.html <<HTMLEOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          </head>
+          <body style="margin:0; padding:0; background:#1e1b18; font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+            <div style="max-width:600px; margin:0 auto; padding:32px 24px;">
+
+              <!-- Header -->
+              <div style="text-align:center; padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                <div style="font-size:11px; color:#d4845a; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">
+                  New Lesson Published
+                </div>
+                <h1 style="color:#f5f0e8; font-size:24px; font-weight:700; margin:0; line-height:1.3;">
+                  Lesson ${NUM}: ${TITLE}
+                </h1>
+              </div>
+
+              <!-- Lesson content from PR body -->
+              <div style="padding:24px 0; color:#f5f0e8; font-size:15px; line-height:1.7;">
+          HTMLEOF
+
+          # Convert PR markdown body to simple HTML for the email
+          echo "$PR_BODY" | sed \
+            -e 's|^## \(.*\)|<h2 style="color:#d4845a; font-size:18px; font-weight:600; margin:24px 0 12px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.07);">\1</h2>|' \
+            -e 's|^### \(.*\)|<h3 style="color:#f5f0e8; font-size:16px; font-weight:600; margin:16px 0 8px;">\1</h3>|' \
+            -e 's|^\*\*Q:\*\* \(.*\)|<p style="margin:8px 0;"><strong style="color:#d4845a;">Q:</strong> \1</p>|' \
+            -e 's|^\*\*A:\*\* \(.*\)|<p style="margin:8px 0; padding:12px 16px; background:rgba(212,132,90,0.1); border-radius:8px; border-left:3px solid #d4845a;"><strong style="color:#d4845a;">A:</strong> \1</p>|' \
+            -e 's|^- \(.*\)|<div style="margin:4px 0; padding-left:16px;">• \1</div>|' \
+            -e 's|`\([^`]*\)`|<code style="background:#161210; padding:2px 6px; border-radius:4px; font-size:13px; color:#d4845a;">\1</code>|g' \
+            -e 's|\*\*\([^*]*\)\*\*|<strong style="color:#f5f0e8;">\1</strong>|g' \
+            -e '/^$/s|.*|<br/>|' \
+            >> /tmp/email-body.html
+
+          cat >> /tmp/email-body.html <<HTMLEOF
+              </div>
+
+              <!-- Preview button -->
+              <div style="text-align:center; padding:24px 0;">
+                <a href="${PREVIEW_URL}"
+                   style="display:inline-block; padding:14px 32px; background:#d4845a; color:#1e1b18; font-size:15px; font-weight:600; text-decoration:none; border-radius:8px;">
+                  View Lesson Preview
+                </a>
+              </div>
+
+              <!-- Footer -->
+              <div style="text-align:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.07);">
+                <a href="${PR_URL}"
+                   style="color:rgba(245,240,232,0.5); font-size:12px; text-decoration:none;">
+                  View PR #${PR_NUM} on GitHub
+                </a>
+              </div>
+            </div>
+          </body>
+          </html>
+          HTMLEOF
+
+          echo "title=Lesson ${NUM}: ${TITLE}" >> "$GITHUB_OUTPUT"
+
+      - name: Send email notification
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "New Lesson: ${{ steps.email.outputs.title }}"
+          to: jwzaarour@gmail.com
+          from: Claude Code Lessons <${{ secrets.SMTP_USERNAME }}>
+          html_body: file:///tmp/email-body.html
+          content_type: text/html
