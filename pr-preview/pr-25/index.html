@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code — Best Practices</title>
+  <meta name="description" content="A deep-dive guide to Claude Code best practices — from CLAUDE.md to multi-agent workflows." />
+  <meta property="og:title" content="Claude Code — Best Practices" />
+  <meta property="og:description" content="Interactive guide to Claude Code: CLAUDE.md, context management, memory, MCP, multi-agent workflows, and more." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jaczaar.github.io/claude-code-bestpractices/" />
+  <link rel="icon" href="/claude-code-bestpractices/favicon.svg" type="image/svg+xml" />
+  <script type="module" crossorigin src="/claude-code-bestpractices/assets/index-DAzRATxV.js"></script>
+  <link rel="stylesheet" crossorigin href="/claude-code-bestpractices/assets/index-DuuYoBcs.css">
+</head>
+<body>
+
+  <!-- Sidebar TOC -->
+  <nav class="toc-sidebar" aria-label="Table of contents">
+    <ol class="toc-sidebar-list">
+      <li data-chapter="0"><a href="#">Intro</a></li>
+      <li data-chapter="1"><a href="#">CLAUDE.md</a></li>
+      <li data-chapter="2"><a href="#">Context</a></li>
+      <li data-chapter="3"><a href="#">Memory</a></li>
+      <li data-chapter="4"><a href="#">Toolbox</a></li>
+      <li data-chapter="5"><a href="#">Commands</a></li>
+      <li data-chapter="6"><a href="#">Skills</a></li>
+      <li data-chapter="7"><a href="#">MCP</a></li>
+      <li data-chapter="8"><a href="#">Loops</a></li>
+      <li data-chapter="9"><a href="#">Multi-Agent</a></li>
+      <li data-chapter="10"><a href="#">GSD</a></li>
+      <li data-chapter="11"><a href="#">Desktop</a></li>
+    </ol>
+    <a href="lessons/" class="toc-lessons-link">Lessons &amp; Tips &rarr;</a>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Presentation
+       ═══════════════════════════════════════════════════════ -->
+  <main class="presentation">
+
+    <!-- ── 0 · Intro ── -->
+    <section class="slide slide--intro" data-chapter="0">
+      <div class="slide-center">
+        <p class="eyebrow">From setup to multi-agent workflows</p>
+        <h1 class="hero-title">
+          <span class="accent">Claude Code</span><br />Best Practices
+        </h1>
+        <p class="start-hint">Press <kbd>→</kbd> to start</p>
+      </div>
+    </section>
+
+    <!-- ── 1.1 · CLAUDE.md — The Golden Rule ── -->
+    <section class="slide" data-chapter="1">
+      <div class="slide-content">
+        <span class="slide-label">01 — CLAUDE.md</span>
+        <h2 class="slide-title">The Golden Rule</h2>
+        <div class="slide-body">
+          <ul class="bullets">
+            <li>Loaded into <strong>every session</strong> — injected before your first message</li>
+            <li>Include only what Claude <strong>cannot infer</strong> from code and that <strong>changes behavior</strong></li>
+            <li>Removal test: "Would removing this cause mistakes?" No → <strong>cut it</strong></li>
+            <li>Structure: <strong>WHAT</strong> (stack) / <strong>WHY</strong> (one line) / <strong>HOW</strong> (conventions, gotchas)</li>
+          </ul>
+          <div class="comparison-grid">
+            <div class="compare-box compare-box--good">
+              <h4>Concise &amp; Imperative</h4>
+              <div class="code-aside">
+                <span class="kw">## Code Conventions</span><br />
+                - TypeScript strict mode, no `any`.<br />
+                - Named exports only.<br />
+                - Prefer `const` arrow for components.
+              </div>
+            </div>
+            <div class="compare-box compare-box--bad">
+              <h4>Verbose Prose</h4>
+              <div class="code-aside">
+                When writing TypeScript, we always use strict mode. The reason for this is that it catches more errors at compile time. We also don't use `any`&hellip;
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 1.2 · CLAUDE.md — Three Levels ── -->
+    <section class="slide" data-chapter="1">
+      <div class="slide-content">
+        <span class="slide-label">01 — CLAUDE.md</span>
+        <h2 class="slide-title">Three-Level Hierarchy</h2>
+        <div class="slide-body">
+          <table class="info-table">
+            <thead>
+              <tr><th>Level</th><th>Location</th><th>Target</th><th>Tokens</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Global</td><td><code>~/.claude/CLAUDE.md</code></td><td>&lt; 30 lines</td><td>~150</td></tr>
+              <tr><td>Project</td><td><code>&lt;root&gt;/CLAUDE.md</code></td><td>&lt; 100 lines</td><td>~700</td></tr>
+              <tr><td>Directory</td><td><code>&lt;subdir&gt;/CLAUDE.md</code></td><td>&lt; 10 lines</td><td>~70</td></tr>
+              <tr class="row-highlight"><td><strong>Combined</strong></td><td></td><td><strong>&lt; 150 lines</strong></td><td><strong>&lt; 1,500</strong></td></tr>
+            </tbody>
+          </table>
+          <ul class="bullets">
+            <li>More specific overrides general — <strong>directory beats project beats global</strong></li>
+            <li>Directory files only load when Claude works in that subtree</li>
+            <li>Global skills &amp; agents also load everywhere — only install if truly universal</li>
+          </ul>
+          <div class="tip-box">
+            <div class="tip-label">Size Impact</div>
+            <p>At 500+ lines (~3,500 tokens, 1.75% of context): review for bloat.<br />At 2,000+ lines (~14K tokens, 7%): Claude starts <strong>ignoring</strong> instructions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 1.3 · CLAUDE.md — Format & Tooling ── -->
+    <section class="slide" data-chapter="1">
+      <div class="slide-content">
+        <span class="slide-label">01 — CLAUDE.md</span>
+        <h2 class="slide-title">Format &amp; Tooling</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Format Rules</h3>
+              <ul class="bullets">
+                <li><strong>Imperative mood</strong> — "Use named exports" not "We prefer…"</li>
+                <li><strong>Bullets &amp; tables only</strong> — no prose paragraphs</li>
+                <li><strong>Two nesting levels</strong> max — keep flat</li>
+                <li><strong>Critical rules at the top</strong> — primacy bias</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Tooling</h3>
+              <ul class="bullets">
+                <li><code>/init</code> — bootstrap CLAUDE.md from codebase</li>
+                <li><code>.claude/rules/*.md</code> — split into topic files (auto-loaded)</li>
+                <li><code>/claude-md-improver</code> — audit for staleness, gaps, redundancy</li>
+              </ul>
+              <button class="modal-trigger" data-modal="anthropic-md" style="margin-top: 0.8rem;">
+                <span class="modal-trigger-icon">▸</span>
+                View Anthropic's Internal CLAUDE.md
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2.1 · Context — The 200K Budget ── -->
+    <section class="slide" data-chapter="2">
+      <div class="slide-content">
+        <span class="slide-label">02 — Context Management</span>
+        <h2 class="slide-title">The 200K Token Budget</h2>
+        <div class="slide-body">
+          <p class="slide-desc">System prompt, CLAUDE.md, MCP schemas, conversation, tool results — all share one window.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Context Usage</th><th>Quality</th><th>Speed</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>&lt; 50K tokens</td><td>Optimal recall</td><td>Fast</td></tr>
+              <tr><td>50K – 100K</td><td>Good, occasional misses</td><td>Moderate</td></tr>
+              <tr><td>100K – 150K</td><td>Noticeable degradation</td><td>Slower</td></tr>
+              <tr><td>150K+</td><td>Auto-compresses, detail lost</td><td>Slowest</td></tr>
+            </tbody>
+          </table>
+          <div class="callout">
+            <strong class="accent">The hidden cost: input compounds.</strong> Every turn re-sends full history.<br />
+            20 turns × 100K avg = <strong>2M tokens</strong> processed.<br />
+            Same work in 4 sessions × 25K = 500K → <strong class="accent">4× cheaper.</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2.2 · Context — Staying Lean ── -->
+    <section class="slide" data-chapter="2">
+      <div class="slide-content">
+        <span class="slide-label">02 — Context Management</span>
+        <h2 class="slide-title">Staying Lean</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Key Commands</h3>
+              <ul class="bullets">
+                <li><code>/compact [hint]</code> — compress conversation (at ~80%)</li>
+                <li><code>/clear</code> — wipe everything (on topic switch)</li>
+                <li><code>/usage</code> — monitor token usage</li>
+              </ul>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">Auto-Compaction</h3>
+              <p class="slide-desc">Triggers at <strong>83.5%</strong> (~167K). Each pass is lossy:<br /><span class="accent">~80% → ~60% → ~40%</span> fidelity. CLAUDE.md bypasses this — reloaded every turn.</p>
+            </div>
+            <div>
+              <h3 class="slide-section">6 Lean Strategies</h3>
+              <ol class="numbered-list">
+                <li><strong>Precise questions</strong> — one file, not "how does auth work?"</li>
+                <li><strong>Let Claude read files</strong> — tool results compress; pastes don't</li>
+                <li><strong>Scope tools tightly</strong> — specific globs, not repo-wide</li>
+                <li><strong>Offload to subagents</strong> — parent gets summary</li>
+                <li><strong>/clear between topics</strong></li>
+                <li><strong>Monitor with /usage</strong></li>
+              </ol>
+            </div>
+          </div>
+          <div class="callout callout--compact">Target: keep active context <strong class="accent">under 100K</strong> for quality.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3.1 · Memory — How It Works ── -->
+    <section class="slide" data-chapter="3">
+      <div class="slide-content">
+        <span class="slide-label">03 — Long-Term Memory</span>
+        <h2 class="slide-title">Stateless by Design</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Claude forgets everything between sessions. "Memory" = markdown files injected at startup.<br /><strong>Both CLAUDE.md &amp; MEMORY.md reload every turn</strong> — they bypass auto-compaction and survive <code>/compact</code>.</p>
+          <h3 class="slide-section">Load Order</h3>
+          <ol class="numbered-list">
+            <li><code>~/.claude/CLAUDE.md</code> — global preferences</li>
+            <li><code>&lt;project&gt;/CLAUDE.md</code> + subdirectories</li>
+            <li><code>~/.claude/projects/&lt;hash&gt;/MEMORY.md</code> — personal memories</li>
+            <li>Session files via <code>/add</code> or <code>@</code></li>
+          </ol>
+          <div class="comparison-grid">
+            <div class="compare-box">
+              <h4>CLAUDE.md</h4>
+              <ul>
+                <li>Manual — written by you/team</li>
+                <li>Committed to git (shared)</li>
+                <li>Prescriptive: "do X, don't do Y"</li>
+                <li>Stable, intentional directives</li>
+              </ul>
+            </div>
+            <div class="compare-box">
+              <h4>MEMORY.md</h4>
+              <ul>
+                <li>Auto — Claude decides what to save</li>
+                <li>Local only (never in git)</li>
+                <li>Descriptive: learnings &amp; corrections</li>
+                <li><strong>200-line hard limit</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3.2 · Memory — Lifecycle ── -->
+    <section class="slide" data-chapter="3">
+      <div class="slide-content">
+        <span class="slide-label">03 — Long-Term Memory</span>
+        <h2 class="slide-title">Auto Memory &amp; Lifecycle</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">4 Memory Types</h3>
+              <p class="slide-desc">Saved to <code>~/.claude/projects/&lt;hash&gt;/memory/</code></p>
+              <ul class="bullets">
+                <li><strong>User</strong> — role, preferences, expertise</li>
+                <li><strong>Feedback</strong> — corrections from sessions <span class="accent">(most important)</span></li>
+                <li><strong>Project</strong> — architecture, decisions, ongoing work</li>
+                <li><strong>Reference</strong> — pointers to external systems</li>
+              </ul>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">200-Line Limit</h3>
+              <p class="slide-desc">Only first 200 lines loaded. Use MEMORY.md as a concise <strong>index</strong> → topic files for details.</p>
+            </div>
+            <div>
+              <h3 class="slide-section">Capture → Promote → Prune</h3>
+              <div class="flow-diagram"><span class="accent">Session correction</span>
+    ↓ "remember this" / /memory
+<span class="accent">MEMORY.md</span> (raw, personal)
+    ↓ promote validated items (weekly)
+<span class="accent">CLAUDE.md</span> (structured, shared)
+    ↓ prune stale entries (monthly)
+<span class="accent">/dev/null</span></div>
+              <p class="slide-desc" style="margin-top: 0.5rem;">Without this cycle, MEMORY.md bloats and important things get truncated past line 200.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.1 · Toolbox — Configuration & Instructions ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Everything in One Place</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Claude Code has a lot of moving parts. This is the complete map — <strong>what each piece does, when it fires, and what it costs you</strong>.</p>
+          <h3 class="slide-section">Configuration &amp; Instructions</h3>
+          <table class="info-table">
+            <thead>
+              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>CLAUDE.md</strong></td>
+                <td>Markdown instructions loaded every session</td>
+                <td>Automatic (startup)</td>
+                <td>~500–1,500 tok</td>
+                <td>Project conventions &amp; rules</td>
+              </tr>
+              <tr>
+                <td><strong>Rules</strong> <code>.claude/rules/</code></td>
+                <td>Path-scoped instructions (YAML frontmatter + markdown)</td>
+                <td>Automatic (when matching files are touched)</td>
+                <td>On demand only</td>
+                <td>File-type-specific guidelines</td>
+              </tr>
+              <tr>
+                <td><strong>Settings</strong> <code>settings.json</code></td>
+                <td>Permissions, model choice, hooks config, allowed/denied tools</td>
+                <td>Automatic (startup)</td>
+                <td>Zero (config only)</td>
+                <td>Permissions &amp; guardrails</td>
+              </tr>
+              <tr>
+                <td><strong>Memory</strong> <code>MEMORY.md</code></td>
+                <td>Auto-saved notes from corrections &amp; preferences</td>
+                <td>Automatic (first 200 lines at startup; rest on demand)</td>
+                <td>~200–500 tok</td>
+                <td>Persistent cross-session learning</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.2 · Toolbox — Slash Commands ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Slash Commands (3 Types)</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Slash commands look the same but work very differently under the hood.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Type</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Examples</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Built-in Commands</strong></td>
+                <td>CLI actions — no model involvement at all. 30+ commands.</td>
+                <td>User types <code>/command</code></td>
+                <td>Zero</td>
+                <td><code>/clear</code> <code>/compact</code> <code>/cost</code> <code>/model</code> <code>/init</code> <code>/doctor</code> <code>/memory</code> <code>/permissions</code> <code>/mcp</code> <code>/hooks</code> <code>/status</code></td>
+              </tr>
+              <tr>
+                <td><strong>Skill-Based Commands</strong></td>
+                <td>Invoke the Skill tool → loads specialized prompt + tools into context</td>
+                <td>User types <code>/command</code></td>
+                <td>On demand (when invoked)</td>
+                <td><code>/commit</code> <code>/review-pr</code> <code>/simplify</code> <code>/loop</code> <code>/batch</code> <code>/debug</code> <code>/claude-api</code></td>
+              </tr>
+              <tr>
+                <td><strong>Custom Commands / Skills</strong></td>
+                <td>Markdown templates (<code>.claude/commands/</code> or <code>.claude/skills/</code>)</td>
+                <td>User types <code>/project:name</code> or auto-match</td>
+                <td>On demand (full template injected)</td>
+                <td><code>/project:fix-lint</code> <code>/user:standup</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            <strong class="accent">The difference matters:</strong> Built-in commands are free. Skill-based commands load instructions into context (tokens). Custom commands inject their entire markdown file as a prompt.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.3 · Toolbox — Agents & Execution ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">Agents &amp; Execution</h2>
+        <div class="slide-body">
+          <p class="slide-desc">These control <em>how work gets done</em> — delegation, parallelism, and isolation.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Mechanism</th><th>What It Is</th><th>Triggered By</th><th>Context Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Subagents</strong></td>
+                <td>Child agents with isolated context</td>
+                <td>Model (Task tool)</td>
+                <td>Own window (isolated)</td>
+                <td>Heavy research &amp; parallel work</td>
+              </tr>
+              <tr>
+                <td><strong>Agent Teams</strong></td>
+                <td>Multi-agent coordination with mailbox communication</td>
+                <td>Model or user request</td>
+                <td>1M per agent (isolated)</td>
+                <td>Large-scale parallel refactors</td>
+              </tr>
+              <tr>
+                <td><strong>Custom Agents</strong></td>
+                <td>Named personas with specialized prompts</td>
+                <td>User (<code>--agent</code> flag)</td>
+                <td>Prompt overhead only</td>
+                <td>Consistent review / audit roles</td>
+              </tr>
+              <tr>
+                <td><strong>Worktrees</strong></td>
+                <td>Isolated git working directories per agent</td>
+                <td>User (<code>--worktree</code>) or Agent Teams</td>
+                <td>Zero (filesystem only)</td>
+                <td>Safe parallel edits without conflicts</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4.5 · Toolbox — When to Use What ── -->
+    <section class="slide" data-chapter="4">
+      <div class="slide-content">
+        <span class="slide-label">04 — The Toolbox</span>
+        <h2 class="slide-title">When to Use What</h2>
+        <div class="slide-body">
+          <p class="slide-desc">The mental model: three layers, one key distinction.</p>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Guide Behavior (Advisory)</h3>
+              <ul class="bullets">
+                <li><strong>CLAUDE.md</strong> — what Claude should <em>always know</em></li>
+                <li><strong>Rules</strong> — what Claude should know <em>per file type</em></li>
+                <li><strong>Memory</strong> — what Claude <em>learned</em> across sessions</li>
+                <li><strong>Commands / Skills</strong> — reusable prompts &amp; workflows</li>
+                <li><strong>Custom Agents</strong> — specialized personas</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Extend &amp; Enforce</h3>
+              <ul class="bullets">
+                <li><strong>Settings</strong> — what Claude is <em>allowed to do</em></li>
+                <li><strong>Hooks</strong> — what <em>must happen</em> (only deterministic one)</li>
+                <li><strong>MCP Servers</strong> — what Claude <em>can reach</em></li>
+                <li><strong>Plugins</strong> — full extension packages (skills + agents + hooks + MCP)</li>
+                <li><strong>Subagents / Agent Teams / Worktrees</strong> — how work is <em>split &amp; isolated</em></li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            <strong class="accent">Key insight:</strong>
+            MCP extends what Claude <em>can do</em> (new tools).
+            Hooks enforce what Claude <em>must do</em> (deterministic).
+            Settings control what Claude <em>can see and touch</em>.
+            Everything else <em>guides</em> what Claude should do (advisory).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5.1 · Commands — Built-in ── -->
+    <section class="slide" data-chapter="5">
+      <div class="slide-content">
+        <span class="slide-label">05 — Slash Commands</span>
+        <h2 class="slide-title">Built-in Commands</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Handled by the CLI — no model involvement, <strong>zero token cost</strong>.</p>
+          <div class="command-grid">
+            <div class="command-item"><code>/help</code><span>Show commands &amp; shortcuts</span></div>
+            <div class="command-item"><code>/clear</code><span>Wipe conversation history</span></div>
+            <div class="command-item"><code>/compact [hint]</code><span>Compress conversation</span></div>
+            <div class="command-item"><code>/context &lt;path&gt;</code><span>Add files/dirs/URLs</span></div>
+            <div class="command-item"><code>/init</code><span>Generate starter CLAUDE.md</span></div>
+            <div class="command-item"><code>/model</code><span>Switch model mid-session</span></div>
+            <div class="command-item"><code>/cost</code><span>Token &amp; cost usage</span></div>
+            <div class="command-item"><code>/review</code><span>Review uncommitted changes</span></div>
+            <div class="command-item"><code>/doctor</code><span>Diagnose environment</span></div>
+            <div class="command-item"><code>/config</code><span>Manage settings</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5.2 · Commands — Skill-Based & Custom ── -->
+    <section class="slide" data-chapter="5">
+      <div class="slide-content">
+        <span class="slide-label">05 — Slash Commands</span>
+        <h2 class="slide-title">Skill-Based &amp; Custom</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Skill-Based</h3>
+              <p class="slide-desc">Load specialized instructions into context on demand.</p>
+              <div class="command-list-compact">
+                <div><code>/commit</code> <span>auto-commit with message</span></div>
+                <div><code>/review-pr &lt;num&gt;</code> <span>review a GitHub PR</span></div>
+                <div><code>/simplify</code> <span>3 parallel agents + auto-fix</span></div>
+                <div><code>/loop [interval]</code> <span>recurring tasks</span></div>
+                <div><code>/batch</code> <span>parallel with worktree isolation</span></div>
+                <div><code>/frontend-design</code> <span>production-grade UI</span></div>
+                <div><code>/gsd:*</code> <span>GSD framework phases</span></div>
+              </div>
+            </div>
+            <div>
+              <h3 class="slide-section">Custom Commands</h3>
+              <p class="slide-desc">Markdown templates with <code>$ARGUMENTS</code> placeholder.</p>
+              <div class="code-aside">
+                <span class="kw"># .claude/commands/test.md</span><br />
+                Write unit tests for: $ARGUMENTS<br /><br />
+                Requirements:<br />
+                - Use existing test framework<br />
+                - Cover happy path + edge cases
+              </div>
+              <p class="slide-desc" style="margin-top: 0.6rem;">
+                <code>.claude/commands/</code> → <code>/project:name</code><br />
+                <code>~/.claude/commands/</code> → <code>/user:name</code>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6 · Skills ── -->
+    <section class="slide" data-chapter="6">
+      <div class="slide-content">
+        <span class="slide-label">06 — Skills</span>
+        <h2 class="slide-title">Claude's Package Ecosystem</h2>
+        <div class="slide-body">
+          <ul class="bullets">
+            <li><code>SKILL.md</code> = YAML frontmatter + markdown instructions — <strong>zero permanent context cost</strong></li>
+            <li>Auto-triggered by description match, or manually via <code>/command</code></li>
+            <li><strong>Hot reload</strong> (edit + test instantly) + <strong>forked context</strong> (runs in isolation)</li>
+          </ul>
+          <div class="two-col" style="margin-top: 0.8rem;">
+            <div>
+              <h3 class="slide-section">Install &amp; Scope</h3>
+              <ul class="bullets">
+                <li><code>/plugin</code> — interactive browser</li>
+                <li><code>/plugin install &lt;source&gt;</code> — from GitHub</li>
+                <li>Manual — drop in <code>.claude/skills/</code></li>
+              </ul>
+              <p class="slide-desc" style="margin-top: 0.4rem;"><strong>Project</strong> skills = this project only.<br /><strong>Global</strong> skills = everywhere (loads every session).</p>
+            </div>
+            <div>
+              <h3 class="slide-section">Top Skills</h3>
+              <table class="info-table info-table--compact">
+                <tbody>
+                  <tr><td><strong>Frontend Design</strong></td><td>Distinctive UI <span class="muted">(277K+)</span></td></tr>
+                  <tr><td><strong>Simplify</strong></td><td>3 agents review + fix</td></tr>
+                  <tr><td><strong>CLAUDE.md Improver</strong></td><td>Audit &amp; optimize</td></tr>
+                  <tr><td><strong>Skill Creator</strong></td><td>Generate new skills</td></tr>
+                  <tr><td><strong>Planning w/ Files</strong></td><td>Plans as markdown</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">Browse official plugins: <a href="https://github.com/anthropics/claude-code/tree/main/plugins" target="_blank">github.com/anthropics/claude-code/tree/main/plugins</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7.1 · MCP — Token Cost ── -->
+    <section class="slide" data-chapter="7">
+      <div class="slide-content">
+        <span class="slide-label">07 — MCP Servers</span>
+        <h2 class="slide-title">External Systems via JSON-RPC</h2>
+        <div class="slide-body">
+          <p class="slide-desc">Servers spawn on startup → tools discovered → schemas injected into system prompt.<br />Every tool schema = <strong>fixed token cost per turn</strong>, whether used or not.</p>
+          <table class="info-table">
+            <thead>
+              <tr><th>Server</th><th>Tools</th><th>Token Overhead</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Context7</td><td>2–4</td><td>~800 – 1,500</td></tr>
+              <tr><td>Notion</td><td>8–12</td><td>~2,500 – 4,000</td></tr>
+              <tr><td>GitHub</td><td>10–15</td><td>~3,000 – 5,000</td></tr>
+              <tr><td>Playwright</td><td>15–20</td><td>~5,000 – 8,000</td></tr>
+              <tr><td>Jira</td><td>20+</td><td>~17,000</td></tr>
+              <tr class="row-highlight"><td><strong>5 servers loaded</strong></td><td><strong>~58</strong></td><td><strong class="accent">~55,000</strong></td></tr>
+            </tbody>
+          </table>
+          <div class="callout callout--compact">55K tokens consumed <strong>before your first message</strong>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7.2 · MCP — Optimization ── -->
+    <section class="slide" data-chapter="7">
+      <div class="slide-content">
+        <span class="slide-label">07 — MCP Servers</span>
+        <h2 class="slide-title">Optimization</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Tool Search (Deferred Loading)</h3>
+              <p class="slide-desc">Tools registered by name only (~10 tokens each). Full schemas fetched on demand.</p>
+              <div class="callout"><strong class="accent">51K → 8.5K</strong> = 95% reduction</div>
+
+              <h3 class="slide-section" style="margin-top: 0.8rem;">On-Demand Strategy</h3>
+              <ul class="bullets">
+                <li><strong>Always active</strong> — core workflow (GitHub, Context7)</li>
+                <li><strong>On-demand</strong> — <code>mcp-on playwright</code> / <code>mcp-off</code></li>
+                <li>Document strategy in CLAUDE.md</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Decision Tree</h3>
+              <div class="flow-diagram"><span class="accent">Need external API?</span>
+  → MCP Server
+
+<span class="accent">Reusable prompt workflow?</span>
+  → Skill
+
+<span class="accent">Heavy/parallel subtask?</span>
+  → Subagent
+
+<span class="accent">Otherwise</span>
+  → Built-in tools</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 8.1 · Loops — RALPH ── -->
+    <section class="slide" data-chapter="8">
+      <div class="slide-content">
+        <span class="slide-label">08 — Autonomous Loops</span>
+        <h2 class="slide-title">RALPH — Filesystem as Memory</h2>
+        <div class="slide-body">
+          <p class="slide-desc">A <code>while</code> loop that invokes Claude with the same prompt. Each iteration = fresh session. State lives on disk.</p>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">The 5-Step Cycle</h3>
+              <ol class="numbered-list">
+                <li><strong>Read</strong> — PRD, progress file, codebase</li>
+                <li><strong>Plan</strong> — gap analysis, update implementation plan</li>
+                <li><strong>Log</strong> — AGENTS.md with learnings for next iteration</li>
+                <li><strong>Execute</strong> — implement next item, commit, mark done</li>
+                <li><strong>Repeat</strong> — until all items checked off</li>
+              </ol>
+            </div>
+            <div>
+              <h3 class="slide-section">Why It Works</h3>
+              <ul class="bullets">
+                <li><strong>Git as memory</strong> — avoids repeating mistakes</li>
+                <li><strong>Fresh context</strong> — no degradation over time</li>
+                <li><strong>Self-healing</strong> — failed iterations leave artifacts</li>
+                <li><strong>PRD-driven</strong> — clear success criteria</li>
+              </ul>
+              <div class="code-aside" style="margin-top: 0.6rem;">
+                <span class="kw">while</span> true; <span class="kw">do</span><br />
+                &nbsp;&nbsp;claude -p "Read PRD.md and<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;PROGRESS.md. Implement next<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;unchecked item. Commit."<br />
+                &nbsp;&nbsp;sleep 10<br />
+                <span class="kw">done</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 8.2 · Loops — /loop & Comparison ── -->
+    <section class="slide" data-chapter="8">
+      <div class="slide-content">
+        <span class="slide-label">08 — Autonomous Loops</span>
+        <h2 class="slide-title">/loop &amp; When to Use What</h2>
+        <div class="slide-body">
+          <p class="slide-desc"><code>/loop [interval] &lt;prompt or /command&gt;</code> — default 10m, max 50 concurrent, 3-day expiry. Dies with terminal.</p>
+          <div class="comparison-grid">
+            <div class="compare-box">
+              <h4>RALPH (External Script)</h4>
+              <ul>
+                <li>Multi-hour autonomous dev</li>
+                <li>PRD-driven feature implementation</li>
+                <li>Survives session restart</li>
+                <li>Fresh context every iteration</li>
+              </ul>
+            </div>
+            <div class="compare-box">
+              <h4>/loop (Built-in)</h4>
+              <ul>
+                <li>Deploy / CI monitoring</li>
+                <li>PR babysitting</li>
+                <li>Recurring quality checks</li>
+                <li>Quick interval-based tasks</li>
+              </ul>
+            </div>
+          </div>
+          <div class="code-aside">
+            <span class="kw">/loop 5m</span> check the deploy status<br />
+            <span class="kw">/loop 30m</span> /simplify<br />
+            <span class="kw">/loop 1h</span> run tests and fix failures
+          </div>
+          <p class="slide-desc" style="margin-top: 0.5rem;"><strong>Guardrails:</strong> <code>--max-budget-usd</code> for cost caps · max iteration count in scripts · periodic <code>git diff</code> review</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9.1 · Multi-Agent — Subagents & Teams ── -->
+    <section class="slide" data-chapter="9">
+      <div class="slide-content">
+        <span class="slide-label">09 — Multi-Agent</span>
+        <h2 class="slide-title">Decompose Across Agents</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Subagents (Task Tool)</h3>
+              <ul class="bullets">
+                <li>Child agent with <strong>isolated context</strong></li>
+                <li>Runs autonomously, returns <strong>summary only</strong></li>
+                <li>Parent stays clean — child does heavy lifting</li>
+                <li>Best for: research, multi-file reads</li>
+              </ul>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">Agent Teams <span class="muted">(experimental)</span></h3>
+              <ul class="bullets">
+                <li>Each agent: own <strong>git worktree</strong> + <strong>1M-token context</strong></li>
+                <li>Team Lead plans &amp; delegates; specialists execute in parallel</li>
+              </ul>
+              <p class="slide-desc muted" style="margin-top: 0.4rem;">Deep dive on next slide →</p>
+            </div>
+            <div>
+              <h3 class="slide-section">Worktrees</h3>
+              <p class="slide-desc"><code>claude --worktree name</code> (add <code>--tmux</code>)<br />Each gets independent builds, tests, branches.</p>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">When to Use What</h3>
+              <ul class="bullets">
+                <li><strong>Subagents</strong> — research, multi-file reads</li>
+                <li><strong>Agent Teams</strong> — large coordinated refactors</li>
+                <li><strong>Worktrees</strong> — manual parallel sessions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9.2 · Multi-Agent — Agent Teams Deep Dive ── -->
+    <section class="slide" data-chapter="9">
+      <div class="slide-content">
+        <span class="slide-label">09 — Multi-Agent</span>
+        <h2 class="slide-title">Agent Teams — Swarm Mode</h2>
+        <div class="slide-body">
+          <div class="callout">
+            <strong>Architecture:</strong> Team Lead <strong class="accent">plans &amp; delegates</strong> (never writes code).
+            Specialist agents (Frontend, Backend, Testing, Docs, Architecture) each get their own
+            <strong>git worktree</strong> + <strong>1M-token context</strong>.
+            Enable: <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>
+          </div>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">How It Works</h3>
+              <ol>
+                <li><strong>Plan</strong> — Lead creates task breakdown with dependencies</li>
+                <li><strong>Spawn</strong> — Specialist agents launched in isolated worktrees</li>
+                <li><strong>Execute</strong> — Agents work in parallel; coordinate via task board + @mentions</li>
+                <li><strong>Synthesize</strong> — Lead merges results and resolves conflicts</li>
+              </ol>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">Best Use Cases</h3>
+              <ul class="bullets">
+                <li>Large refactors across many files</li>
+                <li>Multi-layer features (frontend + backend + tests simultaneously)</li>
+                <li>Debugging with competing hypotheses</li>
+                <li>Research tasks with parallel exploration</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Team Patterns</h3>
+              <table class="info-table info-table--compact">
+                <thead><tr><th>Pattern</th><th>How</th><th>When</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Leader</strong></td><td>Delegate &amp; synthesize</td><td>Default — most tasks</td></tr>
+                  <tr><td><strong>Swarm</strong></td><td>Peer-to-peer comms</td><td>Large refactors</td></tr>
+                  <tr><td><strong>Pipeline</strong></td><td>Sequential handoff</td><td>Code → test → review</td></tr>
+                  <tr><td><strong>Watchdog</strong></td><td>Long-running + gates</td><td>CI monitoring</td></tr>
+                </tbody>
+              </table>
+              <div class="callout" style="margin-top: 0.8rem;">
+                <strong>Token cost:</strong> <strong class="accent">4–15×</strong> more than single agent.<br />
+                Reserve for high-value, complex tasks.<br />
+                <span class="muted">Powered by TeammateTool (13 ops: spawn, lifecycle, coordination, sync).</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9.3 · Multi-Agent — Swarm Mode in Practice ── -->
+    <section class="slide" data-chapter="9">
+      <div class="slide-content">
+        <span class="slide-label">09 — Multi-Agent</span>
+        <h2 class="slide-title">Swarm Mode in Practice</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Custom Agents + Context Architecture</h3>
+              <div class="flow-diagram">🤖 <span class="accent">Claude Code</span>
+    │
+    ├─ 👷 <span class="accent">shadcn-expert</span>          .claude/
+    │  ├ shadcn theme MCP        ├─ Task/
+    │  └ shadcn component MCP    │  └─ <span class="accent">context_01.md</span>
+    │                            │
+    ├─ 🔒 <span class="accent">vercel-ai-sdk-expert</span>  ├─ Doc/
+    │  └ latest vercel ai sdk    │  ├─ ui-implementation.md
+    │    v5 docs                 │  ├─ vercel-ai-sdk-plan.md
+    │                            │  └─ stripe-integration-plan.md
+    ├─ 🎨 <span class="accent">stripe-expert</span>         │
+    │  └ latest stripe docs      │
+    │                            │
+    └─ 📚 <span class="accent">context7</span>              │</div>
+              <p class="slide-desc muted" style="margin-top: 0.4rem;">Each agent has specialised MCP servers and writes context files for the team.</p>
+            </div>
+            <div>
+              <h3 class="slide-section">Agent Teams Terminal UI</h3>
+              <div class="terminal-mockup"><span class="t-green">Background tasks</span>
+<span class="t-muted">12 agents</span>
+
+<span class="t-white">❯ @team-lead</span>
+  Team: x-dl-web-interface (12)
+  <span class="t-cyan">@tester</span>: Reading 5 files…
+  <span class="t-yellow">@config-setup</span>: Reading ~/x-dl
+  <span class="t-red">@styler</span>: Editing web/src/App.css
+  <span class="t-purple">@app-integrator</span>: working
+  <span class="t-cyan">@component-creator</span>: Running Verify all components
+  <span class="t-white">@api-server</span>: Running List all task dirs
+  <span class="t-yellow">@vite-setup</span>: idle
+  <span class="t-green">@qa-tester</span>: Reading web/vite.config.ts
+  <span class="t-purple">@backend-builder</span>: Reading 4 files…
+  <span class="t-orange">@component-builder</span>: Reading 3 files…
+  <span class="t-red">@frontend-builder</span>: Running env | grep CLAUDE_CODE</div>
+              <p class="slide-desc muted" style="margin-top: 0.4rem;">Real-time view: 12 specialist agents working in parallel, each with its own worktree.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9.4 · Multi-Agent — Choosing the Right Tool ── -->
+    <section class="slide" data-chapter="9">
+      <div class="slide-content">
+        <span class="slide-label">09 — Multi-Agent</span>
+        <h2 class="slide-title">Choosing the Right Tool</h2>
+        <div class="slide-body">
+          <table class="info-table">
+            <thead>
+              <tr><th></th><th>Subagents</th><th>Agent Teams</th><th>Swarm Mode</th><th>/batch</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Coordination</strong></td><td>None</td><td>Dep tracking + mailbox</td><td>Peer-to-peer comms</td><td>None</td></tr>
+              <tr><td><strong>Isolation</strong></td><td>Shared worktree</td><td>Own worktree</td><td>Own worktree</td><td>Auto worktree</td></tr>
+              <tr><td><strong>Context</strong></td><td>Parent's</td><td>1M each</td><td>1M each</td><td>Independent</td></tr>
+              <tr><td><strong>Token cost</strong></td><td>Low</td><td>4–15×</td><td>4–15×</td><td>Per-task</td></tr>
+              <tr><td><strong>Best for</strong></td><td>Research</td><td>Coordinated features</td><td>Large refactors</td><td>Similar edits</td></tr>
+            </tbody>
+          </table>
+          <div class="two-col" style="margin-top: 0.8rem;">
+            <div>
+              <h3 class="slide-section">Worktrees</h3>
+              <p class="slide-desc"><code>claude --worktree name</code> (add <code>--tmux</code>)<br />Each gets independent builds, tests, branches.</p>
+              <h3 class="slide-section" style="margin-top: 0.6rem;">Hooks</h3>
+              <p class="slide-desc">Pre/post tool callbacks in <code>.claude/settings.json</code>.<br />Auto-format, audit logging, security gates.</p>
+            </div>
+            <div>
+              <h3 class="slide-section">Integrations</h3>
+              <ul class="bullets">
+                <li><strong>VS Code</strong> — official extension, inline panels</li>
+                <li><strong>JetBrains</strong> — CLI + <code>--ide</code> flag</li>
+                <li><strong>GitHub</strong> — <code>/review-pr</code>, <code>--from-pr 123</code>, Actions CI</li>
+                <li><strong>Chrome</strong> — <code>--chrome</code> for visual debugging</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 10.1 · GSD — Problem & Principles ── -->
+    <section class="slide" data-chapter="10">
+      <div class="slide-content">
+        <span class="slide-label">10 — GSD Framework</span>
+        <h2 class="slide-title">Solving Context Rot</h2>
+        <div class="slide-body">
+          <div class="callout">
+            <strong>The problem:</strong> Claude degrades at <strong class="accent">40–50% context utilization</strong>.<br />
+            Traditional: one long session → quality decays.<br />
+            GSD: keep sessions small and fresh — state lives in files.
+          </div>
+          <h3 class="slide-section">5 Core Principles</h3>
+          <ol class="numbered-list">
+            <li><strong>Context Engineering</strong> — thin orchestrators delegate to fresh subagent contexts</li>
+            <li><strong>Spec-Driven</strong> — every task has explicit success criteria, no vibe coding</li>
+            <li><strong>Aggressive Atomicity</strong> — 2–3 tasks per plan, each fits ~50% of a fresh window</li>
+            <li><strong>Wave Parallelism</strong> — Wave 1 (blocking) → Wave 2 (parallel) → Wave 3 (dependent)</li>
+            <li><strong>Goal-Backward Verification</strong> — verify output against goals, 1 commit = 1 task</li>
+          </ol>
+          <p class="slide-desc" style="margin-top: 0.5rem;">Install: <code>npx get-shit-done</code></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 10.2 · GSD — The Pattern ── -->
+    <section class="slide" data-chapter="10">
+      <div class="slide-content">
+        <span class="slide-label">10 — GSD Framework</span>
+        <h2 class="slide-title">The Lean Orchestrator</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div>
+              <div class="flow-diagram">┌──────────────┐
+│ Orchestrator │ ← reads specs, assigns, tracks
+└──────┬───────┘
+       │
+  ┌────┴────┬────────┐
+  ▼         ▼        ▼
+┌─────┐ ┌─────┐ ┌─────┐
+│<span class="accent">Sub 1</span>│ │<span class="accent">Sub 2</span>│ │<span class="accent">Sub 3</span>│ ← fresh 200K each
+└─────┘ └─────┘ └─────┘
+       ↓
+  File-based state</div>
+              <h3 class="slide-section" style="margin-top: 0.8rem;">4 Phases</h3>
+              <p class="slide-desc"><strong>Design</strong> → <strong>Plan</strong> → <strong>Execute</strong> → <strong>Verify</strong><br /><span class="muted">/gsd:new-project · /gsd:plan-phase · /gsd:execute-phase</span></p>
+            </div>
+            <div>
+              <div class="comparison-grid" style="grid-template-columns: 1fr;">
+                <div class="compare-box">
+                  <h4>Traditional</h4>
+                  <ul>
+                    <li>One long session</li>
+                    <li>Quality degrades (rot)</li>
+                    <li>Ad-hoc task granularity</li>
+                    <li>Unclear commit history</li>
+                  </ul>
+                </div>
+                <div class="compare-box">
+                  <h4>GSD</h4>
+                  <ul>
+                    <li>Fresh context per task</li>
+                    <li>Consistent quality</li>
+                    <li>2–3 tasks/plan, atomic</li>
+                    <li>1 commit = 1 task</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 11.1 · Desktop — Claude Code on Desktop ── -->
+    <section class="slide" data-chapter="11">
+      <div class="slide-content">
+        <span class="slide-label">11 — Desktop App</span>
+        <h2 class="slide-title">Claude Code on Desktop</h2>
+        <div class="slide-body">
+          <p class="slide-desc">The Code tab in Claude Desktop runs the same engine as the CLI — with a visual layer on top.</p>
+          <div class="two-col">
+            <div>
+              <h3 class="slide-section">Visual Workflow</h3>
+              <ul class="bullets">
+                <li><strong>Diff review</strong> — review changes file-by-file with inline commenting before creating PRs</li>
+                <li><strong>App preview</strong> — embedded browser; Claude starts dev servers, takes screenshots, and auto-verifies changes</li>
+                <li><strong>PR monitoring</strong> — CI status bar with <strong>auto-fix</strong> (Claude fixes failing checks) and <strong>auto-merge</strong> (squash when green)</li>
+                <li><strong>Connectors</strong> — one-click MCP setup for GitHub, Slack, Linear, Notion — no JSON editing</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="slide-section">Sessions &amp; Environments</h3>
+              <ul class="bullets">
+                <li><strong>Parallel sessions</strong> — sidebar tabs, each with automatic Git worktree isolation</li>
+                <li><strong>Scheduled tasks</strong> — recurring tasks (daily code reviews, dependency checks) that fire automatically</li>
+                <li><strong>Remote/cloud sessions</strong> — run on Anthropic's cloud, continue after closing the app, monitor from web or mobile</li>
+                <li><strong>SSH sessions</strong> — connect to cloud VMs, dev containers, or remote servers through the desktop UI</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            Run <code>/desktop</code> in the CLI to move your current session into the app.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 11.2 · Desktop — Desktop vs CLI ── -->
+    <section class="slide" data-chapter="11">
+      <div class="slide-content">
+        <span class="slide-label">11 — Desktop App</span>
+        <h2 class="slide-title">Desktop vs CLI</h2>
+        <div class="slide-body">
+          <table class="info-table">
+            <thead>
+              <tr><th>Feature</th><th>CLI</th><th>Desktop</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Diff review</strong></td><td>text-based</td><td>Visual + inline comments</td></tr>
+              <tr><td><strong>App preview</strong></td><td>—</td><td>Embedded browser, auto-verify</td></tr>
+              <tr><td><strong>PR monitoring</strong></td><td>Manual</td><td>CI bar, auto-fix, auto-merge</td></tr>
+              <tr><td><strong>Sessions</strong></td><td>Separate terminals</td><td>Sidebar tabs + auto worktrees</td></tr>
+              <tr><td><strong>Recurring tasks</strong></td><td>cron / CI pipelines</td><td>Built-in scheduled tasks</td></tr>
+              <tr><td><strong>File attachments</strong></td><td>—</td><td>Images, PDFs, drag-and-drop</td></tr>
+              <tr><td><strong>Remote / cloud</strong></td><td>—</td><td>Anthropic-hosted, persist on close</td></tr>
+              <tr><td><strong>SSH sessions</strong></td><td>—</td><td>Connect via desktop UI</td></tr>
+              <tr><td><strong>Scripting</strong></td><td><code>--print</code>, Agent SDK</td><td>—</td></tr>
+              <tr><td><strong>Third-party providers</strong></td><td>Bedrock, Vertex, Foundry</td><td>—</td></tr>
+              <tr><td><strong>Agent teams</strong></td><td>Supported</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <div class="callout callout--compact" style="margin-top: 0.6rem;">
+            <strong class="accent">Shared config:</strong> CLAUDE.md, MCP servers, hooks, skills, and settings all carry over between Desktop and CLI.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Final Slide ── -->
+    <section class="slide slide--intro" data-chapter="12">
+      <div class="slide-center" style="max-width: none;">
+        <p class="eyebrow">That's it. The rest is practice.</p>
+        <h1 class="hero-title" style="white-space: nowrap;">
+          Build something <span class="accent">great</span>.
+        </h1>
+        <p class="start-hint" style="animation: none; opacity: 0.5;">Press <kbd>←</kbd> to go back</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Full-page Modal — Anthropic's Internal CLAUDE.md
+       ═══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-anthropic-md">
+    <div class="modal-panel">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <div class="modal-header">
+        <span class="slide-label">Reference</span>
+        <h2 class="modal-title">Anthropic's Internal CLAUDE.md</h2>
+        <p class="modal-desc">Extracted from Anthropic's own Claude Code project. Unedited.</p>
+      </div>
+      <div class="modal-body">
+        <h3>Workflow Orchestration</h3>
+
+        <h4>1. Plan Node Default</h4>
+        <ul>
+          <li>Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)</li>
+          <li>If something goes sideways, STOP and re-plan immediately - don't keep pushing</li>
+          <li>Use plan mode for verification steps, not just building</li>
+          <li>Write detailed specs upfront to reduce ambiguity</li>
+        </ul>
+
+        <h4>2. Subagent Strategy</h4>
+        <ul>
+          <li>Use subagents liberally to keep main context window clean</li>
+          <li>Offload research, exploration, and parallel analysis to subagents</li>
+          <li>For complex problems, throw more compute at it via subagents</li>
+          <li>One task per subagent for focused execution</li>
+        </ul>
+
+        <h4>3. Self-Improvement Loop</h4>
+        <ul>
+          <li>After ANY correction from the user: update <code>tasks/lessons.md</code> with the pattern</li>
+          <li>Write rules for yourself that prevent the same mistake</li>
+          <li>Ruthlessly iterate on these lessons until mistake rate drops</li>
+          <li>Review lessons at session start for relevant project</li>
+        </ul>
+
+        <h4>4. Verification Before Done</h4>
+        <ul>
+          <li>Never mark a task complete without proving it works</li>
+          <li>Diff behavior between main and your changes when relevant</li>
+          <li>Ask yourself: "Would a staff engineer approve this?"</li>
+          <li>Run tests, check logs, demonstrate correctness</li>
+        </ul>
+
+        <h4>5. Demand Elegance (Balanced)</h4>
+        <ul>
+          <li>For non-trivial changes: pause and ask "is there a more elegant way?"</li>
+          <li>If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"</li>
+          <li>Skip this for simple, obvious fixes - don't over-engineer</li>
+          <li>Challenge your own work before presenting it</li>
+        </ul>
+
+        <h4>6. Autonomous Bug Fixing</h4>
+        <ul>
+          <li>When given a bug report: just fix it. Don't ask for hand-holding</li>
+          <li>Point at logs, errors, failing tests - then resolve them</li>
+          <li>Zero context switching required from the user</li>
+          <li>Go fix failing CI tests without being told how</li>
+        </ul>
+
+        <h3>Task Management</h3>
+        <ol>
+          <li><strong>Plan First</strong>: Write plan to <code>tasks/todo.md</code> with checkable items</li>
+          <li><strong>Verify Plan</strong>: Check in before starting implementation</li>
+          <li><strong>Track Progress</strong>: Mark items complete as you go</li>
+          <li><strong>Explain Changes</strong>: High-level summary at each step</li>
+          <li><strong>Document Results</strong>: Add review section to <code>tasks/todo.md</code></li>
+          <li><strong>Capture Lessons</strong>: Update <code>tasks/lessons.md</code> after corrections</li>
+        </ol>
+
+        <h3>Core Principles</h3>
+        <ul>
+          <li><strong>Simplicity First</strong>: Make every change as simple as possible. Impact minimal code.</li>
+          <li><strong>No Laziness</strong>: Find root causes. No temporary fixes. Senior developer standards.</li>
+          <li><strong>Minimal Impact</strong>: Changes should only touch what's necessary. Avoid introducing bugs.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom navigation -->
+  <nav class="presentation-nav">
+    <div class="nav-progress-track">
+      <div class="nav-progress-fill"></div>
+    </div>
+    <div class="nav-bar">
+      <span class="nav-hint">← → to navigate</span>
+      <span class="slide-counter"></span>
+      <div class="nav-arrows">
+        <button class="nav-prev" aria-label="Previous slide">←</button>
+        <button class="nav-next" aria-label="Next slide">→</button>
+      </div>
+    </div>
+  </nav>
+
+</body>
+</html>
