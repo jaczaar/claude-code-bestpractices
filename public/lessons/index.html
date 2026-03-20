@@ -5,73 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Claude Code — Lessons &amp; Tips</title>
   <meta name="description" content="Bite-sized Claude Code lessons delivered Mon/Wed/Fri. Flashcard-style tips on features, releases, and best practices." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --accent: #d2a8ff;
-      --accent-alt: #79c0ff;
-      --tag-bg: #1f2937;
+      --bg: #161210;
+      --bg-raised: #1e1a17;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-hover: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.07);
+      --border-hover: rgba(212, 132, 90, 0.5);
+      --text: #f5f0e8;
+      --text-muted: rgba(245, 240, 232, 0.55);
+      --accent: #d4845a;
+      --accent-soft: rgba(212, 132, 90, 0.12);
+      --accent-glow: rgba(212, 132, 90, 0.25);
+      --green: #22c55e;
+      --tag-bg: rgba(212, 132, 90, 0.1);
+      --tag-border: rgba(212, 132, 90, 0.2);
+      --font-heading: 'Exo', sans-serif;
+      --font-mono: 'Roboto Mono', monospace;
+      --font-body: 'Exo', -apple-system, BlinkMacSystemFont, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-family: var(--font-body);
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.03;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      z-index: 9999;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 860px;
       margin: 0 auto;
-      padding: 3rem 1.5rem;
+      padding: 3rem 1.5rem 4rem;
     }
 
+    /* Header */
     .header {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 3.5rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1.25rem;
+    }
+
+    .header-label svg {
+      width: 16px;
+      height: 16px;
     }
 
     .header h1 {
-      font-size: 2.2rem;
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 1.5rem + 4vw, 3.2rem);
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
     }
 
     .header h1 .accent { color: var(--accent); }
 
     .header p {
       color: var(--text-muted);
-      font-size: 1.1rem;
+      font-size: 1.05rem;
+      max-width: 420px;
+      margin: 0 auto;
     }
 
     .stats {
       display: flex;
       justify-content: center;
-      gap: 2rem;
-      margin: 1.5rem 0;
-      font-size: 0.9rem;
+      gap: 2.5rem;
+      margin-top: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
       color: var(--text-muted);
     }
 
-    .stats strong { color: var(--accent); }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 2rem;
-      color: var(--accent-alt);
-      text-decoration: none;
-      font-size: 0.9rem;
+    .stats strong {
+      color: var(--accent);
+      font-weight: 600;
     }
 
-    .back-link:hover { text-decoration: underline; }
-
+    /* Lessons grid */
     .lessons-grid {
       display: flex;
       flex-direction: column;
@@ -79,71 +125,189 @@
     }
 
     .lesson-card {
-      display: block;
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 1.25rem;
+      align-items: start;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 1.5rem;
       text-decoration: none;
       color: var(--text);
-      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+      transition: border-color 0.25s var(--ease),
+                  background 0.25s var(--ease),
+                  transform 0.25s var(--ease),
+                  box-shadow 0.25s var(--ease);
     }
 
     .lesson-card:hover {
-      border-color: var(--accent);
+      border-color: var(--border-hover);
+      background: var(--surface-hover);
       transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 0 1px var(--border-hover);
     }
 
-    .lesson-card .number {
-      font-size: 0.8rem;
-      color: var(--accent);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+    .lesson-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
-    .lesson-card .title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0.25rem 0 0.5rem;
-    }
-
-    .lesson-card .summary {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    .lesson-card .meta {
+    .card-number {
       display: flex;
-      gap: 0.75rem;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: var(--accent-soft);
+      border: 1px solid var(--tag-border);
+      border-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .card-body .date {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-body .title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-body .summary {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .card-body .meta {
+      display: flex;
+      gap: 0.5rem;
       margin-top: 0.75rem;
       flex-wrap: wrap;
     }
 
     .tag {
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.2rem 0.55rem;
       background: var(--tag-bg);
-      border-radius: 999px;
-      color: var(--text-muted);
+      border: 1px solid var(--tag-border);
+      border-radius: 6px;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      font-weight: 500;
     }
 
+    /* Empty state */
     .empty-state {
       text-align: center;
-      padding: 4rem 1rem;
+      padding: 5rem 1rem;
       color: var(--text-muted);
     }
 
-    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state .icon-wrap {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      border-radius: 16px;
+    }
+
+    .empty-state .icon-wrap svg {
+      width: 28px;
+      height: 28px;
+      color: var(--accent);
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      transition: color 0.2s;
+    }
+
+    .footer a:hover { color: var(--accent); }
+
+    .footer a svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header { animation: fadeUp 0.6s var(--ease) both; }
+    .lessons-grid { animation: fadeUp 0.6s var(--ease) 0.15s both; }
+    .footer { animation: fadeUp 0.6s var(--ease) 0.3s both; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container { padding: 2rem 1rem 3rem; }
+      .lesson-card { grid-template-columns: 1fr; gap: 0.75rem; }
+      .card-number {
+        width: auto;
+        height: auto;
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        justify-self: start;
+      }
+      .stats { gap: 1.5rem; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <a class="back-link" href="../">&larr; Back to Best Practices</a>
-
     <div class="header">
+      <div class="header-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lessons &amp; Tips
+      </div>
       <h1><span class="accent">Claude Code</span> Lessons</h1>
-      <p>Bite-sized tips &amp; insights — delivered Mon / Wed / Fri</p>
+      <p>Bite-sized tips &amp; insights, delivered Mon / Wed / Fri</p>
       <div class="stats">
         <span><strong id="lesson-count">0</strong> lessons</span>
         <span>Updated <strong id="last-updated">—</strong></span>
@@ -151,6 +315,13 @@
     </div>
 
     <div id="lessons-container" class="lessons-grid"></div>
+
+    <div class="footer">
+      <a href="../">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Back to Best Practices
+      </a>
+    </div>
   </div>
 
   <script>
@@ -165,7 +336,9 @@
       if (lessons.length === 0) {
         document.getElementById('lessons-container').innerHTML = `
           <div class="empty-state">
-            <div class="icon">📚</div>
+            <div class="icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
             <p>First lesson drops soon.<br>Check back Monday, Wednesday, or Friday!</p>
           </div>`;
         return;
@@ -174,18 +347,21 @@
       const lastDate = lessons[lessons.length - 1].date;
       document.getElementById('last-updated').textContent = lastDate;
 
-      // Show newest first
       const sorted = [...lessons].reverse();
 
       document.getElementById('lessons-container').innerHTML = sorted.map((l, i) => {
         const num = lessons.length - i;
+        const numStr = String(num).padStart(3, '0');
         const tags = (l.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
         return `
           <a class="lesson-card" href="${l.slug}.html">
-            <div class="number">Lesson ${String(num).padStart(3, '0')} · ${l.date}</div>
-            <div class="title">${l.title}</div>
-            <div class="summary">${l.summary}</div>
-            <div class="meta">${tags}</div>
+            <div class="card-number">#${numStr}</div>
+            <div class="card-body">
+              <div class="date">${l.date}</div>
+              <div class="title">${l.title}</div>
+              <div class="summary">${l.summary}</div>
+              <div class="meta">${tags}</div>
+            </div>
           </a>`;
       }).join('');
     })();
