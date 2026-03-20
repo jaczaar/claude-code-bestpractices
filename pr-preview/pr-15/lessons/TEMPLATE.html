@@ -1,0 +1,949 @@
+<!--
+  ══════════════════════════════════════════════════════════════
+  CLAUDE CODE LESSONS — DESIGN SYSTEM REFERENCE
+  ══════════════════════════════════════════════════════════════
+
+  This template derives from the main Claude Code Best Practices site.
+  When creating new lesson pages, follow these design principles:
+
+  DESIGN TOKENS (must be kept in sync with main site):
+  ─────────────────────────────────────────────────────
+  Background:     #1a1816     (warm dark brown)
+  Text:           #f5f0e8     (warm off-white)
+  Text primary:   #e8e0d4     (slightly muted)
+  Accent:         #d4845a     (warm orange — Anthropic-inspired)
+  Accent soft:    rgba(212, 132, 90, 0.12)
+  Muted:          rgba(245, 240, 232, 0.6)
+  Subtle:         rgba(245, 240, 232, 0.25)
+  Surface:        rgba(255, 255, 255, 0.035)
+  Border:         rgba(255, 255, 255, 0.06)
+
+  TYPOGRAPHY:
+  ─────────────
+  Primary font:   Manrope (Google Fonts)
+  Monospace:      SF Mono, Fira Code, Consolas
+  Heading weight: 600-700
+  Body line-height: 1.7
+
+  VISUAL ELEMENTS:
+  ─────────────────
+  - Film grain texture overlay (SVG noise at 0.028 opacity)
+  - Accent-colored left borders on callouts and code blocks
+  - Pill-shaped tags and labels with accent-soft background
+  - Subtle border-radius: 12px on cards/surfaces
+  - Smooth transitions using cubic-bezier(0.16, 1, 0.3, 1)
+  - Staggered entrance animations (opacity + translateY)
+
+  COMPONENT CLASSES AVAILABLE:
+  ─────────────────────────────
+  .callout           — Accent-background info box
+  .tip-box           — Left-border tip with label
+  .info-table        — Styled data table with accent headers
+  .comparison-grid   — Side-by-side comparison boxes
+  .code-block        — Styled code container with label
+  .terminal-mockup   — Terminal-style display
+  .flashcard         — Click-to-reveal interactive card
+  .key-takeaway      — Bottom summary box with accent border
+  .diagram-container — For flow diagrams and visual aids
+  .progress-ring     — Circular progress indicator (SVG)
+
+  CONTENT GUIDELINES:
+  ────────────────────
+  - Use h2 for main sections, h3 for subsections
+  - Keep content concise: 300-500 words
+  - Include at least one interactive element (flashcard, collapsible, etc.)
+  - Use code blocks with proper language labels
+  - Include a key takeaway at the bottom
+  - Write like teaching a colleague — concise, accurate, practical
+
+  IMPORTANT FOR AUTOMATED LESSON GENERATION:
+  ───────────────────────────────────────────
+  When filling this template, replace ALL placeholder values:
+  - LESSON_TITLE, LESSON_NUMBER, LESSON_DATE, LESSON_TAGS
+  - FLASHCARD_QUESTION, FLASHCARD_ANSWER
+  - LESSON_CONTENT, KEY_TAKEAWAY
+  - LESSON_PREV_SLUG, LESSON_NEXT_SLUG (use "#" if N/A)
+
+  Use the component classes above to make content visually rich.
+  Each lesson should feel like a polished, standalone micro-article
+  that belongs to the same family as the main presentation.
+  ══════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LESSON_TITLE — Claude Code Lessons</title>
+  <meta name="description" content="LESSON_TITLE — A Claude Code lesson on features, workflows, and best practices." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════
+       Design Tokens — synced with main site
+       ══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-bg: #1a1816;
+      --color-bg-raised: #1f1d1a;
+      --color-text: #f5f0e8;
+      --color-text-primary: #e8e0d4;
+      --color-accent: #d4845a;
+      --color-accent-soft: rgba(212, 132, 90, 0.12);
+      --color-accent-hover: #e09a74;
+      --color-accent-glow: rgba(212, 132, 90, 0.25);
+      --color-muted: rgba(245, 240, 232, 0.6);
+      --color-subtle: rgba(245, 240, 232, 0.25);
+      --color-surface: rgba(255, 255, 255, 0.035);
+      --color-border: rgba(255, 255, 255, 0.06);
+      --color-border-hover: rgba(255, 255, 255, 0.12);
+      --color-code-bg: rgba(255, 255, 255, 0.04);
+      --color-success: #6dbf7b;
+      --color-warning: #d4a85a;
+
+      --font-main: 'Manrope', -apple-system, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+      --text-hero: clamp(1.8rem, 1.5rem + 2vw, 2.6rem);
+      --text-heading: clamp(1.3rem, 1.15rem + 1vw, 1.6rem);
+      --text-subhead: clamp(1.05rem, 1rem + 0.4vw, 1.2rem);
+      --text-body: clamp(0.95rem, 0.92rem + 0.25vw, 1.05rem);
+      --text-small: clamp(0.78rem, 0.74rem + 0.2vw, 0.86rem);
+      --text-label: 0.7rem;
+
+      --content-max: 720px;
+      --radius: 12px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-main);
+      font-size: var(--text-body);
+      line-height: 1.7;
+      color: var(--color-text-primary);
+      background: var(--color-bg);
+      min-height: 100vh;
+    }
+
+    /* Grain texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px;
+    }
+
+    ::selection { background: rgba(212, 132, 90, 0.3); }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 4px; }
+
+    /* ══════════════════════════════════════
+       Reading Progress Bar
+       ══════════════════════════════════════ */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--color-accent);
+      box-shadow: 0 0 10px var(--color-accent-glow);
+      z-index: 1000;
+      transition: width 0.1s linear;
+    }
+
+    /* ══════════════════════════════════════
+       Layout
+       ══════════════════════════════════════ */
+    .page-container {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    /* ── Back nav ── */
+    .back-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-muted);
+      text-decoration: none;
+      padding: 0.35rem 0.75rem 0.35rem 0.5rem;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      transition: all 0.25s var(--ease);
+      margin-bottom: 2.5rem;
+    }
+
+    .back-nav:hover {
+      color: var(--color-accent);
+      border-color: var(--color-border);
+      background: var(--color-surface);
+    }
+
+    .back-nav svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.25s var(--ease);
+    }
+
+    .back-nav:hover svg {
+      transform: translateX(-2px);
+    }
+
+    /* ══════════════════════════════════════
+       Lesson Header
+       ══════════════════════════════════════ */
+    .lesson-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .lesson-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      color: var(--color-accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25em 0.7em;
+      background: var(--color-accent-soft);
+      border-radius: 100px;
+      border: 1px solid rgba(212, 132, 90, 0.08);
+      margin-bottom: 1rem;
+    }
+
+    .lesson-title {
+      font-size: var(--text-hero);
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-date {
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-subtle);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .meta-date svg {
+      width: 13px;
+      height: 13px;
+      opacity: 0.6;
+    }
+
+    .meta-divider {
+      width: 1px;
+      height: 14px;
+      background: var(--color-border);
+    }
+
+    .lesson-tags {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.2em 0.6em;
+      background: var(--color-accent-soft);
+      border: 1px solid rgba(212, 132, 90, 0.06);
+      border-radius: 100px;
+      color: var(--color-accent);
+      letter-spacing: 0.02em;
+      text-transform: lowercase;
+    }
+
+    /* ══════════════════════════════════════
+       Flashcard
+       ══════════════════════════════════════ */
+    .flashcard {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flashcard::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), transparent);
+      opacity: 0.5;
+    }
+
+    .flashcard:hover {
+      border-color: var(--color-border-hover);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .flashcard-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .flashcard-label svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .flashcard-question {
+      font-size: var(--text-subhead);
+      font-weight: 600;
+      color: var(--color-text);
+      line-height: 1.45;
+    }
+
+    .flip-hint {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      color: var(--color-subtle);
+      margin-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: opacity 0.3s var(--ease);
+    }
+
+    .flashcard.flipped .flip-hint { display: none; }
+
+    .flashcard-answer {
+      display: none;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+      line-height: 1.7;
+    }
+
+    .flashcard.flipped .flashcard-answer {
+      display: block;
+      animation: fadeSlideIn 0.35s var(--ease) forwards;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════
+       Content Typography
+       ══════════════════════════════════════ */
+    .content h2 {
+      font-size: var(--text-heading);
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 2.5rem 0 0.75rem;
+      letter-spacing: -0.02em;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .content h2:first-child { margin-top: 0; }
+
+    .content h3 {
+      font-size: var(--text-subhead);
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 1.75rem 0 0.5rem;
+    }
+
+    .content p {
+      margin-bottom: 1rem;
+      color: var(--color-text-primary);
+    }
+
+    .content ul, .content ol {
+      margin: 0.75rem 0 1rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .content li {
+      padding: 0.25em 0 0.25em 1.3em;
+      position: relative;
+      color: var(--color-muted);
+      line-height: 1.65;
+    }
+
+    .content ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      opacity: 0.4;
+    }
+
+    .content ol { counter-reset: item; }
+    .content ol li { counter-increment: item; }
+    .content ol li::before {
+      content: counter(item);
+      position: absolute;
+      left: 0;
+      top: 0.25em;
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    .content li strong {
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    .content a {
+      color: var(--color-accent);
+      text-decoration: underline;
+      text-decoration-color: rgba(212, 132, 90, 0.3);
+      text-underline-offset: 2px;
+      transition: text-decoration-color 0.2s;
+    }
+
+    .content a:hover {
+      text-decoration-color: var(--color-accent);
+    }
+
+    /* ── Inline code ── */
+    .content code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      color: var(--color-text);
+      background: var(--color-code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+    }
+
+    /* ── Code blocks ── */
+    .content pre {
+      background: var(--color-code-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    .content pre code {
+      background: none;
+      padding: 0;
+      border: none;
+      font-size: 0.85em;
+      color: var(--color-muted);
+      line-height: 1.7;
+    }
+
+    /* ── Code block with label ── */
+    .code-block {
+      margin: 1rem 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .code-block-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-accent);
+      background: var(--color-surface);
+      padding: 0.4rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .code-block pre {
+      margin: 0;
+      border: none;
+      border-radius: 0;
+    }
+
+    /* ── Blockquote ── */
+    .content blockquote {
+      border-left: 2px solid var(--color-accent);
+      padding: 0.5rem 0 0.5rem 1.2rem;
+      margin: 1.25rem 0;
+      color: var(--color-muted);
+      font-style: normal;
+    }
+
+    /* ══════════════════════════════════════
+       Reusable Components
+       ══════════════════════════════════════ */
+
+    /* ── Callout ── */
+    .callout {
+      background: var(--color-accent-soft);
+      border: 1px solid rgba(212, 132, 90, 0.12);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: var(--text-small);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+    }
+
+    .callout strong { color: var(--color-text); }
+
+    /* ── Tip box ── */
+    .tip-box {
+      background: var(--color-surface);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.75rem 1.1rem;
+      margin: 1rem 0;
+    }
+
+    .tip-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-accent);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-box p {
+      font-size: var(--text-small);
+      color: var(--color-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Info table ── */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-small);
+      margin: 1rem 0;
+    }
+
+    .info-table th,
+    .info-table td {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+      line-height: 1.5;
+    }
+
+    .info-table th {
+      color: var(--color-accent);
+      font-weight: 600;
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    .info-table td { color: var(--color-muted); }
+    .info-table td strong { color: var(--color-text); }
+    .info-table tr:last-child td { border-bottom: none; }
+    .info-table code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--color-text);
+      background: var(--color-surface);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+
+    /* ── Comparison grid ── */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .compare-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .compare-box h4 {
+      font-size: var(--text-label);
+      font-weight: 600;
+      color: var(--color-accent);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .compare-box p, .compare-box li {
+      font-size: var(--text-small);
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Terminal mockup ── */
+    .terminal-mockup {
+      background: #0d1117;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      font-family: var(--font-mono);
+      font-size: calc(var(--text-small) - 0.04rem);
+      color: #8b949e;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .terminal-mockup .t-green { color: #3fb950; }
+    .terminal-mockup .t-cyan { color: #58a6ff; }
+    .terminal-mockup .t-yellow { color: #d29922; }
+    .terminal-mockup .t-orange { color: #d4845a; }
+    .terminal-mockup .t-white { color: #e6edf3; }
+
+    /* ── Diagram container ── */
+    .diagram-container {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin: 1rem 0;
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .diagram-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ── Collapsible ── */
+    .collapsible {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      margin: 0.75rem 0;
+      overflow: hidden;
+    }
+
+    .collapsible summary {
+      padding: 0.65rem 1rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-accent);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+      user-select: none;
+    }
+
+    .collapsible summary::-webkit-details-marker { display: none; }
+
+    .collapsible summary::before {
+      content: '\25B8';
+      font-size: 0.7em;
+      transition: transform 0.2s var(--ease);
+      display: inline-block;
+    }
+
+    .collapsible[open] summary::before { transform: rotate(90deg); }
+    .collapsible summary:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .collapsible .collapsible-body {
+      padding: 0 1rem 0.8rem;
+      font-size: var(--text-small);
+      color: var(--color-muted);
+      line-height: 1.7;
+    }
+
+    /* ══════════════════════════════════════
+       Key Takeaway
+       ══════════════════════════════════════ */
+    .key-takeaway {
+      background: var(--color-surface);
+      border: 1px solid rgba(212, 132, 90, 0.2);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin: 2.5rem 0 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .key-takeaway::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), transparent 80%);
+    }
+
+    .key-takeaway-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .key-takeaway-label svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .key-takeaway p {
+      color: var(--color-text-primary);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ══════════════════════════════════════
+       Navigation Footer
+       ══════════════════════════════════════ */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-muted);
+      text-decoration: none;
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      transition: all 0.25s var(--ease);
+    }
+
+    .nav-link:hover {
+      color: var(--color-accent);
+      border-color: var(--color-border);
+      background: var(--color-surface);
+    }
+
+    .nav-link svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.25s var(--ease);
+    }
+
+    .nav-link--prev:hover svg { transform: translateX(-2px); }
+    .nav-link--next:hover svg { transform: translateX(2px); }
+
+    /* ══════════════════════════════════════
+       Page Footer
+       ══════════════════════════════════════ */
+    .page-footer {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+    }
+
+    .footer-brand {
+      font-family: var(--font-mono);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-subtle);
+    }
+
+    .footer-brand .accent { color: var(--color-accent); }
+
+    /* ══════════════════════════════════════
+       Entrance Animations
+       ══════════════════════════════════════ */
+    .animate-in {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+
+    .animate-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-in { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ══════════════════════════════════════
+       Responsive
+       ══════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .page-container { padding: 1.5rem 1.25rem 3rem; }
+      .flashcard { padding: 1.25rem 1.5rem; }
+      .lesson-title { font-size: clamp(1.5rem, 1.3rem + 1.5vw, 2rem); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Reading progress -->
+  <div class="reading-progress" id="reading-progress"></div>
+
+  <div class="page-container">
+
+    <!-- Back navigation -->
+    <a class="back-nav animate-in" href="index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 12L6 8l4-4"/>
+      </svg>
+      All Lessons
+    </a>
+
+    <!-- Lesson header -->
+    <header class="lesson-header animate-in" style="transition-delay: 50ms">
+      <div class="lesson-label">LESSON_NUMBER</div>
+      <h1 class="lesson-title">LESSON_TITLE</h1>
+      <div class="lesson-meta">
+        <span class="meta-date">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5.5 2v2M10.5 2v2"/>
+          </svg>
+          LESSON_DATE
+        </span>
+        <span class="meta-divider"></span>
+        <div class="lesson-tags">LESSON_TAGS</div>
+      </div>
+    </header>
+
+    <!-- Flashcard -->
+    <div class="flashcard animate-in" style="transition-delay: 100ms" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2.5 1.5"/>
+        </svg>
+        Quick Check
+      </div>
+      <div class="flashcard-question">FLASHCARD_QUESTION</div>
+      <div class="flip-hint">Click to reveal answer</div>
+      <div class="flashcard-answer">
+        FLASHCARD_ANSWER
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <article class="content animate-in" style="transition-delay: 150ms">
+      LESSON_CONTENT
+    </article>
+
+    <!-- Key takeaway -->
+    <div class="key-takeaway animate-in" style="transition-delay: 200ms">
+      <div class="key-takeaway-label">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z"/>
+        </svg>
+        Key Takeaway
+      </div>
+      <p>KEY_TAKEAWAY</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-footer">
+      <a class="nav-link nav-link--prev" href="index.html">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 12L6 8l4-4"/>
+        </svg>
+        All Lessons
+      </a>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <div class="footer-brand">
+        <span class="accent">Claude Code</span> Best Practices
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Entrance animations
+    document.querySelectorAll('.animate-in').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 80 * i);
+    });
+
+    // Reading progress bar
+    const progressBar = document.getElementById('reading-progress');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = Math.min(progress, 100) + '%';
+    }, { passive: true });
+  </script>
+</body>
+</html>
