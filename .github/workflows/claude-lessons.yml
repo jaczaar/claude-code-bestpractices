@@ -103,7 +103,7 @@ jobs:
           - "## Flashcard" section with the Q&A
           - "## Lesson" section with the full explanation in markdown (not HTML)
           - "## Key Takeaway" section
-          - A link: "Read on the web: https://jaczaar.github.io/claude-code-bestpractices/lessons/${LESSON_SLUG}.html"
+          - Do NOT include a "Read on the web" link — the PR preview action will add one automatically.
           This will be the PR description — make it clean and shareable.
 
           ### 4. Verify
