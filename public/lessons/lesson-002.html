@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hooks: Auto-Format, Audit, and Gate Every Tool Call — Claude Code Lessons</title>
+  <meta property="og:title" content="Hooks: Auto-Format, Audit, and Gate Every Tool Call — Claude Code Lessons" />
+  <meta property="og:description" content="A bite-sized Claude Code lesson with flashcard quiz and practical tips." />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 002
+      </div>
+      <h1>Hooks: Auto-Format, Audit, and Gate Every Tool Call</h1>
+      <div class="meta">
+        <div>2026-03-23</div>
+        <div class="tags"><span class="tag">hooks</span> <span class="tag">settings</span> <span class="tag">automation</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>Where do you configure Claude Code hooks, and what are the two hook types that let you run commands before or after a tool executes?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Hooks are configured in your settings JSON files (<code>.claude/settings.json</code>, <code>.claude/settings.local.json</code>, or <code>~/.claude/settings.json</code>). The two types are <code>preTool</code> (runs before a tool executes) and <code>postTool</code> (runs after a tool completes). Each hook targets a specific tool by name and runs a shell command.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Are Hooks?</h2>
+      <p>Hooks are shell commands that Claude Code runs automatically before or after specific tool invocations. Think of them as git hooks, but for Claude's tools &mdash; every time Claude calls <code>Edit</code>, <code>Bash</code>, <code>Write</code>, or any other tool, your hooks fire.</p>
+      <p>They live in your settings JSON under the <code>"hooks"</code> key:</p>
+      <pre><code class="language-json">{
+  "hooks": {
+    "preTool": [
+      {
+        "tool": "Bash",
+        "command": "echo \"$(date): Bash call\" >> /tmp/claude-audit.log"
+      }
+    ],
+    "postTool": [
+      {
+        "tool": "Edit",
+        "command": "npx eslint --fix $CLAUDE_FILE_PATH"
+      }
+    ]
+  }
+}</code></pre>
+
+      <h2>The Two Hook Types</h2>
+      <ul>
+        <li><strong>preTool</strong> &mdash; Fires before the tool runs. Use it for validation, logging, or blocking operations on sensitive files. If a preTool hook exits with a non-zero code, the tool call is blocked.</li>
+        <li><strong>postTool</strong> &mdash; Fires after the tool completes. Use it for auto-formatting, linting, notifications, or any cleanup that should follow an edit.</li>
+      </ul>
+
+      <h2>Three Practical Recipes</h2>
+
+      <h3>1. Auto-format after every edit</h3>
+      <p>Run Prettier automatically whenever Claude modifies a file:</p>
+      <pre><code class="language-json">"postTool": [
+  {
+    "tool": "Edit",
+    "command": "npx prettier --write $CLAUDE_FILE_PATH"
+  }
+]</code></pre>
+
+      <h3>2. Audit log for compliance</h3>
+      <p>Track every tool call with timestamps:</p>
+      <pre><code class="language-json">"preTool": [
+  {
+    "tool": "Bash",
+    "command": "echo \"$(date -u +%FT%TZ) BASH\" >> ~/.claude/audit.log"
+  }
+]</code></pre>
+
+      <h3>3. Block edits to protected files</h3>
+      <p>Prevent Claude from touching migration files that have already been committed:</p>
+      <pre><code class="language-json">"preTool": [
+  {
+    "tool": "Edit",
+    "command": "echo $CLAUDE_FILE_PATH | grep -q 'migrations/' && echo 'Blocked: do not edit committed migrations' >&2 && exit 1 || true"
+  }
+]</code></pre>
+
+      <h2>Where to Put Them</h2>
+      <p>Hooks can be configured at three levels, just like other settings:</p>
+      <ul>
+        <li><strong><code>.claude/settings.json</code></strong> &mdash; Project-level, committed to git. The whole team gets them.</li>
+        <li><strong><code>.claude/settings.local.json</code></strong> &mdash; Project-level, gitignored. Your personal project hooks.</li>
+        <li><strong><code>~/.claude/settings.json</code></strong> &mdash; Global. Applies to every project.</li>
+      </ul>
+
+      <h2>Gotchas</h2>
+      <ul>
+        <li>Hooks run <strong>synchronously</strong> &mdash; they add latency to every tool call they target. Keep them fast.</li>
+        <li>A failing <code>preTool</code> hook <strong>blocks</strong> the tool. This is powerful for gates but can stall Claude if misconfigured.</li>
+        <li>Debug with <code>--debug hooks</code> to see exactly what fires and when.</li>
+        <li>For complex logic, point the hook at an external script rather than inlining shell one-liners.</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Add <code>preTool</code> and <code>postTool</code> hooks in your settings JSON to automatically format code, log tool usage, or block dangerous operations &mdash; enforcing your team's standards on every single tool call without relying on Claude to remember the rules.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="../">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+</body>
+</html>

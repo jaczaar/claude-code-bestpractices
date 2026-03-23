@@ -6,6 +6,13 @@
       "summary": "How to structure Claude Code's auto memory system using topic files and the capture-promote-prune cycle to stay under the 200-line MEMORY.md limit.",
       "date": "2026-03-20",
       "tags": ["memory", "auto-memory", "advanced"]
+    },
+    {
+      "slug": "lesson-002",
+      "title": "Hooks: Auto-Format, Audit, and Gate Every Tool Call",
+      "summary": "How to use preTool and postTool hooks in Claude Code settings to auto-format code, log tool usage, and block dangerous operations.",
+      "date": "2026-03-23",
+      "tags": ["hooks", "settings", "automation"]
     }
   ]
 }
