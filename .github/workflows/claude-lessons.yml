@@ -167,6 +167,7 @@ jobs:
 
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
+        id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -184,12 +185,48 @@ jobs:
             --body-file "$BODY_FILE" \
             --base master)
 
-          # Extract PR number and comment with direct lesson preview link
           PR_NUM=$(echo "$PR_URL" | grep -o '[0-9]*$')
-          gh pr comment "$PR_NUM" --body "📖 **[Preview this lesson](https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUM}/lessons/${{ steps.meta.outputs.slug }}.html)** (available once the Pages deployment completes)"
-
           echo "pr_num=$PR_NUM" >> "$GITHUB_OUTPUT"
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      # Deploy preview directly to gh-pages. GITHUB_TOKEN events don't trigger
+      # other workflows, so pr-preview.yml never fires for lesson PRs.
+      - uses: actions/setup-node@v4
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          node-version: 20
+          cache: npm
+      - name: Build and deploy PR preview
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          npm ci
+          npm run build
+          PR_NUM=${{ steps.pr.outputs.pr_num }}
+          PREVIEW_DIR="pr-preview/pr-${PR_NUM}"
+
+          # Clone gh-pages branch (shallow) and copy preview into it
+          git clone --depth 1 --branch gh-pages \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            /tmp/gh-pages
+
+          rm -rf "/tmp/gh-pages/${PREVIEW_DIR}"
+          mkdir -p "/tmp/gh-pages/${PREVIEW_DIR}"
+          cp -r dist/* "/tmp/gh-pages/${PREVIEW_DIR}/"
+
+          cd /tmp/gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Deploy preview for PR #${PR_NUM}"
+          git push origin gh-pages
+
+      - name: Comment preview link
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM=${{ steps.pr.outputs.pr_num }}
+          gh pr comment "$PR_NUM" --body "📖 **[Preview this lesson](https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUM}/lessons/${{ steps.meta.outputs.slug }}.html)**"
 
       - name: Build email body
         if: steps.changes.outputs.has_changes == 'true'
