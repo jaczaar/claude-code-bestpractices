@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subagents: Offloading Research to Keep Your Context Clean — Claude Code Lessons</title>
+  <meta property="og:title" content="Subagents: Offloading Research to Keep Your Context Clean — Claude Code Lessons" />
+  <meta property="og:description" content="A bite-sized Claude Code lesson with flashcard quiz and practical tips." />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 002
+      </div>
+      <h1>Subagents: Offloading Research to Keep Your Context Clean</h1>
+      <div class="meta">
+        <div>2026-03-23</div>
+        <div class="tags"><span class="tag">subagents</span> <span class="tag">context-management</span> <span class="tag">productivity</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How can you prevent heavy research tasks from bloating your main Claude Code context window?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Delegate research to a subagent. The subagent runs in its own isolated context, reads files and searches the codebase, then returns only a concise summary to your main conversation. Your main context gets the answer without the raw search results.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: Context Bloat from Research</h2>
+      <p>Every file Claude reads, every grep result, every tool output — it all goes into your context window. Ask Claude to "find all usages of <code>DeviceConfigService</code> across the monorepo" and you might dump thousands of lines of search results into context. That's token budget you can't get back without <code>/compact</code> or <code>/clear</code>.</p>
+      <p>Anthropic's own internal engineering practices emphasize one key strategy: <strong>use subagents liberally to keep the main context window clean</strong>.</p>
+
+      <h2>What Is a Subagent?</h2>
+      <p>A subagent is a child Claude instance spawned via the Task/Agent tool. It gets its own isolated context window, does work autonomously, and returns a single summary message to the parent conversation. The parent never sees the raw intermediate output — just the distilled result.</p>
+      <pre><code class="language-bash"># Conceptual flow:
+# Main context asks for research
+#   → Subagent spawns with fresh context
+#   → Subagent reads 30 files, runs 12 greps
+#   → Subagent returns: "Found 4 usages, here's the summary"
+# Main context receives only the summary</code></pre>
+
+      <h2>When to Use Subagents</h2>
+      <ul>
+        <li><strong>Broad codebase searches:</strong> "Find all TODO comments and categorize by priority"</li>
+        <li><strong>Multi-file analysis:</strong> "Audit <code>src/</code> for hardcoded credentials"</li>
+        <li><strong>Exploratory research:</strong> "How does the auth middleware work? Trace the flow."</li>
+        <li><strong>Parallel workstreams:</strong> Multiple independent research tasks can run as separate subagents simultaneously</li>
+      </ul>
+
+      <h2>How to Trigger Them</h2>
+      <p>You don't need special syntax. Just describe the research task and ask Claude to use a subagent:</p>
+      <pre><code class="language-bash"># Good — research stays isolated
+"Use a subagent to find all usages of DeviceConfigService
+ and summarize the patterns."
+
+# Bad — raw results flood your main context
+"Search the entire monorepo for DeviceConfigService"</code></pre>
+      <p>The key phrase is describing what you want <em>summarized back</em>. Claude will naturally delegate when the task is framed as isolated research with a summary deliverable.</p>
+
+      <h2>The Token Math</h2>
+      <p>A subagent might internally consume 50-100K tokens reading files and running searches. But your main context only receives the 500-token summary. Without subagents, those same 50-100K tokens would land directly in your main conversation, potentially triggering auto-compaction and losing earlier context.</p>
+      <p>Anthropic's guidance: for complex problems, <strong>throw more compute at it via subagents</strong>. One focused subagent per task keeps each context clean and each result high-quality.</p>
+
+      <h2>Limitations to Know</h2>
+      <ul>
+        <li><strong>No shared state:</strong> Subagents don't see your main conversation history — they start with only the task description</li>
+        <li><strong>No follow-up questions:</strong> You can't ask a subagent for clarification mid-execution; it runs to completion</li>
+        <li><strong>Cost:</strong> Each subagent consumes its own API tokens, so costs scale with parallelism</li>
+        <li><strong>No cross-agent communication:</strong> Two sibling subagents can't coordinate (unless you use Agent Teams)</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>When a task requires reading many files or running broad searches, delegate it to a subagent — your main context gets a clean summary instead of raw output, keeping your session fast, focused, and under budget.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="../">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+</body>
+</html>

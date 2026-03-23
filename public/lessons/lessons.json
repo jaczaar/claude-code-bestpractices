@@ -6,6 +6,13 @@
       "summary": "How to structure Claude Code's auto memory system using topic files and the capture-promote-prune cycle to stay under the 200-line MEMORY.md limit.",
       "date": "2026-03-20",
       "tags": ["memory", "auto-memory", "advanced"]
+    },
+    {
+      "slug": "lesson-002",
+      "title": "Subagents: Offloading Research to Keep Your Context Clean",
+      "summary": "Use subagents to delegate heavy research tasks into isolated contexts, keeping your main conversation lean and your token budget intact.",
+      "date": "2026-03-23",
+      "tags": ["subagents", "context-management", "productivity"]
     }
   ]
 }
