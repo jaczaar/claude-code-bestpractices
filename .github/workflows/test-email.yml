@@ -1,0 +1,37 @@
+name: Test Email
+
+on:
+  workflow_dispatch:
+
+jobs:
+  send-test:
+    runs-on: self-hosted
+    steps:
+      - name: Send test email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          secure: true
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Test Email — Claude Code Lessons"
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: Claude Code Lessons <${{ secrets.SMTP_USERNAME }}>
+          html_body: |
+            <!DOCTYPE html>
+            <html>
+            <body style="margin:0; padding:0; background:#1e1b18; font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+              <div style="max-width:600px; margin:0 auto; padding:32px 24px; text-align:center;">
+                <div style="font-size:11px; color:#d4845a; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">
+                  Test Email
+                </div>
+                <h1 style="color:#f5f0e8; font-size:24px; font-weight:700; margin:0;">
+                  Email delivery is working
+                </h1>
+                <p style="color:rgba(245,240,232,0.6); font-size:14px; margin-top:16px;">
+                  If you're reading this, the SMTP configuration is correct.
+                </p>
+              </div>
+            </body>
+            </html>
