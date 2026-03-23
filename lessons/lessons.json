@@ -13,6 +13,13 @@
       "summary": "How CLAUDE.md operates at Global, Project, and Directory levels — and why the most specific level always wins.",
       "date": "2026-03-23",
       "tags": ["CLAUDE.md", "configuration", "best-practices"]
+    },
+    {
+      "slug": "lesson-003",
+      "title": "Hooks: Auto-Run Scripts Before and After Every Tool Call",
+      "summary": "How to configure preTool and postTool hooks in settings.json to auto-format code, enforce policies, and audit tool usage.",
+      "date": "2026-03-23",
+      "tags": ["hooks", "settings", "automation"]
     }
   ]
 }
