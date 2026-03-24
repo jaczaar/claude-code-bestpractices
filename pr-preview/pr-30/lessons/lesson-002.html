@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Three-Level CLAUDE.md Hierarchy — Claude Code Lessons</title>
+  <meta property="og:title" content="The Three-Level CLAUDE.md Hierarchy — Claude Code Lessons" />
+  <meta property="og:description" content="A bite-sized Claude Code lesson with flashcard quiz and practical tips." />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 002
+      </div>
+      <h1>The Three-Level CLAUDE.md Hierarchy</h1>
+      <div class="meta">
+        <div>2026-03-23</div>
+        <div class="tags"><span class="tag">CLAUDE.md</span> <span class="tag">configuration</span> <span class="tag">best-practices</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What are the three levels of CLAUDE.md, and which one wins when they conflict?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Global (<code>~/.claude/CLAUDE.md</code>), Project (<code>&lt;repo&gt;/CLAUDE.md</code>), and Directory (<code>&lt;subdir&gt;/CLAUDE.md</code>). The most specific level wins: Directory overrides Project, which overrides Global.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>One File, Three Scopes</h2>
+      <p>CLAUDE.md is Claude Code's persistent instruction file — loaded automatically at the start of every session. But it's not a single file. It operates at three levels, each with a different scope and purpose.</p>
+
+      <h3>Global: Your Personal Defaults</h3>
+      <p><strong>Location:</strong> <code>~/.claude/CLAUDE.md</code></p>
+      <p>This applies to every project you open with Claude Code. Put truly universal preferences here: communication style, security rules, personal git workflow. Keep it under 30 lines.</p>
+      <pre><code class="language-markdown">## Communication
+- Be concise and direct.
+- Don't ask for confirmation on routine actions.
+
+## Security
+- Never commit secrets or .env files.</code></pre>
+      <p>If you work in both Python and TypeScript repos, don't put "use TypeScript strict mode" here — it'll confuse Claude in Python projects.</p>
+
+      <h3>Project: Your Team's Playbook</h3>
+      <p><strong>Location:</strong> <code>&lt;repo-root&gt;/CLAUDE.md</code></p>
+      <p>This is the primary CLAUDE.md for most teams. Commit it to git so everyone benefits. Describe your tech stack, conventions, build commands, and testing patterns. Target under 100 lines.</p>
+      <pre><code class="language-markdown">## Stack
+- Frontend: Next.js 14 (App Router), TypeScript, Tailwind
+- Backend: tRPC, Drizzle ORM, PostgreSQL
+
+## Testing
+- Vitest for unit tests. Playwright for E2E.
+- Run: `pnpm test` (unit), `pnpm test:e2e` (E2E).</code></pre>
+
+      <h3>Directory: Surgical Overrides</h3>
+      <p><strong>Location:</strong> <code>&lt;repo&gt;/&lt;subdir&gt;/CLAUDE.md</code></p>
+      <p>Use these in monorepos when a subdirectory has its own conventions. Directory files are only loaded when Claude works within that directory tree, making them efficient and targeted. Keep them under 10 lines.</p>
+      <pre><code class="language-markdown"># packages/db
+- All schema changes go through Drizzle migrations.
+- Never modify migration files after they've been committed.</code></pre>
+
+      <h2>How Conflicts Resolve</h2>
+      <p>When the same topic appears at multiple levels, the most specific level wins:</p>
+      <pre><code class="language-bash">Directory CLAUDE.md  &gt;  Project CLAUDE.md  &gt;  Global CLAUDE.md</code></pre>
+      <p>If your global says "use semicolons" and your project says "no semicolons," Claude follows the project rule. A directory-level override narrows it further — but only within that directory.</p>
+
+      <h2>Size Budgets Matter</h2>
+      <p>Every line in CLAUDE.md consumes context tokens on every conversation turn. Research shows instruction adherence degrades as the instruction set grows. Stay within these targets:</p>
+      <ul>
+        <li><strong>Global:</strong> under 30 lines</li>
+        <li><strong>Project:</strong> under 100 lines</li>
+        <li><strong>Directory:</strong> under 10 lines each</li>
+        <li><strong>Combined total:</strong> under 150 lines</li>
+      </ul>
+      <p>For every line, ask: <em>"Would removing this cause Claude to make mistakes?"</em> If the answer is no, cut it.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Use Global for personal defaults, Project for team conventions, and Directory for surgical overrides — the most specific level always wins, so keep each one short and purposeful.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="../">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+</body>
+</html>
