@@ -352,7 +352,7 @@
   justify-content: flex-end;
   gap: 1rem;
   padding: 0.5rem 2rem 0.6rem;
-  background: rgba(26, 24, 22, 0.85);
+  background: var(--color-nav-bg);
   backdrop-filter: blur(8px);
 }
 
@@ -412,7 +412,7 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(10, 8, 6, 0.92);
+  background: var(--color-overlay-bg);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -529,7 +529,7 @@
 /* Modal scrollbar */
 .modal-panel::-webkit-scrollbar { width: 4px; }
 .modal-panel::-webkit-scrollbar-track { background: transparent; }
-.modal-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+.modal-panel::-webkit-scrollbar-thumb { background: var(--color-scrollbar-thumb); border-radius: 4px; }
 
 /* ── Modal Trigger Button ── */
 .modal-trigger {
@@ -559,6 +559,34 @@
 
 .modal-trigger:hover .modal-trigger-icon {
   transform: translateX(2px);
+}
+
+/* ══════════════════════════════════════
+   Theme Toggle
+   ══════════════════════════════════════ */
+.theme-toggle {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-size: 1rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-hover);
+  background: var(--color-accent-soft);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
 }
 
 /* ══════════════════════════════════════

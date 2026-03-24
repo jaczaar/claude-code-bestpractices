@@ -1,17 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --color-bg: #1a1816;
-  --color-text: #f5f0e8;
-  --color-text-primary: #e8e0d4;
-  --color-accent: #d4845a;
-  --color-accent-soft: rgba(212, 132, 90, 0.12);
-  --color-accent-hover: #e09a74;
-  --color-muted: rgba(245, 240, 232, 0.6);
-  --color-subtle: rgba(245, 240, 232, 0.25);
-  --color-surface: rgba(255, 255, 255, 0.035);
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-hover: rgba(255, 255, 255, 0.12);
+  /* ── Light mode (default) — Anthropic-inspired warm white ── */
+  --color-bg: #faf5f0;
+  --color-text: #1a1816;
+  --color-text-primary: #3d3530;
+  --color-accent: #c4713e;
+  --color-accent-soft: rgba(196, 113, 62, 0.1);
+  --color-accent-hover: #d4845a;
+  --color-muted: rgba(61, 53, 48, 0.65);
+  --color-subtle: rgba(61, 53, 48, 0.3);
+  --color-surface: rgba(0, 0, 0, 0.03);
+  --color-border: rgba(0, 0, 0, 0.07);
+  --color-border-hover: rgba(0, 0, 0, 0.14);
+  --color-overlay-bg: rgba(250, 245, 240, 0.92);
+  --color-grain-opacity: 0.022;
+  --color-scrollbar-thumb: rgba(0, 0, 0, 0.08);
+  --color-selection: rgba(196, 113, 62, 0.2);
+  --color-nav-bg: rgba(250, 245, 240, 0.88);
 
   --font-main: 'Manrope', -apple-system, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
@@ -26,6 +32,26 @@
   --content-max: 660px;
   --radius: 12px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] {
+  --color-bg: #1a1816;
+  --color-text: #f5f0e8;
+  --color-text-primary: #e8e0d4;
+  --color-accent: #d4845a;
+  --color-accent-soft: rgba(212, 132, 90, 0.12);
+  --color-accent-hover: #e09a74;
+  --color-muted: rgba(245, 240, 232, 0.6);
+  --color-subtle: rgba(245, 240, 232, 0.25);
+  --color-surface: rgba(255, 255, 255, 0.035);
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-hover: rgba(255, 255, 255, 0.12);
+  --color-overlay-bg: rgba(10, 8, 6, 0.92);
+  --color-grain-opacity: 0.028;
+  --color-scrollbar-thumb: rgba(255, 255, 255, 0.06);
+  --color-selection: rgba(212, 132, 90, 0.3);
+  --color-nav-bg: rgba(26, 24, 22, 0.85);
 }
 
 *,
@@ -57,7 +83,7 @@ body::after {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.028;
+  opacity: var(--color-grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 200px;
@@ -77,10 +103,10 @@ a {
 }
 
 ::selection {
-  background: rgba(212, 132, 90, 0.3);
+  background: var(--color-selection);
 }
 
 /* Thin subtle scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--color-scrollbar-thumb); border-radius: 4px; }
