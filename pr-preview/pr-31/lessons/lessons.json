@@ -1,0 +1,25 @@
+{
+  "lessons": [
+    {
+      "slug": "lesson-001",
+      "title": "Auto Memory: Taming the 200-Line MEMORY.md Limit",
+      "summary": "How to structure Claude Code's auto memory system using topic files and the capture-promote-prune cycle to stay under the 200-line MEMORY.md limit.",
+      "date": "2026-03-20",
+      "tags": ["memory", "auto-memory", "advanced"]
+    },
+    {
+      "slug": "lesson-002",
+      "title": "The Three-Level CLAUDE.md Hierarchy",
+      "summary": "How CLAUDE.md operates at Global, Project, and Directory levels — and why the most specific level always wins.",
+      "date": "2026-03-23",
+      "tags": ["CLAUDE.md", "configuration", "best-practices"]
+    },
+    {
+      "slug": "lesson-003",
+      "title": "Hooks: Auto-Run Scripts Before and After Every Tool Call",
+      "summary": "How to configure preTool and postTool hooks in settings.json to auto-format code, enforce policies, and audit tool usage.",
+      "date": "2026-03-23",
+      "tags": ["hooks", "settings", "automation"]
+    }
+  ]
+}
