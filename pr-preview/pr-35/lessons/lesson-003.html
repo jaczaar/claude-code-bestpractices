@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hooks: Auto-Run Scripts Before and After Every Tool Call — Claude Code Lessons</title>
+  <meta property="og:title" content="Hooks: Auto-Run Scripts Before and After Every Tool Call — Claude Code Lessons" />
+  <meta property="og:description" content="A bite-sized Claude Code lesson with flashcard quiz and practical tips." />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 003
+      </div>
+      <h1>Hooks: Auto-Run Scripts Before and After Every Tool Call</h1>
+      <div class="meta">
+        <div>2026-03-23</div>
+        <div class="tags"><span class="tag">hooks</span> <span class="tag">settings</span> <span class="tag">automation</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What are the two hook types in Claude Code, and where do you configure them?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        <code>preTool</code> (runs before a tool executes) and <code>postTool</code> (runs after). Configure them in the <code>"hooks"</code> key of your settings file: <code>.claude/settings.json</code> for project-level or <code>~/.claude/settings.json</code> for global.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Are Hooks?</h2>
+      <p>Hooks are shell commands that Claude Code runs automatically before or after specific tool invocations. They let you enforce policies, auto-format code, log activity, or block dangerous operations — without relying on Claude to remember to do it.</p>
+      <p>Think of them like git hooks, but for Claude Code's tools (Bash, Edit, Read, Write, etc.).</p>
+
+      <h3>The Two Hook Types</h3>
+      <ul>
+        <li><strong><code>preTool</code></strong> — fires before a tool executes. Use it for validation, audit logging, or blocking operations.</li>
+        <li><strong><code>postTool</code></strong> — fires after a tool completes. Use it for auto-formatting, notifications, or cleanup.</li>
+      </ul>
+
+      <h2>How to Configure</h2>
+      <p>Add a <code>"hooks"</code> key to your settings JSON. Each hook specifies which <code>tool</code> it targets and the <code>command</code> to run:</p>
+      <pre><code class="language-json">{
+  "hooks": {
+    "preTool": [
+      {
+        "tool": "Bash",
+        "command": "echo \"$(date) Bash tool called\" >> /tmp/claude-audit.log"
+      }
+    ],
+    "postTool": [
+      {
+        "tool": "Edit",
+        "command": "npx eslint --fix $CLAUDE_FILE_PATH"
+      }
+    ]
+  }
+}</code></pre>
+      <p>This config does two things: logs every Bash invocation to an audit file, and auto-runs ESLint on any file Claude edits.</p>
+
+      <h3>Where to Put It</h3>
+      <ul>
+        <li><strong>Project-level:</strong> <code>.claude/settings.json</code> — shared with your team via git</li>
+        <li><strong>Project-local:</strong> <code>.claude/settings.local.json</code> — personal overrides, not committed</li>
+        <li><strong>Global:</strong> <code>~/.claude/settings.json</code> — applies to all projects</li>
+      </ul>
+
+      <h2>Practical Examples</h2>
+      <h3>Auto-Format After Every Edit</h3>
+      <pre><code class="language-json">{
+  "hooks": {
+    "postTool": [
+      {
+        "tool": "Edit",
+        "command": "npx prettier --write $CLAUDE_FILE_PATH"
+      }
+    ]
+  }
+}</code></pre>
+
+      <h3>Block Edits to Sensitive Files</h3>
+      <pre><code class="language-bash"># In your preTool command:
+if echo "$CLAUDE_FILE_PATH" | grep -q '.env'; then
+  echo "BLOCKED: Cannot modify .env files" >&2
+  exit 1
+fi</code></pre>
+      <p>A non-zero exit code from a <code>preTool</code> hook blocks the tool from executing — acting as a policy gate.</p>
+
+      <h2>Things to Watch Out For</h2>
+      <ul>
+        <li>Hooks run <strong>synchronously</strong> and add latency to every matching tool call. Keep them fast.</li>
+        <li>A failing <code>preTool</code> hook <strong>blocks</strong> the tool — useful for gates, but make sure you don't accidentally block legitimate work.</li>
+        <li>Debug hook issues with the <code>--debug hooks</code> flag to see execution details.</li>
+        <li>For complex logic, write an external script and call it from the hook command.</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Use <code>preTool</code> hooks to gate and audit, <code>postTool</code> hooks to auto-format and clean up — they enforce your standards automatically so Claude doesn't have to remember them.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="../">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
