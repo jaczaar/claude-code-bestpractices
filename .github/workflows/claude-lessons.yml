@@ -64,18 +64,10 @@ jobs:
 
           ## Topic Selection (follow this priority order strictly)
           1. Read public/lessons/lessons.json — note all previously covered topics and their titles so you NEVER repeat one. A topic is "covered" if any lesson already teaches the same concept, even from a different angle.
-          2. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview and scan the sidebar/links for newer topics. Also fetch 1-2 of these pages for fresh material:
-             - https://docs.anthropic.com/en/docs/claude-code/claude-code-sdk
-             - https://docs.anthropic.com/en/docs/claude-code/sub-agents
-             - https://docs.anthropic.com/en/docs/claude-code/github-actions
-             - https://docs.anthropic.com/en/docs/claude-code/ide-integrations
-             - https://docs.anthropic.com/en/docs/claude-code/bedrock-vertex
-             - https://docs.anthropic.com/en/docs/claude-code/mcp-servers
-             - https://docs.anthropic.com/en/docs/claude-code/hooks
-             - https://docs.anthropic.com/en/docs/claude-code/security
+          2. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview — scan the page for all linked sub-pages under the Claude Code section. Then fetch 1-2 of those sub-pages that look most likely to contain topics NOT already in lessons.json.
           3. Read files in research/ directory (SKIP presentation-summary.md — it is not a lesson source). Each numbered file is a potential lesson source.
           4. Pick a topic using this priority waterfall:
-             a. **Newer features first:** Prefer topics from the Anthropic docs that cover recent or advanced capabilities NOT already in lessons.json — things like the Claude Code SDK, sub-agents, headless/CI mode, IDE extensions, GitHub Actions integration, multi-model support, background agents, Bedrock/Vertex, session hooks, git worktrees, etc.
+             a. **Newer features first:** Prefer topics from the Anthropic docs that cover recent or advanced capabilities NOT already in lessons.json.
              b. **Research files:** If all doc topics are covered, pick an uncovered sub-topic from research/ files (higher-numbered = newer, start there).
              c. **Basics fallback:** If everything above is covered, teach a fundamental Claude Code concept — something a new user would benefit from.
           5. Within a chosen source, pick a SPECIFIC sub-topic. Not "Claude Code SDK basics" but "Running Claude Code headless in CI pipelines with --print mode".
