@@ -27,6 +27,13 @@
       "summary": "How to use /compact with focus hints at natural breakpoints to preserve critical context before auto-compression decides for you.",
       "date": "2026-03-25",
       "tags": ["context-management", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-005",
+      "title": "Worktrees: Run Parallel Claude Sessions Without Conflicts",
+      "summary": "How to use the --worktree flag to run multiple Claude Code sessions on the same repo in isolated checkouts, enabling parallel work without file conflicts.",
+      "date": "2026-03-25",
+      "tags": ["worktrees", "parallel-sessions", "workflow"]
     }
   ]
 }
