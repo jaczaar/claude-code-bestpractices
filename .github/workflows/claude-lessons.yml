@@ -63,9 +63,8 @@ jobs:
           Research and create ONE focused, bite-sized lesson about Claude Code. Teach something specific, practical, and immediately useful.
 
           ## Topic Selection (follow this priority order strictly)
-          1. Read public/lessons/lessons.json — note all previously covered topics and their titles so you NEVER repeat one.
-          2. Read ALL files in research/ directory. Each file is a potential lesson source.
-          3. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview and scan the sidebar/links for newer topics. Optionally also fetch 1-2 of these pages for fresh material:
+          1. Read public/lessons/lessons.json — note all previously covered topics and their titles so you NEVER repeat one. A topic is "covered" if any lesson already teaches the same concept, even from a different angle.
+          2. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview and scan the sidebar/links for newer topics. Also fetch 1-2 of these pages for fresh material:
              - https://docs.anthropic.com/en/docs/claude-code/claude-code-sdk
              - https://docs.anthropic.com/en/docs/claude-code/sub-agents
              - https://docs.anthropic.com/en/docs/claude-code/github-actions
@@ -74,9 +73,10 @@ jobs:
              - https://docs.anthropic.com/en/docs/claude-code/mcp-servers
              - https://docs.anthropic.com/en/docs/claude-code/hooks
              - https://docs.anthropic.com/en/docs/claude-code/security
+          3. Read files in research/ directory (SKIP presentation-summary.md — it is not a lesson source). Each numbered file is a potential lesson source.
           4. Pick a topic using this priority waterfall:
-             a. **Newer features first (~60% of lessons):** Prefer topics from the Anthropic docs that cover recent or advanced capabilities NOT already in lessons.json — things like the Claude Code SDK, sub-agents, headless/CI mode, IDE extensions, GitHub Actions integration, multi-model support, background agents, Bedrock/Vertex, session hooks, git worktrees, etc.
-             b. **Research files (sprinkle in ~40%):** If the most recent doc topics are covered, pick an uncovered sub-topic from research/ files (higher-numbered = newer, start there).
+             a. **Newer features first:** Prefer topics from the Anthropic docs that cover recent or advanced capabilities NOT already in lessons.json — things like the Claude Code SDK, sub-agents, headless/CI mode, IDE extensions, GitHub Actions integration, multi-model support, background agents, Bedrock/Vertex, session hooks, git worktrees, etc.
+             b. **Research files:** If all doc topics are covered, pick an uncovered sub-topic from research/ files (higher-numbered = newer, start there).
              c. **Basics fallback:** If everything above is covered, teach a fundamental Claude Code concept — something a new user would benefit from.
           5. Within a chosen source, pick a SPECIFIC sub-topic. Not "Claude Code SDK basics" but "Running Claude Code headless in CI pipelines with --print mode".
           6. Today is ${LESSON_DAY} (${LESSON_DATE}). Use the day to guide the angle:
@@ -85,10 +85,11 @@ jobs:
              - Friday: Recent capabilities, releases, or advanced techniques
 
           ## Research
-          - The Anthropic docs (fetched via WebFetch) are your PRIMARY source for newer features — always check them first
-          - The research/ directory is your SECONDARY source — read every file for foundational topics
-          - Cross-reference both sources: use Anthropic docs for accuracy and recency, research/ files for depth and context
+          - The Anthropic docs (fetched via WebFetch) are your PRIMARY source — always check them first
+          - The research/ directory is your secondary source for foundational topics (ignore presentation-summary.md)
+          - Cross-reference both sources: use Anthropic docs for accuracy and recency, research/ files for depth
           - Information must be ACCURATE and UP TO DATE — if a doc page has newer info than a research file, prefer the doc page
+          - NEVER teach a topic that has already been covered in lessons.json, even partially
 
           ## Steps
 
