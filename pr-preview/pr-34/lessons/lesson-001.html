@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto Memory: Taming the 200-Line MEMORY.md Limit — Claude Code Lessons</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 001
+      </div>
+      <h1>Auto Memory: Taming the 200-Line MEMORY.md Limit</h1>
+      <div class="meta">
+        <div>2026-03-20</div>
+        <div class="tags"><span class="tag">memory</span> <span class="tag">auto-memory</span> <span class="tag">advanced</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What happens when your MEMORY.md exceeds 200 lines, and how should you structure it to avoid losing context?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Claude Code only loads the first 200 lines of MEMORY.md — everything beyond that is silently truncated. To avoid losing context, keep MEMORY.md as a concise index of short entries and pointers, and move detailed content into separate topic files (like <code>debugging.md</code> or <code>api-conventions.md</code>) in the same memory directory.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Is Auto Memory?</h2>
+      <p>Auto memory is a 2026 addition to Claude Code that lets Claude autonomously save learnings across sessions. When Claude discovers something useful — a build command, an architectural pattern, a correction you gave it — it writes that knowledge to <code>MEMORY.md</code> without you having to say "remember this."</p>
+      <p>It's on by default. The file lives at:</p>
+      <pre><code>~/.claude/projects/&lt;encoded-path&gt;/memory/MEMORY.md</code></pre>
+      <p>Every subsequent session in that project loads this file automatically, giving Claude a running knowledge base about your project.</p>
+
+      <h2>The 200-Line Hard Limit</h2>
+      <p>Here's the catch: Claude Code only injects the <strong>first 200 lines</strong> of MEMORY.md into context. Everything past line 200 is truncated silently. If your most important memories are buried at the bottom, Claude will never see them.</p>
+      <p>This limit exists because every line of MEMORY.md consumes tokens from your context window on every single conversation turn. A bloated memory file means less room for actual code reasoning.</p>
+
+      <h2>The Topic File Strategy</h2>
+      <p>The solution is to treat MEMORY.md as an <strong>index</strong>, not a dumping ground. Keep it lean with short entries and pointers, then offload detailed content into separate topic files:</p>
+      <pre><code>~/.claude/projects/&lt;encoded-path&gt;/memory/
+  MEMORY.md              # Index — stays under 200 lines
+  debugging.md           # Deep debugging notes
+  api-conventions.md     # API patterns and endpoints
+  architecture.md        # System design decisions</code></pre>
+      <p>Your MEMORY.md becomes a table of contents:</p>
+      <pre><code># MEMORY.md
+
+## Build &amp; Dev
+- `pnpm dev` starts all services
+- Port 5432 conflicts with local Postgres — use 5433
+
+## Architecture
+- Monorepo managed by NX
+- See architecture.md for service boundaries
+
+## Gotchas
+- See debugging.md for common build failures</code></pre>
+
+      <h2>The Capture-Promote-Prune Cycle</h2>
+      <p>Auto memory is additive — Claude appends but never reorganizes. Left unchecked, MEMORY.md becomes a disorganized list. Use this three-phase cycle:</p>
+      <ul>
+        <li><strong>Capture:</strong> Let auto memory and <code>/memory</code> collect raw learnings during sessions</li>
+        <li><strong>Promote:</strong> Weekly, move validated facts into your project's <code>CLAUDE.md</code> (team-shared, version-controlled)</li>
+        <li><strong>Prune:</strong> Monthly, delete stale or redundant entries from MEMORY.md</li>
+      </ul>
+      <p>The goal: MEMORY.md stays a lean scratch pad. Stable knowledge graduates to CLAUDE.md. Stale knowledge gets deleted.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Keep MEMORY.md under 200 lines by using it as an index with pointers to topic files — and regularly promote validated learnings to CLAUDE.md so your best knowledge is always team-shared and permanent.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="../">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
