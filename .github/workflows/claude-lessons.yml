@@ -56,7 +56,7 @@ jobs:
           LESSON_DAY: ${{ steps.meta.outputs.day }}
           LESSON_SLUG: ${{ steps.meta.outputs.slug }}
         run: |
-          claude -p --allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 30 "$(cat <<PROMPT
+          claude -p --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch" --max-turns 30 "$(cat <<PROMPT
           You are a Claude Code educator. Create lesson ${LESSON_NUM} for a flashcard-style learning site.
 
           ## Task
@@ -65,19 +65,30 @@ jobs:
           ## Topic Selection (follow this priority order strictly)
           1. Read public/lessons/lessons.json — note all previously covered topics and their titles so you NEVER repeat one.
           2. Read ALL files in research/ directory. Each file is a potential lesson source.
-          3. Pick a topic using this priority waterfall:
-             a. **Newest research first (this week):** Sort research files by number (higher = newer). Start with the highest-numbered file. If it contains a topic not already covered in lessons.json, use it.
-             b. **Older research (go back in time):** If all topics from this week's newest files are already covered, work backwards through older research files until you find an uncovered topic.
-             c. **Basics fallback:** If every research file has been fully covered, teach a fundamental Claude Code concept (basic commands, getting started, core workflows) — something a new user would benefit from.
-          4. Within a chosen research file, pick a SPECIFIC sub-topic. Not "CLAUDE.md basics" but "Using CLAUDE.md local overrides for per-directory context".
-          5. Today is ${LESSON_DAY} (${LESSON_DATE}). Use the day to guide the angle:
+          3. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview and scan the sidebar/links for newer topics. Optionally also fetch 1-2 of these pages for fresh material:
+             - https://docs.anthropic.com/en/docs/claude-code/claude-code-sdk
+             - https://docs.anthropic.com/en/docs/claude-code/sub-agents
+             - https://docs.anthropic.com/en/docs/claude-code/github-actions
+             - https://docs.anthropic.com/en/docs/claude-code/ide-integrations
+             - https://docs.anthropic.com/en/docs/claude-code/bedrock-vertex
+             - https://docs.anthropic.com/en/docs/claude-code/mcp-servers
+             - https://docs.anthropic.com/en/docs/claude-code/hooks
+             - https://docs.anthropic.com/en/docs/claude-code/security
+          4. Pick a topic using this priority waterfall:
+             a. **Newer features first (~60% of lessons):** Prefer topics from the Anthropic docs that cover recent or advanced capabilities NOT already in lessons.json — things like the Claude Code SDK, sub-agents, headless/CI mode, IDE extensions, GitHub Actions integration, multi-model support, background agents, Bedrock/Vertex, session hooks, git worktrees, etc.
+             b. **Research files (sprinkle in ~40%):** If the most recent doc topics are covered, pick an uncovered sub-topic from research/ files (higher-numbered = newer, start there).
+             c. **Basics fallback:** If everything above is covered, teach a fundamental Claude Code concept — something a new user would benefit from.
+          5. Within a chosen source, pick a SPECIFIC sub-topic. Not "Claude Code SDK basics" but "Running Claude Code headless in CI pipelines with --print mode".
+          6. Today is ${LESSON_DAY} (${LESSON_DATE}). Use the day to guide the angle:
              - Monday: Deep-dive into a feature, command, or setting
              - Wednesday: Workflow tip, best practice, or productivity technique
              - Friday: Recent capabilities, releases, or advanced techniques
 
           ## Research
-          - The research/ directory is your primary source — READ every file before choosing
-          - Information must be ACCURATE and UP TO DATE
+          - The Anthropic docs (fetched via WebFetch) are your PRIMARY source for newer features — always check them first
+          - The research/ directory is your SECONDARY source — read every file for foundational topics
+          - Cross-reference both sources: use Anthropic docs for accuracy and recency, research/ files for depth and context
+          - Information must be ACCURATE and UP TO DATE — if a doc page has newer info than a research file, prefer the doc page
 
           ## Steps
 
