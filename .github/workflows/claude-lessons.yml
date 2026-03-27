@@ -208,6 +208,9 @@ jobs:
           PR_NUM=${{ steps.pr.outputs.pr_num }}
           PREVIEW_DIR="pr-preview/pr-${PR_NUM}"
 
+          # Clean up any leftover clone (self-hosted runners persist state)
+          rm -rf /tmp/gh-pages
+
           # Clone gh-pages branch (shallow) and copy preview into it
           git clone --depth 1 --branch gh-pages \
             "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
