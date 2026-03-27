@@ -34,6 +34,13 @@
       "summary": "How to use the --worktree flag to run multiple Claude Code sessions on the same repo in isolated checkouts, enabling parallel work without file conflicts.",
       "date": "2026-03-25",
       "tags": ["worktrees", "parallel-sessions", "workflow"]
+    },
+    {
+      "slug": "lesson-006",
+      "title": "Custom Slash Commands: Build Reusable Prompt Templates",
+      "summary": "How to create custom slash commands as markdown files in .claude/commands/, use $ARGUMENTS for flexible templates, and share them with your team via git.",
+      "date": "2026-03-27",
+      "tags": ["custom-commands", "productivity", "advanced"]
     }
   ]
 }
