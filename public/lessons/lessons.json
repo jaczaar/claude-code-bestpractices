@@ -48,6 +48,13 @@
       "summary": "How Claude Code Review dispatches parallel specialized agents to find logic errors, security issues, and regressions in your PRs with under 1% false positive rate.",
       "date": "2026-03-30",
       "tags": ["code-review", "multi-agent", "pull-requests"]
+    },
+    {
+      "slug": "lesson-008",
+      "title": "Auto Mode: Smarter Permission Handling Without --dangerously-skip-permissions",
+      "summary": "How Claude Code's auto mode uses a two-stage classifier to auto-approve safe actions and block dangerous ones, eliminating approval fatigue without sacrificing safety.",
+      "date": "2026-03-30",
+      "tags": ["permissions", "auto-mode", "safety"]
     }
   ]
 }
