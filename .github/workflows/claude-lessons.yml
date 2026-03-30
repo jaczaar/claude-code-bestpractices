@@ -70,7 +70,8 @@ jobs:
              c. Search: "from:anthropaborkar claude code" — Anthropic engineer
              d. Search: "from:biraborkar claude code" — Anthropic engineer
              e. Search: "from:sdtoyer claude code" — Anthropic engineer
-             f. General search: "anthropic claude code tip OR trick OR feature site:x.com" for broader community insights from Anthropic employees
+             f. Search: "from:bcherny claude code" — Boris Cherny (Anthropic engineer)
+             g. General search: "anthropic claude code tip OR trick OR feature site:x.com" for broader community insights from Anthropic employees
              Run at least 3-4 of these searches. For any promising results, use WebFetch to read the full post/thread and extract the specific tip, workflow, or feature being discussed.
              **Focus on:** practical tips, newly announced features, workflow recommendations, hidden features, and best practices shared by Anthropic employees.
           3. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview — scan the page for all linked sub-pages under the Claude Code section. Then fetch 1-2 of those sub-pages that look most likely to contain topics NOT already in lessons.json.
