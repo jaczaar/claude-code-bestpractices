@@ -56,7 +56,7 @@ jobs:
           LESSON_DAY: ${{ steps.meta.outputs.day }}
           LESSON_SLUG: ${{ steps.meta.outputs.slug }}
         run: |
-          claude -p --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch" --max-turns 30 "$(cat <<PROMPT
+          claude -p --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch" --max-turns 30 "$(cat <<PROMPT
           You are a Claude Code educator. Create lesson ${LESSON_NUM} for a flashcard-style learning site.
 
           ## Task
@@ -64,23 +64,35 @@ jobs:
 
           ## Topic Selection (follow this priority order strictly)
           1. Read public/lessons/lessons.json — note all previously covered topics and their titles so you NEVER repeat one. A topic is "covered" if any lesson already teaches the same concept, even from a different angle.
-          2. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview — scan the page for all linked sub-pages under the Claude Code section. Then fetch 1-2 of those sub-pages that look most likely to contain topics NOT already in lessons.json.
-          3. Read files in research/ directory (SKIP presentation-summary.md — it is not a lesson source). Each numbered file is a potential lesson source.
-          4. Pick a topic using this priority waterfall:
-             a. **Newer features first:** Prefer topics from the Anthropic docs that cover recent or advanced capabilities NOT already in lessons.json.
-             b. **Research files:** If all doc topics are covered, pick an uncovered sub-topic from research/ files (higher-numbered = newer, start there).
-             c. **Basics fallback:** If everything above is covered, teach a fundamental Claude Code concept — something a new user would benefit from.
-          5. Within a chosen source, pick a SPECIFIC sub-topic. Not "Claude Code SDK basics" but "Running Claude Code headless in CI pipelines with --print mode".
-          6. Today is ${LESSON_DAY} (${LESSON_DATE}). Use the day to guide the angle:
+          2. **Search X (Twitter) for the latest Claude Code insights.** This is your TOP PRIORITY source — X has the most up-to-date tips and discoveries. Use WebSearch to run these searches:
+             a. Search: "from:alexalbert__ claude code" — Alex Albert (Head of Claude Relations at Anthropic)
+             b. Search: "from:amanrsanger claude code" — Aman Sanger (Claude Code lead at Anthropic)
+             c. Search: "from:anthropaborkar claude code" — Anthropic engineer
+             d. Search: "from:biraborkar claude code" — Anthropic engineer
+             e. Search: "from:sdtoyer claude code" — Anthropic engineer
+             f. General search: "anthropic claude code tip OR trick OR feature site:x.com" for broader community insights from Anthropic employees
+             Run at least 3-4 of these searches. For any promising results, use WebFetch to read the full post/thread and extract the specific tip, workflow, or feature being discussed.
+             **Focus on:** practical tips, newly announced features, workflow recommendations, hidden features, and best practices shared by Anthropic employees.
+          3. **Check Anthropic docs for recent features.** Use WebFetch to fetch https://docs.anthropic.com/en/docs/claude-code/overview — scan the page for all linked sub-pages under the Claude Code section. Then fetch 1-2 of those sub-pages that look most likely to contain topics NOT already in lessons.json.
+          4. Read files in research/ directory (SKIP presentation-summary.md — it is not a lesson source). Each numbered file is a potential lesson source.
+          5. Pick a topic using this priority waterfall:
+             a. **X/Twitter insights first:** Prefer topics discovered from Anthropic employees' X posts — these are the freshest, most practical tips. If an X post reveals a feature, workflow, or technique NOT in lessons.json, use it. Credit the source (e.g., "As shared by @username on X").
+             b. **Newer features from docs:** If no fresh X insights are available, prefer topics from the Anthropic docs that cover recent or advanced capabilities NOT already in lessons.json.
+             c. **Research files:** If all doc topics are covered, pick an uncovered sub-topic from research/ files (higher-numbered = newer, start there).
+             d. **Basics fallback:** If everything above is covered, teach a fundamental Claude Code concept — something a new user would benefit from.
+          6. Within a chosen source, pick a SPECIFIC sub-topic. Not "Claude Code SDK basics" but "Running Claude Code headless in CI pipelines with --print mode".
+          7. Today is ${LESSON_DAY} (${LESSON_DATE}). Use the day to guide the angle:
              - Monday: Deep-dive into a feature, command, or setting
              - Wednesday: Workflow tip, best practice, or productivity technique
              - Friday: Recent capabilities, releases, or advanced techniques
 
           ## Research
-          - The Anthropic docs (fetched via WebFetch) are your PRIMARY source — always check them first
-          - The research/ directory is your secondary source for foundational topics (ignore presentation-summary.md)
-          - Cross-reference both sources: use Anthropic docs for accuracy and recency, research/ files for depth
-          - Information must be ACCURATE and UP TO DATE — if a doc page has newer info than a research file, prefer the doc page
+          - **X (Twitter) posts from Anthropic employees are your #1 source** — they share the most current tips, hidden features, and workflows before they appear anywhere else. Always search X first.
+          - The Anthropic docs (fetched via WebFetch) are your secondary source for official documentation
+          - The research/ directory is your tertiary source for foundational topics (ignore presentation-summary.md)
+          - Cross-reference all three sources: use X for freshness, Anthropic docs for accuracy, research/ files for depth
+          - Information must be ACCURATE and UP TO DATE — if an X post or doc page has newer info than a research file, prefer the newer source
+          - When a lesson is based on an X post, include a brief attribution (e.g., "Tip originally shared by @username on X") in the lesson content
           - NEVER teach a topic that has already been covered in lessons.json, even partially
 
           ## Steps
