@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/claude-code-bestpractices/',
+  base: '/',
   server: {
     port: 3000,
   },
