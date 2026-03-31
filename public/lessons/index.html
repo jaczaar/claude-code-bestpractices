@@ -2,102 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claude Code — Lessons &amp; Tips</title>
-  <meta name="description" content="Bite-sized Claude Code lessons delivered Mon/Wed/Fri. Flashcard-style tips on features, releases, and best practices." />
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="lesson.css" />
-  <style>
-    /* Index uses wider container */
-    .container { max-width: 860px; }
-    body { line-height: 1.6; }
-  </style>
+  <meta http-equiv="refresh" content="0;url=/" />
+  <link rel="canonical" href="/" />
+  <title>Redirecting…</title>
 </head>
 <body>
-  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
-  <div class="container">
-    <div class="header">
-      <div class="header-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Lessons &amp; Tips
-      </div>
-      <h1><span class="accent">Claude Code</span> Lessons</h1>
-      <p>Bite-sized tips &amp; insights, delivered Mon / Wed / Fri</p>
-      <div class="stats">
-        <span><strong id="lesson-count">0</strong> lessons</span>
-        <span>Updated <strong id="last-updated">—</strong></span>
-      </div>
-    </div>
-
-    <div id="lessons-container" class="lessons-grid"></div>
-
-    <div class="footer">
-      <a href="../">
-        Best Practices
-      </a>
-    </div>
-  </div>
-
-  <script>
-    (async () => {
-      const base = window.location.pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
-      const res = await fetch(`${base}/lessons.json`);
-      const data = await res.json();
-      const lessons = data.lessons || [];
-
-      document.getElementById('lesson-count').textContent = lessons.length;
-
-      if (lessons.length === 0) {
-        document.getElementById('lessons-container').innerHTML = `
-          <div class="empty-state">
-            <div class="icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            </div>
-            <p>First lesson drops soon.<br>Check back Monday, Wednesday, or Friday!</p>
-          </div>`;
-        return;
-      }
-
-      const lastDate = lessons[lessons.length - 1].date;
-      document.getElementById('last-updated').textContent = lastDate;
-
-      const sorted = [...lessons].reverse();
-
-      document.getElementById('lessons-container').innerHTML = sorted.map((l, i) => {
-        const num = lessons.length - i;
-        const numStr = String(num).padStart(3, '0');
-        const tags = (l.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
-        return `
-          <a class="lesson-card" href="${l.slug}.html">
-            <div class="card-number">#${numStr}</div>
-            <div class="card-body">
-              <div class="date">${l.date}</div>
-              <div class="title">${l.title}</div>
-              <div class="summary">${l.summary}</div>
-              <div class="meta">${tags}</div>
-            </div>
-          </a>`;
-      }).join('');
-    })();
-  </script>
-  <script>
-    (function() {
-      var t = localStorage.getItem('theme');
-      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-      var btn = document.querySelector('.theme-toggle');
-      function update() {
-        var d = document.documentElement.getAttribute('data-theme') === 'dark';
-        btn.innerHTML = d ? '&#9788;' : '&#9790;';
-        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
-      }
-      update();
-      btn.addEventListener('click', function() {
-        var d = document.documentElement.getAttribute('data-theme') === 'dark';
-        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
-        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
-        update();
-      });
-    })();
-  </script>
+  <p>Redirecting to <a href="/">lessons homepage</a>…</p>
 </body>
 </html>
