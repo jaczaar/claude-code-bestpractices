@@ -69,6 +69,13 @@
       "summary": "How to use Plan Mode to separate thinking from execution — iterate on the approach in read-only mode, then let Claude one-shot the implementation.",
       "date": "2026-04-01",
       "tags": ["plan-mode", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-011",
+      "title": "Remote Control: Drive Claude Code From Your Phone",
+      "summary": "How to use /remote-control and /teleport to drive a local Claude Code session from your phone or any browser — your code stays on your machine, only messages travel through the bridge.",
+      "date": "2026-04-01",
+      "tags": ["remote-control", "workflow", "mobile"]
     }
   ]
 }
