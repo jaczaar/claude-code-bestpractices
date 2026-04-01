@@ -62,6 +62,13 @@
       "summary": "How to use the /loop command to schedule recurring tasks like deploy monitoring, PR babysitting, and test runs — so Claude watches while you focus on real work.",
       "date": "2026-04-01",
       "tags": ["workflow", "automation", "productivity"]
+    },
+    {
+      "slug": "lesson-010",
+      "title": "Plan Mode: Think First, Code Second",
+      "summary": "How to use Plan Mode to separate thinking from execution — iterate on the approach in read-only mode, then let Claude one-shot the implementation.",
+      "date": "2026-04-01",
+      "tags": ["plan-mode", "workflow", "productivity"]
     }
   ]
 }
