@@ -220,15 +220,23 @@ jobs:
             exit 1
           fi
 
-          # Check tweet file exists and is under 280 chars
+          # Check tweet file exists and is under 280 effective chars
+          # X counts URLs as 23 chars regardless of actual length
           TWEET_FILE="public/lessons/${SLUG}-tweet.txt"
           if [ ! -f "$TWEET_FILE" ]; then
             echo "::error::Tweet file ${TWEET_FILE} was not created"
             exit 1
           fi
-          TWEET_LEN=$(wc -c < "$TWEET_FILE" | tr -d ' ')
-          if [ "$TWEET_LEN" -gt 280 ]; then
-            echo "::warning::Tweet is ${TWEET_LEN} chars (over 280)"
+          TWEET_CONTENT=$(cat "$TWEET_FILE")
+          TWEET_URL=$(echo "$TWEET_CONTENT" | grep -oE 'https?://[^ ]+' | tail -1 || true)
+          if [ -n "$TWEET_URL" ]; then
+            TEXT_ONLY="${TWEET_CONTENT//$TWEET_URL/}"
+            EFFECTIVE_LEN=$(( ${#TEXT_ONLY} + 23 ))
+          else
+            EFFECTIVE_LEN=${#TWEET_CONTENT}
+          fi
+          if [ "$EFFECTIVE_LEN" -gt 280 ]; then
+            echo "::warning::Tweet is ${EFFECTIVE_LEN} effective chars (over 280)"
           fi
 
           # Check email body exists
