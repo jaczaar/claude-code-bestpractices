@@ -76,6 +76,13 @@
       "summary": "How to use /remote-control and /teleport to drive a local Claude Code session from your phone or any browser — your code stays on your machine, only messages travel through the bridge.",
       "date": "2026-04-01",
       "tags": ["remote-control", "workflow", "mobile"]
+    },
+    {
+      "slug": "lesson-012",
+      "title": "Give Claude a Feedback Loop to 2-3x Output Quality",
+      "summary": "The #1 tip from Claude Code's creator: let Claude verify its own work with tests, a browser, or simulators so it iterates to correct results instead of guessing once.",
+      "date": "2026-04-01",
+      "tags": ["workflow", "verification", "best-practices"]
     }
   ]
 }
