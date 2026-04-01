@@ -128,9 +128,39 @@ jobs:
           - Do NOT include a "Read on the web" link — the PR preview action will add one automatically.
           This will be the PR description — make it clean and shareable.
 
-          ### 4. Verify
+          ### 4. Create a tweet draft
+          Write a file called public/lessons/${LESSON_SLUG}-tweet.txt containing a single tweet for this lesson.
+          Rules:
+          - Lead with a provocative hook or surprising insight from the lesson (NOT just the title)
+          - Follow with one sentence of value
+          - End with the link: https://cclessons.jaczaar.com/lessons/${LESSON_SLUG}.html
+          - URLs count as 23 characters on X regardless of actual length — budget 257 chars for text + 23 for the link = 280 max
+          - No hashtags, no emojis, no "New lesson:" prefix
+          - Example: "Most Claude Code users approve 93% of permission prompts anyway. Auto mode's two-stage classifier blocks the dangerous 7% automatically. https://cclessons.jaczaar.com/lessons/lesson-008.html"
+
+          ### 5. Create styled HTML email body
+          Write a file called /tmp/lesson-email-body.html — a complete, self-contained HTML email.
+          Requirements:
+          - Full <!DOCTYPE html> document with ALL styles inline (style= attributes, no <style> blocks)
+          - Dark theme: background #1e1b18, accent #d4845a, text #f5f0e8, muted rgba(245,240,232,0.6)
+          - Max width 600px centered, 32px vertical / 24px horizontal padding
+          - Structure:
+            1. Header: "New Lesson Published" label (11px, uppercase, letter-spacing 2px, #d4845a), then "Lesson ${LESSON_NUM}: {title}" as h1 (24px, #f5f0e8)
+            2. One-paragraph lesson summary
+            3. Flashcard section: Q in bold #d4845a, A in highlighted box (rgba(212,132,90,0.1) bg, 3px left border #d4845a)
+            4. 2-3 key content highlights as a styled list
+            5. Key takeaway in a highlighted box
+            6. Tweet preview section: label "Tweet Preview (posted on merge)" in muted text, then the tweet text from public/lessons/${LESSON_SLUG}-tweet.txt in a box styled like a quote (rgba(255,255,255,0.05) bg, 1px solid rgba(255,255,255,0.1) border, 12px padding, 8px border-radius, italic, 14px font-size)
+            7. CTA button: "View Full Lesson" linking to PREVIEW_URL_PLACEHOLDER (inline-block, 14px/32px padding, #d4845a bg, #1e1b18 text, 8px border-radius)
+            8. Footer: "View PR on GitHub" link to PR_URL_PLACEHOLDER (12px, muted color)
+          - Code snippets: <code> with background #161210, padding 2px 6px, border-radius 4px, color #d4845a
+          - Use PREVIEW_URL_PLACEHOLDER and PR_URL_PLACEHOLDER as literal strings — they will be replaced at send time
+
+          ### 6. Verify
           - Confirm the HTML file exists and is valid
           - Confirm lessons.json is valid JSON
+          - Confirm public/lessons/${LESSON_SLUG}-tweet.txt exists and is under 280 characters
+          - Confirm /tmp/lesson-email-body.html exists
           - Do NOT modify any other files
 
           Write like you're teaching a colleague. Be concise, accurate, practical.
@@ -255,71 +285,33 @@ jobs:
           TITLE=$(jq -r '.lessons[-1].title' public/lessons/lessons.json)
           NUM=${{ steps.meta.outputs.padded }}
           SLUG=${{ steps.meta.outputs.slug }}
-          PR_NUM=$(gh pr list --head "${{ steps.meta.outputs.branch }}" --json number -q '.[0].number')
+          PR_NUM=${{ steps.pr.outputs.pr_num }}
           PREVIEW_URL="https://jaczaar.github.io/claude-code-bestpractices/pr-preview/pr-${PR_NUM}/lessons/${SLUG}.html"
           PR_URL="https://github.com/${{ github.repository }}/pull/${PR_NUM}"
 
-          # Read PR body for email content
-          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body')
-
-          cat > /tmp/email-body.html <<HTMLEOF
+          if [ -f /tmp/lesson-email-body.html ]; then
+            # Use Claude-generated email, substitute placeholder URLs
+            sed -e "s|PREVIEW_URL_PLACEHOLDER|${PREVIEW_URL}|g" \
+                -e "s|PR_URL_PLACEHOLDER|${PR_URL}|g" \
+                /tmp/lesson-email-body.html > /tmp/email-body.html
+          else
+            # Fallback: minimal email if Claude didn't generate the file
+            cat > /tmp/email-body.html <<HTMLEOF
           <!DOCTYPE html>
           <html>
-          <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          </head>
           <body style="margin:0; padding:0; background:#1e1b18; font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
-            <div style="max-width:600px; margin:0 auto; padding:32px 24px;">
-
-              <!-- Header -->
-              <div style="text-align:center; padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                <div style="font-size:11px; color:#d4845a; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">
-                  New Lesson Published
-                </div>
-                <h1 style="color:#f5f0e8; font-size:24px; font-weight:700; margin:0; line-height:1.3;">
-                  Lesson ${NUM}: ${TITLE}
-                </h1>
-              </div>
-
-              <!-- Lesson content from PR body -->
-              <div style="padding:24px 0; color:#f5f0e8; font-size:15px; line-height:1.7;">
-          HTMLEOF
-
-          # Convert PR markdown body to simple HTML for the email
-          echo "$PR_BODY" | sed \
-            -e 's|^## \(.*\)|<h2 style="color:#d4845a; font-size:18px; font-weight:600; margin:24px 0 12px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.07);">\1</h2>|' \
-            -e 's|^### \(.*\)|<h3 style="color:#f5f0e8; font-size:16px; font-weight:600; margin:16px 0 8px;">\1</h3>|' \
-            -e 's|^\*\*Q:\*\* \(.*\)|<p style="margin:8px 0;"><strong style="color:#d4845a;">Q:</strong> \1</p>|' \
-            -e 's|^\*\*A:\*\* \(.*\)|<p style="margin:8px 0; padding:12px 16px; background:rgba(212,132,90,0.1); border-radius:8px; border-left:3px solid #d4845a;"><strong style="color:#d4845a;">A:</strong> \1</p>|' \
-            -e 's|^- \(.*\)|<div style="margin:4px 0; padding-left:16px;">• \1</div>|' \
-            -e 's|`\([^`]*\)`|<code style="background:#161210; padding:2px 6px; border-radius:4px; font-size:13px; color:#d4845a;">\1</code>|g' \
-            -e 's|\*\*\([^*]*\)\*\*|<strong style="color:#f5f0e8;">\1</strong>|g' \
-            -e '/^$/s|.*|<br/>|' \
-            >> /tmp/email-body.html
-
-          cat >> /tmp/email-body.html <<HTMLEOF
-              </div>
-
-              <!-- Preview button -->
-              <div style="text-align:center; padding:24px 0;">
-                <a href="${PREVIEW_URL}"
-                   style="display:inline-block; padding:14px 32px; background:#d4845a; color:#1e1b18; font-size:15px; font-weight:600; text-decoration:none; border-radius:8px;">
-                  View Lesson Preview
-                </a>
-              </div>
-
-              <!-- Footer -->
-              <div style="text-align:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.07);">
-                <a href="${PR_URL}"
-                   style="color:rgba(245,240,232,0.5); font-size:12px; text-decoration:none;">
-                  View PR #${PR_NUM} on GitHub
-                </a>
+            <div style="max-width:600px; margin:0 auto; padding:32px 24px; text-align:center;">
+              <div style="font-size:11px; color:#d4845a; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">New Lesson Published</div>
+              <h1 style="color:#f5f0e8; font-size:24px; font-weight:700; margin:0 0 24px; line-height:1.3;">Lesson ${NUM}: ${TITLE}</h1>
+              <a href="${PREVIEW_URL}" style="display:inline-block; padding:14px 32px; background:#d4845a; color:#1e1b18; font-size:15px; font-weight:600; text-decoration:none; border-radius:8px;">View Lesson</a>
+              <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.07);">
+                <a href="${PR_URL}" style="color:rgba(245,240,232,0.5); font-size:12px; text-decoration:none;">View PR #${PR_NUM} on GitHub</a>
               </div>
             </div>
           </body>
           </html>
           HTMLEOF
+          fi
 
           echo "title=Lesson ${NUM}: ${TITLE}" >> "$GITHUB_OUTPUT"
 
