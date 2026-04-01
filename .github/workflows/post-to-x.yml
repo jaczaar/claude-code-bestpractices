@@ -3,13 +3,20 @@ name: Post to X
 on:
   pull_request:
     types: [closed]
+  workflow_dispatch:
+    inputs:
+      lesson_slug:
+        description: 'Lesson slug to tweet (e.g. lesson-012)'
+        required: true
+        type: string
 
 jobs:
   post-tweet:
-    # Only run when a lesson PR is merged (not just closed)
+    # Run on merged lesson PR or manual dispatch
     if: >
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'lessons/')
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'lessons/'))
     runs-on: ubuntu-latest
 
     steps:
@@ -18,8 +25,12 @@ jobs:
       - name: Extract lesson slug from branch
         id: meta
         run: |
-          BRANCH="${{ github.event.pull_request.head.ref }}"
-          SLUG="${BRANCH#lessons/}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SLUG="${{ github.event.inputs.lesson_slug }}"
+          else
+            BRANCH="${{ github.event.pull_request.head.ref }}"
+            SLUG="${BRANCH#lessons/}"
+          fi
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
 
       - name: Read tweet text
@@ -33,12 +44,29 @@ jobs:
           fi
 
           TWEET_TEXT=$(cat "$TWEET_FILE")
-          CHAR_COUNT=${#TWEET_TEXT}
-          echo "Tweet (${CHAR_COUNT} chars): ${TWEET_TEXT}"
 
-          if [ "$CHAR_COUNT" -gt 280 ]; then
-            echo "::warning::Tweet exceeds 280 chars (${CHAR_COUNT}), truncating"
-            TWEET_TEXT="${TWEET_TEXT:0:277}..."
+          # X counts every URL as 23 chars regardless of actual length
+          # Calculate effective length the way X does
+          URL=$(echo "$TWEET_TEXT" | grep -oE 'https?://[^ ]+' | tail -1 || true)
+          if [ -n "$URL" ]; then
+            URL_ACTUAL_LEN=${#URL}
+            TEXT_WITHOUT_URL="${TWEET_TEXT//$URL/}"
+            EFFECTIVE_COUNT=$(( ${#TEXT_WITHOUT_URL} + 23 ))
+          else
+            EFFECTIVE_COUNT=${#TWEET_TEXT}
+          fi
+          echo "Tweet (${EFFECTIVE_COUNT} effective chars, ${#TWEET_TEXT} raw): ${TWEET_TEXT}"
+
+          if [ "$EFFECTIVE_COUNT" -gt 280 ]; then
+            echo "::warning::Tweet exceeds 280 effective chars (${EFFECTIVE_COUNT}), truncating text"
+            if [ -n "$URL" ]; then
+              TEXT_PART="${TWEET_TEXT%$URL}"
+              MAX_TEXT=$(( 280 - 23 - 3 ))  # budget for text: 280 - 23 (url) - 3 (...)
+              TEXT_PART="${TEXT_PART:0:$MAX_TEXT}..."
+              TWEET_TEXT="${TEXT_PART}${URL}"
+            else
+              TWEET_TEXT="${TWEET_TEXT:0:277}..."
+            fi
           fi
 
           echo "$TWEET_TEXT" > /tmp/tweet-payload.txt
