@@ -106,6 +106,8 @@ jobs:
           - LESSON_TAGS: 2-3 <span class="tag"> elements
           - FLASHCARD_QUESTION: One clear question the reader can answer after reading
           - FLASHCARD_ANSWER: Concise 1-3 sentence answer
+          - OG_DESCRIPTION: A lesson-specific one-sentence description (under 160 chars) summarizing the key insight — NOT the generic template text
+          - LESSON_SLUG: ${LESSON_SLUG} (used in og:image and og:url meta tags — already in the template, just fill it)
           - LESSON_CONTENT: Main body with HTML (h2, h3, p, code, pre, ul/li). 300-500 words max.
           - KEY_TAKEAWAY: One sentence to remember
 
@@ -131,12 +133,16 @@ jobs:
           ### 4. Create a tweet draft
           Write a file called public/lessons/${LESSON_SLUG}-tweet.txt containing a single tweet for this lesson.
           Rules:
-          - Lead with a provocative hook or surprising insight from the lesson (NOT just the title)
-          - Follow with one sentence of value
-          - End with the link: https://cclessons.jaczaar.com/lessons/${LESSON_SLUG}.html
+          - Write in FIRST PERSON as someone who just learned or tried this — "I just discovered...", "TIL:", "I switched to X and..."
+          - Lead with a surprising, specific insight or result — NOT a feature description
+          - Make it conversational: something a developer would actually say to a colleague, not a product announcement
+          - Include something reply-worthy: a hot take, a question, or a before/after comparison
+          - The link goes at the very end, separated by a line break — let the OG card image do the selling
           - URLs count as 23 characters on X regardless of actual length — budget 257 chars for text + 23 for the link = 280 max
-          - No hashtags, no emojis, no "New lesson:" prefix
-          - Example: "Most Claude Code users approve 93% of permission prompts anyway. Auto mode's two-stage classifier blocks the dangerous 7% automatically. https://cclessons.jaczaar.com/lessons/lesson-008.html"
+          - No hashtags, no emojis, no "New lesson:" prefix, no feature-list style
+          - AVOID: vague attributions ("Claude Code's creator"), unverifiable claims, documentation-style prose
+          - Good example: "TIL you can run Claude Code from your phone. Not a dumbed-down mobile app — your actual terminal, full tool access, code never leaves your machine.\n\nhttps://cclessons.jaczaar.com/lessons/lesson-007.html"
+          - Bad example: "Claude Code's creator writes most of his code from his phone. /remote-control bridges your local terminal to the mobile app."
 
           ### 5. Create styled HTML email body
           Write a file called /tmp/lesson-email-body.html — a complete, self-contained HTML email.
@@ -167,6 +173,28 @@ jobs:
           PROMPT
           )"
 
+      - name: Generate OG image
+        run: |
+          SLUG=${{ steps.meta.outputs.slug }}
+          LESSON_FILE="public/lessons/${SLUG}.html"
+
+          if [ ! -f "$LESSON_FILE" ]; then
+            echo "::warning::Lesson file not found, skipping OG image"
+            exit 0
+          fi
+
+          # Extract title and flashcard question from the generated HTML
+          TITLE=$(grep -oP '(?<=<h1>).*?(?=</h1>)' "$LESSON_FILE" | head -1)
+          QUESTION=$(grep -oP '(?<=<strong>).*?(?=</strong>)' "$LESSON_FILE" | head -1)
+
+          if [ -z "$TITLE" ] || [ -z "$QUESTION" ]; then
+            echo "::warning::Could not extract title/question from lesson HTML"
+            exit 0
+          fi
+
+          npm install --no-save satori @resvg/resvg-js
+          node scripts/generate-og-image.mjs "$SLUG" "$TITLE" "$QUESTION"
+
       - name: Validate generated lesson
         run: |
           SLUG=${{ steps.meta.outputs.slug }}
@@ -185,11 +213,27 @@ jobs:
           fi
 
           # Check for unreplaced template placeholders
-          PLACEHOLDERS="LESSON_TITLE|LESSON_NUMBER|LESSON_DATE|LESSON_TAGS|FLASHCARD_QUESTION|FLASHCARD_ANSWER|LESSON_CONTENT|KEY_TAKEAWAY"
+          PLACEHOLDERS="LESSON_TITLE|LESSON_NUMBER|LESSON_DATE|LESSON_TAGS|FLASHCARD_QUESTION|FLASHCARD_ANSWER|LESSON_CONTENT|KEY_TAKEAWAY|OG_DESCRIPTION|LESSON_SLUG"
           if grep -qE "$PLACEHOLDERS" "$LESSON_FILE"; then
             echo "::error::Unreplaced placeholders found in ${LESSON_FILE}"
             grep -nE "$PLACEHOLDERS" "$LESSON_FILE"
             exit 1
+          fi
+
+          # Check tweet file exists and is under 280 chars
+          TWEET_FILE="public/lessons/${SLUG}-tweet.txt"
+          if [ ! -f "$TWEET_FILE" ]; then
+            echo "::error::Tweet file ${TWEET_FILE} was not created"
+            exit 1
+          fi
+          TWEET_LEN=$(wc -c < "$TWEET_FILE" | tr -d ' ')
+          if [ "$TWEET_LEN" -gt 280 ]; then
+            echo "::warning::Tweet is ${TWEET_LEN} chars (over 280)"
+          fi
+
+          # Check email body exists
+          if [ ! -f /tmp/lesson-email-body.html ]; then
+            echo "::warning::Email body was not created"
           fi
 
           echo "Lesson validation passed"
