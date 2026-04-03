@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NO_FLICKER Mode: Kill Terminal Flashing With One Env Var — Claude Code Lessons</title>
+  <meta property="og:title" content="NO_FLICKER Mode: Kill Terminal Flashing With One Env Var — Claude Code Lessons" />
+  <meta property="og:description" content="Enable CLAUDE_CODE_NO_FLICKER=1 to switch to a fullscreen renderer that eliminates flicker, keeps memory flat, and adds mouse support." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-013-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-013.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NO_FLICKER Mode: Kill Terminal Flashing With One Env Var — Claude Code Lessons" />
+  <meta name="twitter:description" content="Enable CLAUDE_CODE_NO_FLICKER=1 to switch to a fullscreen renderer that eliminates flicker, keeps memory flat, and adds mouse support." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-013-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 013
+      </div>
+      <h1>NO_FLICKER Mode: Kill Terminal Flashing With One Env Var</h1>
+      <div class="meta">
+        <div>2026-04-03</div>
+        <div class="tags"><span class="tag">rendering</span> <span class="tag">terminal</span> <span class="tag">performance</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you enable Claude Code's flicker-free fullscreen renderer?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Run <code>CLAUDE_CODE_NO_FLICKER=1 claude</code>. This switches to an alternate-screen renderer (like vim or htop) that eliminates flickering, keeps memory and CPU flat in long sessions, and adds mouse support.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Flicker Problem</h2>
+      <p>If you've used Claude Code in long sessions, you've probably noticed the terminal flickering, jumping, or getting sluggish as the conversation grows. The default renderer redraws the entire scrollback on every update, which means more messages = more work for your terminal.</p>
+      <p>As of April 2026, there's an official fix. Boris Cherny (Claude Code's creator) <a href="https://x.com/bcherny/status/2039421575422980329">announced NO_FLICKER mode</a> — an experimental fullscreen renderer that rewrites how Claude Code draws to your terminal.</p>
+
+      <h2>How to Enable It</h2>
+      <p>One environment variable is all it takes:</p>
+      <pre><code class="language-bash">CLAUDE_CODE_NO_FLICKER=1 claude</code></pre>
+      <p>To make it permanent, add this to your shell profile (<code>~/.bashrc</code>, <code>~/.zshrc</code>, etc.):</p>
+      <pre><code class="language-bash">export CLAUDE_CODE_NO_FLICKER=1</code></pre>
+      <p>Requires Claude Code <strong>v2.1.89</strong> or later.</p>
+
+      <h2>What Changes</h2>
+      <p>The new renderer draws on the terminal's <strong>alternate screen buffer</strong> — the same technique vim, htop, and less use. Instead of dumping output into your scrollback, it virtualizes the entire viewport and only renders what's currently visible.</p>
+      <ul>
+        <li><strong>No flickering or jumping</strong> — the screen updates smoothly instead of redrawing everything</li>
+        <li><strong>Flat memory and CPU</strong> — resource usage stays constant no matter how long your conversation gets</li>
+        <li><strong>Mouse support</strong> — scroll, click, and interact using your mouse directly in the terminal</li>
+      </ul>
+
+      <h2>Tradeoffs to Know</h2>
+      <p>Since the UI lives on the alternate screen, a few things work differently:</p>
+      <ul>
+        <li><strong>No native Cmd+F / Ctrl+F</strong> — your terminal's built-in search won't work on the alternate buffer. Use <kbd>Ctrl+O</kbd> then <kbd>/</kbd> to search the transcript, or <kbd>Ctrl+R</kbd> for reverse search.</li>
+        <li><strong>Scrollback isn't in your terminal history</strong> — when you exit, the conversation disappears from your terminal (it's still saved by Claude Code). This is the same behavior as quitting vim.</li>
+      </ul>
+      <p>Most Anthropic internal users already prefer it over the default renderer despite these tradeoffs. If the alternate-screen model feels unfamiliar, give it a few sessions — the smoothness and stability are worth the adjustment.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Set <code>CLAUDE_CODE_NO_FLICKER=1</code> in your shell profile to permanently eliminate terminal flickering and get stable performance in long Claude Code sessions.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
