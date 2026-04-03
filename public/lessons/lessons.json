@@ -83,6 +83,13 @@
       "summary": "The #1 tip from Claude Code's creator: let Claude verify its own work with tests, a browser, or simulators so it iterates to correct results instead of guessing once.",
       "date": "2026-04-01",
       "tags": ["workflow", "verification", "best-practices"]
+    },
+    {
+      "slug": "lesson-013",
+      "title": "NO_FLICKER Mode: Kill Terminal Flashing With One Env Var",
+      "summary": "Enable CLAUDE_CODE_NO_FLICKER=1 to switch to a fullscreen alternate-screen renderer that eliminates flickering, keeps memory flat, and adds mouse support.",
+      "date": "2026-04-03",
+      "tags": ["rendering", "terminal", "performance"]
     }
   ]
 }
