@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Remote Control: Drive Claude Code From Your Phone — Claude Code Lessons</title>
+  <meta property="og:title" content="Remote Control: Drive Claude Code From Your Phone — Claude Code Lessons" />
+  <meta property="og:description" content="A bite-sized Claude Code lesson with flashcard quiz and practical tips." />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 011
+      </div>
+      <h1>Remote Control: Drive Claude Code From Your Phone</h1>
+      <div class="meta">
+        <div>2026-04-01</div>
+        <div class="tags"><span class="tag">remote-control</span> <span class="tag">workflow</span> <span class="tag">mobile</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you control a local Claude Code session from your phone without exposing source code to the cloud?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Run <code>/remote-control</code> in your terminal session. Claude Code creates an encrypted outbound connection to Anthropic's API&mdash;no open ports on your machine. Then open the Claude mobile app or claude.ai/code to send messages that relay back to your local process.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: You're Away From Your Desk</h2>
+      <p>You kicked off a big refactor, walked away to grab coffee, and now Claude needs input. Or you're on the couch and realize you forgot to start that migration script. Opening a laptop feels like overkill.</p>
+      <p>Remote Control solves this. As Boris Cherny (Claude Code's creator) shared on X: he writes a lot of his code from the iOS app as a convenient way to make changes without opening a laptop.</p>
+
+      <h2>How Remote Control Works</h2>
+      <p>Remote Control bridges your local terminal session with the Claude mobile app or any browser. Your code stays local&mdash;only messages travel through Anthropic's API.</p>
+      <p>Start it from an active Claude Code session:</p>
+      <pre><code class="language-bash">/remote-control</code></pre>
+      <p>This displays a session URL and a QR code you can scan with your phone. Open it in the Claude iOS/Android app or at <code>claude.ai/code</code>, and you're connected.</p>
+
+      <h3>What happens under the hood</h3>
+      <ul>
+        <li>Your local Claude Code process opens an <strong>outbound</strong> HTTPS connection to the Anthropic API&mdash;no listening ports, no port forwarding</li>
+        <li>Messages from your phone go to the API first, then relay back to your local process</li>
+        <li>Source code never leaves your machine; only conversation messages travel through the bridge</li>
+      </ul>
+
+      <h2>Teleport: Pull Cloud Sessions to Your Machine</h2>
+      <p>Remote Control has a counterpart: <code>/teleport</code> (or <code>/tp</code>). If you started a session on the web or mobile, teleport pulls it onto your local machine so Claude can access your full filesystem and tools.</p>
+      <pre><code class="language-bash"># From your terminal, pull a cloud session locally
+/teleport</code></pre>
+      <p>You can also start a web session directly from the command line:</p>
+      <pre><code class="language-bash"># Start a remote web session for your current repo
+claude --remote "Fix the auth bug in src/login.ts"</code></pre>
+
+      <h2>Make It Always On</h2>
+      <p>If you want every session to be remotely accessible, enable it in your config:</p>
+      <pre><code class="language-bash">/config</code></pre>
+      <p>Then set <strong>"Enable Remote Control for all sessions"</strong> to true. Now every session you start is automatically available from your phone.</p>
+
+      <h3>Requirements</h3>
+      <ul>
+        <li>Claude Code v2.1.52+ (Remote Control), v2.1.74+ (launching from phone)</li>
+        <li>Claude Max, Team, or Enterprise plan</li>
+        <li>GitHub connected on mobile (being relaxed soon)</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p><code>/remote-control</code> lets you drive a local Claude Code session from your phone or any browser&mdash;your code stays on your machine, only messages travel through the bridge.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
