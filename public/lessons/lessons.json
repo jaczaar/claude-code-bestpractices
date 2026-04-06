@@ -90,6 +90,13 @@
       "summary": "Enable CLAUDE_CODE_NO_FLICKER=1 to switch to a fullscreen alternate-screen renderer that eliminates flickering, keeps memory flat, and adds mouse support.",
       "date": "2026-04-03",
       "tags": ["rendering", "terminal", "performance"]
+    },
+    {
+      "slug": "lesson-014",
+      "title": "Output Styles: Change How Claude Code Talks to You",
+      "summary": "Use /config to switch between Default, Explanatory, Learning, and Concise output styles — or create your own custom style as a Markdown file.",
+      "date": "2026-04-06",
+      "tags": ["output-styles", "config", "customization"]
     }
   ]
 }
