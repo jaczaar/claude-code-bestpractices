@@ -1,0 +1,3 @@
+I used to dread large migrations. Now I type /batch with a one-liner and Claude spins up parallel agents in isolated worktrees — each one tests itself and opens its own PR. A full-day refactor became a coffee break.
+
+https://cclessons.jaczaar.com/lessons/lesson-015.html
