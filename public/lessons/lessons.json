@@ -97,6 +97,13 @@
       "summary": "Use /config to switch between Default, Explanatory, Learning, and Concise output styles — or create your own custom style as a Markdown file.",
       "date": "2026-04-06",
       "tags": ["output-styles", "config", "customization"]
+    },
+    {
+      "slug": "lesson-015",
+      "title": "/batch: Parallel Agents for Large-Scale Code Migrations",
+      "summary": "Use /batch to decompose big refactors into parallel agents running in isolated worktrees — each one tested, reviewed, and PR'd automatically.",
+      "date": "2026-04-08",
+      "tags": ["batch", "workflow", "productivity"]
     }
   ]
 }

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/batch: Parallel Agents for Large-Scale Code Migrations — Claude Code Lessons</title>
+  <meta property="og:title" content="/batch: Parallel Agents for Large-Scale Code Migrations — Claude Code Lessons" />
+  <meta property="og:description" content="Use /batch to decompose big refactors into parallel agents running in isolated worktrees — each one tested and PR'd automatically." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-015-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-015.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/batch: Parallel Agents for Large-Scale Code Migrations — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /batch to decompose big refactors into parallel agents running in isolated worktrees — each one tested and PR'd automatically." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-015-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 015
+      </div>
+      <h1>/batch: Parallel Agents for Large-Scale Code Migrations</h1>
+      <div class="meta">
+        <div>2026-04-08</div>
+        <div class="tags"><span class="tag">batch</span><span class="tag">workflow</span><span class="tag">productivity</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What does /batch do, and how does it prevent parallel agents from stepping on each other's changes?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        /batch decomposes a large change into self-contained units and spawns one agent per unit, all running simultaneously. Each agent operates in its own isolated git worktree and branch, so no agent can interfere with another's work. When done, each agent runs tests and creates a PR automatically.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: Big Refactors Are Sequential Bottlenecks</h2>
+      <p>You need to rename an API field across 40 services, migrate a logging library, or update an auth pattern everywhere it appears. Even with Claude Code, you'd work through each file sequentially — or manually spin up worktree sessions one at a time. That's slow and error-prone.</p>
+
+      <h2>The Solution: /batch</h2>
+      <p>The <code>/batch</code> skill, announced by Claude Code creator Boris Cherny (<a href="https://x.com/bcherny/status/2027534984534544489">@bcherny on X</a>), turns large-scale changes into a parallelized, automated pipeline. You describe the change once, and /batch handles the rest.</p>
+
+      <h3>How It Works</h3>
+      <ol>
+        <li><strong>Research:</strong> An orchestrator agent enters plan mode and launches Explore agents to find every file, pattern, and call site affected by your change.</li>
+        <li><strong>Decompose:</strong> The orchestrator splits the work into 5–30 self-contained units — each one small enough for a single agent to handle independently.</li>
+        <li><strong>Approve:</strong> You review the execution plan before any code is touched.</li>
+        <li><strong>Execute in parallel:</strong> One background agent spawns per unit. Each agent gets its own git worktree and branch — full isolation, zero interference.</li>
+        <li><strong>Test &amp; PR:</strong> Each agent runs tests in its worktree, then runs <code>/simplify</code> (a 3-agent code review) before creating a PR.</li>
+      </ol>
+
+      <h3>Using It</h3>
+      <p>Just type <code>/batch</code> followed by a description of what needs to change:</p>
+      <pre><code class="language-bash">/batch Migrate all services from winston to pino logger. Update imports, configuration, and log level mappings.</code></pre>
+      <p>Or for a targeted migration:</p>
+      <pre><code class="language-bash">/batch Replace every use of our deprecated AuthV1 middleware with AuthV2 across all Express route files.</code></pre>
+      <p>The orchestrator does the thinking — finding all affected files, grouping them into logical units, and asking for your approval before execution begins.</p>
+
+      <h3>Why Worktree Isolation Matters</h3>
+      <p>The reliability of /batch hinges on git worktree isolation. Without it, parallel agents would create merge conflicts, overwrite each other's changes, or produce broken intermediate states. With worktrees, each agent has a clean working copy. If one agent fails, the others are unaffected.</p>
+
+      <h3>When to Reach for /batch</h3>
+      <ul>
+        <li><strong>API migrations:</strong> Renaming fields, updating response shapes, or versioning endpoints across many services</li>
+        <li><strong>Library swaps:</strong> Replacing one dependency with another (e.g., moment → dayjs, winston → pino)</li>
+        <li><strong>Pattern enforcement:</strong> Applying a new coding pattern or removing a deprecated one across the codebase</li>
+        <li><strong>Config updates:</strong> Updating environment variables, feature flags, or configuration schemas at scale</li>
+      </ul>
+      <p>If the change touches fewer than 3–4 files, a regular Claude Code session is simpler. /batch shines when the work is repetitive, parallelizable, and spread across many files.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Use <code>/batch</code> to turn large, repetitive codebase migrations into parallel agent pipelines — each change isolated in its own worktree, tested, reviewed by /simplify, and shipped as a separate PR.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
