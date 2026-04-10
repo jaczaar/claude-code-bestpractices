@@ -1,0 +1,3 @@
+I started running /simplify before every commit and it keeps finding utils I already have in my codebase. Turns out I was re-implementing my own helpers. Add a review checklist to CLAUDE.md and it enforces your team's conventions too.
+
+https://cclessons.jaczaar.com/lessons/lesson-016.html
