@@ -104,6 +104,13 @@
       "summary": "Use /batch to decompose big refactors into parallel agents running in isolated worktrees — each one tested, reviewed, and PR'd automatically.",
       "date": "2026-04-08",
       "tags": ["batch", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-016",
+      "title": "/simplify: Auto-Refactor Your Changes Before You Ship",
+      "summary": "Run /simplify to have Claude review your changed code for reuse, quality, and efficiency — then fix issues automatically before you commit.",
+      "date": "2026-04-10",
+      "tags": ["simplify", "code-quality", "skills"]
     }
   ]
 }
