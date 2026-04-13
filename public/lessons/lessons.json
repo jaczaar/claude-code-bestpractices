@@ -111,6 +111,13 @@
       "summary": "Run /simplify to have Claude review your changed code for reuse, quality, and efficiency — then fix issues automatically before you commit.",
       "date": "2026-04-10",
       "tags": ["simplify", "code-quality", "skills"]
+    },
+    {
+      "slug": "lesson-017",
+      "title": "Plugins: Extend Claude Code from the Built-in Marketplace",
+      "summary": "Use /plugin to browse, install, and manage plugin packages that bundle skills, hooks, and config — with User, Project, and Local scopes.",
+      "date": "2026-04-13",
+      "tags": ["plugins", "skills", "extensibility"]
     }
   ]
 }
