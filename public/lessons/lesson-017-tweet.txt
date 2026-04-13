@@ -1,0 +1,3 @@
+TIL Claude Code has a built-in plugin marketplace. Run /plugin, browse the Discover tab, press Enter to install. Three scopes: just you, just this repo, or shared with your whole team via git. The frontend-design plugin alone has 277K installs.
+
+https://cclessons.jaczaar.com/lessons/lesson-017.html
