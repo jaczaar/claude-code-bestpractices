@@ -1,0 +1,3 @@
+TIL Claude Code has a /btw command — ask questions while it's mid-task. Runs in an overlay with full context but no tools. Main task doesn't even pause. Like whispering to your pair programmer.
+
+https://cclessons.jaczaar.com/lessons/lesson-018.html
