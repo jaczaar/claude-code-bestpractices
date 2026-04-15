@@ -118,6 +118,13 @@
       "summary": "Use /plugin to browse, install, and manage plugin packages that bundle skills, hooks, and config — with User, Project, and Local scopes.",
       "date": "2026-04-13",
       "tags": ["plugins", "skills", "extensibility"]
+    },
+    {
+      "slug": "lesson-018",
+      "title": "/btw: Ask Questions Mid-Task Without Breaking Flow",
+      "summary": "Use /btw to ask side questions while Claude works — full context visibility, zero interruption, minimal cost.",
+      "date": "2026-04-15",
+      "tags": ["workflow", "productivity", "context-management"]
     }
   ]
 }
