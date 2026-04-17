@@ -125,6 +125,13 @@
       "summary": "Use /btw to ask side questions while Claude works — full context visibility, zero interruption, minimal cost.",
       "date": "2026-04-15",
       "tags": ["workflow", "productivity", "context-management"]
+    },
+    {
+      "slug": "lesson-019",
+      "title": "Custom Agents: Build Specialized AI Teammates in .claude/agents",
+      "summary": "Create purpose-built agents with custom tools, permissions, and models as Markdown files — then share them with your team via git.",
+      "date": "2026-04-17",
+      "tags": ["agents", "customization", "advanced"]
     }
   ]
 }

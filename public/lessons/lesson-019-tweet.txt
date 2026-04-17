@@ -1,0 +1,3 @@
+I made a read-only security reviewer agent that can grep my entire codebase but can't edit a single file. Took 15 lines of Markdown in .claude/agents/ — custom name, locked-down tools, its own model. Slash commands could never.
+
+https://cclessons.jaczaar.com/lessons/lesson-019.html
