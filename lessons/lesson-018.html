@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/btw: Ask Questions Mid-Task Without Breaking Flow — Claude Code Lessons</title>
+  <meta property="og:title" content="/btw: Ask Questions Mid-Task Without Breaking Flow — Claude Code Lessons" />
+  <meta property="og:description" content="Use /btw to ask side questions while Claude works — full context, zero interruption, minimal cost." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-018-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-018.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/btw: Ask Questions Mid-Task Without Breaking Flow — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /btw to ask side questions while Claude works — full context, zero interruption, minimal cost." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-018-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 018
+      </div>
+      <h1>/btw: Ask Questions Mid-Task Without Breaking Flow</h1>
+      <div class="meta">
+        <div>2026-04-15</div>
+        <div class="tags"><span class="tag">workflow</span><span class="tag">productivity</span><span class="tag">context-management</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How can you ask Claude a question while it's in the middle of a task — without interrupting its work?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Type <code>/btw</code> followed by your question. It runs as a side conversation with full context visibility but no tools, so the main task keeps running uninterrupted and your conversation history stays clean.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: Waiting or Interrupting</h2>
+      <p>You're watching Claude refactor a module and a question pops into your head: "Wait, what pattern is it using for error handling here?" Normally you have two bad options: interrupt the task (losing its momentum), or wait until it finishes (losing your thought). The <code>/btw</code> command gives you a third option.</p>
+
+      <h2>How /btw Works</h2>
+      <p>Type <code>/btw</code> followed by your question at any time — even while Claude is actively processing a response:</p>
+      <pre><code class="language-bash">/btw What design pattern is this refactor using?</code></pre>
+      <p>The answer appears in an overlay. Your main task keeps running underneath, completely unaware that you asked anything. When the overlay closes, you're right back where you were.</p>
+
+      <h3>What /btw can see</h3>
+      <ul>
+        <li><strong>Full conversation context</strong> — everything Claude has seen or done in this session is visible to your side question</li>
+        <li><strong>No tools</strong> — /btw can't read files, run commands, or search the web. It answers purely from what's already in context</li>
+      </ul>
+
+      <h3>The inverse of a subagent</h3>
+      <p>This is the key mental model. A <strong>subagent</strong> has full tool access but starts with an empty context. <code>/btw</code> is the mirror image: full context, zero tools. Use subagents to go find something new. Use <code>/btw</code> to ask about what Claude already knows.</p>
+
+      <h2>When to Reach for /btw</h2>
+      <ul>
+        <li><strong>"Why did it do that?"</strong> — Ask about a choice Claude just made without stopping the task</li>
+        <li><strong>"What's the plan from here?"</strong> — Check Claude's approach mid-flight</li>
+        <li><strong>"Remind me what X does"</strong> — Quick recall on something Claude already read</li>
+        <li><strong>"Is this going to affect Y?"</strong> — Sanity-check implications while the work continues</li>
+      </ul>
+
+      <h2>Why It's Cheap</h2>
+      <p><code>/btw</code> reuses the parent conversation's prompt cache. Since the context is already cached from the main task, the side question adds minimal cost — you're mostly paying for the short answer, not re-sending the whole conversation.</p>
+
+      <h2>When NOT to Use /btw</h2>
+      <p>If your question requires reading a file, running a command, or searching the codebase, <code>/btw</code> can't help — it has no tool access. For those questions, wait for the task to finish or spin up a separate session.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p><code>/btw</code> lets you ask questions mid-task without interrupting Claude — full context visibility, no tools, minimal cost. It's the inverse of a subagent.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
