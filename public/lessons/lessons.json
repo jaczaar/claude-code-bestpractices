@@ -132,6 +132,13 @@
       "summary": "Create purpose-built agents with custom tools, permissions, and models as Markdown files — then share them with your team via git.",
       "date": "2026-04-17",
       "tags": ["agents", "customization", "advanced"]
+    },
+    {
+      "slug": "lesson-020",
+      "title": "/ultraplan: Plan in the Cloud, Execute Anywhere",
+      "summary": "Use /ultraplan to offload complex planning to a cloud web UI with inline comments and structured review, then execute back in your terminal or in the cloud.",
+      "date": "2026-04-20",
+      "tags": ["ultraplan", "planning", "cloud"]
     }
   ]
 }
