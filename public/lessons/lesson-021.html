@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/voice: Code by Talking Instead of Typing — Claude Code Lessons</title>
+  <meta property="og:title" content="/voice: Code by Talking Instead of Typing — Claude Code Lessons" />
+  <meta property="og:description" content="Use /voice to speak your prompts — mix voice and text, choose push-to-talk or hands-free, and transcription is completely free." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-021-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-021.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/voice: Code by Talking Instead of Typing — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /voice to speak your prompts — mix voice and text, choose push-to-talk or hands-free, and transcription is completely free." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-021-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 021
+      </div>
+      <h1>/voice: Code by Talking Instead of Typing</h1>
+      <div class="meta">
+        <div>2026-04-22</div>
+        <div class="tags"><span class="tag">voice</span><span class="tag">workflow</span><span class="tag">productivity</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you enable voice input in Claude Code, and what are the two listening modes?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Run <code>/voice</code> to toggle voice mode on. Then choose <strong>push-to-talk</strong> (hold Space, release when done) for noisy environments, or <strong>hands-free</strong> mode (Claude listens continuously and responds to natural pauses) for quiet spaces. You can mix voice and typed text in the same prompt.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>Why Talk to Your Terminal?</h2>
+      <p>Boris Cherny, the creator of Claude Code, shared that he does most of his coding by speaking rather than typing. It sounds wild until you try it: describing what you want in natural language is often faster than typing a detailed prompt, especially for complex refactors or architectural decisions where you're thinking out loud anyway.</p>
+      <p>As <a href="https://x.com/bcherny/status/2038454362226467112">@bcherny shared on X</a>: voice mode turns Claude Code into a conversational coding partner you can talk to like a colleague sitting next to you.</p>
+
+      <h2>Getting Started</h2>
+      <p>Toggle voice mode with a single command:</p>
+      <pre><code class="language-bash">/voice</code></pre>
+      <p>That's it. Run it again to turn voice off. Voice mode is available to Pro, Max, Team, and Enterprise users on both the CLI and Desktop app.</p>
+
+      <h3>Two Listening Modes</h3>
+      <ul>
+        <li><strong>Push-to-talk:</strong> Hold the <code>Space</code> bar while speaking, release when done. Best for busy offices or noisy environments where you don't want ambient sound triggering input.</li>
+        <li><strong>Hands-free:</strong> Claude listens continuously and detects natural pauses to know when you've finished. Best for quiet spaces where you want a truly conversational flow.</li>
+      </ul>
+      <p>On Desktop, use the voice button instead of the Space bar. On iOS via Remote Control, enable dictation in your device settings.</p>
+
+      <h2>Mix Voice and Text in the Same Prompt</h2>
+      <p>You don't have to go all-in on voice. The real power move is combining both: speak the high-level intent, then type precise details like file paths, variable names, or code snippets. For example:</p>
+      <ol>
+        <li><strong>Speak:</strong> "Refactor the user authentication module to use JWT tokens instead of session cookies"</li>
+        <li><strong>Type:</strong> <code>Focus on src/auth/middleware.ts and src/auth/session.ts</code></li>
+      </ol>
+      <p>This hybrid approach plays to each input method's strengths: voice for intent and context, text for precision.</p>
+
+      <h2>When Voice Really Shines</h2>
+      <ul>
+        <li><strong>Architectural discussions:</strong> Talk through design tradeoffs like you would with a colleague — "What if we split this service into two microservices? Walk me through the pros and cons."</li>
+        <li><strong>Code reviews:</strong> Narrate what you see as you scroll through a diff — faster than typing paragraph-length feedback.</li>
+        <li><strong>Rubber-duck debugging:</strong> Explain the bug out loud. Claude listens, asks questions, and often spots the issue while you're still describing it.</li>
+        <li><strong>Accessibility:</strong> Hands-free coding opens up new workflows for developers who find extended typing difficult.</li>
+      </ul>
+
+      <h2>Cost: Zero</h2>
+      <p>Transcription is completely free and doesn't count against your rate limits. The only tokens consumed are the transcribed text sent as a normal prompt — the same as if you'd typed it.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Run <code>/voice</code> to talk to Claude Code instead of typing — mix voice for intent with text for precision, and transcription costs nothing.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
