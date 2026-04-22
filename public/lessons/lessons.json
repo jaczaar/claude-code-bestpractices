@@ -139,6 +139,13 @@
       "summary": "Use /ultraplan to offload complex planning to a cloud web UI with inline comments and structured review, then execute back in your terminal or in the cloud.",
       "date": "2026-04-20",
       "tags": ["ultraplan", "planning", "cloud"]
+    },
+    {
+      "slug": "lesson-021",
+      "title": "/voice: Code by Talking Instead of Typing",
+      "summary": "Use /voice to speak your prompts — mix voice and text, choose push-to-talk or hands-free, and transcription is completely free.",
+      "date": "2026-04-22",
+      "tags": ["voice", "workflow", "productivity"]
     }
   ]
 }
