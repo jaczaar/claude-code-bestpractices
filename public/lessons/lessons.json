@@ -146,6 +146,13 @@
       "summary": "Use /voice to speak your prompts — mix voice and text, choose push-to-talk or hands-free, and transcription is completely free.",
       "date": "2026-04-22",
       "tags": ["voice", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-022",
+      "title": "Routines: Claude Code Agents That Run While You Sleep",
+      "summary": "Set up routines to run Claude Code automatically on a schedule, via API, or in response to GitHub events — all on Anthropic's cloud.",
+      "date": "2026-04-24",
+      "tags": ["routines", "automation", "cloud"]
     }
   ]
 }
