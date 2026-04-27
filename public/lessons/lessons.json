@@ -153,6 +153,13 @@
       "summary": "Set up routines to run Claude Code automatically on a schedule, via API, or in response to GitHub events — all on Anthropic's cloud.",
       "date": "2026-04-24",
       "tags": ["routines", "automation", "cloud"]
+    },
+    {
+      "slug": "lesson-023",
+      "title": "MCP Servers: Connect Claude Code to Slack, Databases, and Any API",
+      "summary": "Configure .mcp.json to give Claude Code access to Slack, Postgres, Sentry, and more — then share the setup with your whole team via git.",
+      "date": "2026-04-27",
+      "tags": ["MCP", "integrations", "configuration"]
     }
   ]
 }
