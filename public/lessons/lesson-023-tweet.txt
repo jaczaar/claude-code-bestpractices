@@ -1,0 +1,3 @@
+I added a .mcp.json to our repo and now every dev on the team has Claude Code connected to Slack, Postgres, and Sentry automatically. Zero setup on their end — just pull and go. One config file, committed to git, secrets via ${VAR} placeholders.
+
+https://cclessons.jaczaar.com/lessons/lesson-023.html
