@@ -1,0 +1,3 @@
+I was generating frontend code with Claude Code and wondering why the UI kept coming out wrong. Then I ran /chrome and it could actually SEE the page. Now it screenshots, spots the issue, and fixes it in a loop. Night and day difference.
+
+https://cclessons.jaczaar.com/lessons/lesson-024.html
