@@ -167,6 +167,13 @@
       "summary": "Use the Chrome extension and /chrome to let Claude Code see, click, and debug your UI — turning blind code generation into a visual feedback loop.",
       "date": "2026-04-29",
       "tags": ["chrome", "frontend", "workflow"]
+    },
+    {
+      "slug": "lesson-025",
+      "title": "/effort: Five Levels of Reasoning Depth on Demand",
+      "summary": "Use /effort to switch between low, medium, high, xhigh, and max reasoning depth — match token spend to task complexity in real time.",
+      "date": "2026-05-01",
+      "tags": ["effort", "performance", "advanced"]
     }
   ]
 }
