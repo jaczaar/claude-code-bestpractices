@@ -1,0 +1,179 @@
+{
+  "lessons": [
+    {
+      "slug": "lesson-001",
+      "title": "Auto Memory: Taming the 200-Line MEMORY.md Limit",
+      "summary": "How to structure Claude Code's auto memory system using topic files and the capture-promote-prune cycle to stay under the 200-line MEMORY.md limit.",
+      "date": "2026-03-20",
+      "tags": ["memory", "auto-memory", "advanced"]
+    },
+    {
+      "slug": "lesson-002",
+      "title": "The Three-Level CLAUDE.md Hierarchy",
+      "summary": "How CLAUDE.md operates at Global, Project, and Directory levels — and why the most specific level always wins.",
+      "date": "2026-03-23",
+      "tags": ["CLAUDE.md", "configuration", "best-practices"]
+    },
+    {
+      "slug": "lesson-003",
+      "title": "Hooks: Auto-Run Scripts Before and After Every Tool Call",
+      "summary": "How to configure preTool and postTool hooks in settings.json to auto-format code, enforce policies, and audit tool usage.",
+      "date": "2026-03-23",
+      "tags": ["hooks", "settings", "automation"]
+    },
+    {
+      "slug": "lesson-004",
+      "title": "Tame Context Bloat with /compact Focus Hints",
+      "summary": "How to use /compact with focus hints at natural breakpoints to preserve critical context before auto-compression decides for you.",
+      "date": "2026-03-25",
+      "tags": ["context-management", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-005",
+      "title": "Worktrees: Run Parallel Claude Sessions Without Conflicts",
+      "summary": "How to use the --worktree flag to run multiple Claude Code sessions on the same repo in isolated checkouts, enabling parallel work without file conflicts.",
+      "date": "2026-03-25",
+      "tags": ["worktrees", "parallel-sessions", "workflow"]
+    },
+    {
+      "slug": "lesson-006",
+      "title": "Custom Slash Commands: Build Reusable Prompt Templates",
+      "summary": "How to create custom slash commands as markdown files in .claude/commands/, use $ARGUMENTS for flexible templates, and share them with your team via git.",
+      "date": "2026-03-27",
+      "tags": ["custom-commands", "productivity", "advanced"]
+    },
+    {
+      "slug": "lesson-007",
+      "title": "Code Review: Multi-Agent PR Analysis That Catches What Humans Miss",
+      "summary": "How Claude Code Review dispatches parallel specialized agents to find logic errors, security issues, and regressions in your PRs with under 1% false positive rate.",
+      "date": "2026-03-30",
+      "tags": ["code-review", "multi-agent", "pull-requests"]
+    },
+    {
+      "slug": "lesson-008",
+      "title": "Auto Mode: Smarter Permission Handling Without --dangerously-skip-permissions",
+      "summary": "How Claude Code's auto mode uses a two-stage classifier to auto-approve safe actions and block dangerous ones, eliminating approval fatigue without sacrificing safety.",
+      "date": "2026-03-30",
+      "tags": ["permissions", "auto-mode", "safety"]
+    },
+    {
+      "slug": "lesson-009",
+      "title": "Put Claude on Autopilot with /loop",
+      "summary": "How to use the /loop command to schedule recurring tasks like deploy monitoring, PR babysitting, and test runs — so Claude watches while you focus on real work.",
+      "date": "2026-04-01",
+      "tags": ["workflow", "automation", "productivity"]
+    },
+    {
+      "slug": "lesson-010",
+      "title": "Plan Mode: Think First, Code Second",
+      "summary": "How to use Plan Mode to separate thinking from execution — iterate on the approach in read-only mode, then let Claude one-shot the implementation.",
+      "date": "2026-04-01",
+      "tags": ["plan-mode", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-011",
+      "title": "Remote Control: Drive Claude Code From Your Phone",
+      "summary": "How to use /remote-control and /teleport to drive a local Claude Code session from your phone or any browser — your code stays on your machine, only messages travel through the bridge.",
+      "date": "2026-04-01",
+      "tags": ["remote-control", "workflow", "mobile"]
+    },
+    {
+      "slug": "lesson-012",
+      "title": "Give Claude a Feedback Loop to 2-3x Output Quality",
+      "summary": "The #1 tip from Claude Code's creator: let Claude verify its own work with tests, a browser, or simulators so it iterates to correct results instead of guessing once.",
+      "date": "2026-04-01",
+      "tags": ["workflow", "verification", "best-practices"]
+    },
+    {
+      "slug": "lesson-013",
+      "title": "NO_FLICKER Mode: Kill Terminal Flashing With One Env Var",
+      "summary": "Enable CLAUDE_CODE_NO_FLICKER=1 to switch to a fullscreen alternate-screen renderer that eliminates flickering, keeps memory flat, and adds mouse support.",
+      "date": "2026-04-03",
+      "tags": ["rendering", "terminal", "performance"]
+    },
+    {
+      "slug": "lesson-014",
+      "title": "Output Styles: Change How Claude Code Talks to You",
+      "summary": "Use /config to switch between Default, Explanatory, Learning, and Concise output styles — or create your own custom style as a Markdown file.",
+      "date": "2026-04-06",
+      "tags": ["output-styles", "config", "customization"]
+    },
+    {
+      "slug": "lesson-015",
+      "title": "/batch: Parallel Agents for Large-Scale Code Migrations",
+      "summary": "Use /batch to decompose big refactors into parallel agents running in isolated worktrees — each one tested, reviewed, and PR'd automatically.",
+      "date": "2026-04-08",
+      "tags": ["batch", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-016",
+      "title": "/simplify: Auto-Refactor Your Changes Before You Ship",
+      "summary": "Run /simplify to have Claude review your changed code for reuse, quality, and efficiency — then fix issues automatically before you commit.",
+      "date": "2026-04-10",
+      "tags": ["simplify", "code-quality", "skills"]
+    },
+    {
+      "slug": "lesson-017",
+      "title": "Plugins: Extend Claude Code from the Built-in Marketplace",
+      "summary": "Use /plugin to browse, install, and manage plugin packages that bundle skills, hooks, and config — with User, Project, and Local scopes.",
+      "date": "2026-04-13",
+      "tags": ["plugins", "skills", "extensibility"]
+    },
+    {
+      "slug": "lesson-018",
+      "title": "/btw: Ask Questions Mid-Task Without Breaking Flow",
+      "summary": "Use /btw to ask side questions while Claude works — full context visibility, zero interruption, minimal cost.",
+      "date": "2026-04-15",
+      "tags": ["workflow", "productivity", "context-management"]
+    },
+    {
+      "slug": "lesson-019",
+      "title": "Custom Agents: Build Specialized AI Teammates in .claude/agents",
+      "summary": "Create purpose-built agents with custom tools, permissions, and models as Markdown files — then share them with your team via git.",
+      "date": "2026-04-17",
+      "tags": ["agents", "customization", "advanced"]
+    },
+    {
+      "slug": "lesson-020",
+      "title": "/ultraplan: Plan in the Cloud, Execute Anywhere",
+      "summary": "Use /ultraplan to offload complex planning to a cloud web UI with inline comments and structured review, then execute back in your terminal or in the cloud.",
+      "date": "2026-04-20",
+      "tags": ["ultraplan", "planning", "cloud"]
+    },
+    {
+      "slug": "lesson-021",
+      "title": "/voice: Code by Talking Instead of Typing",
+      "summary": "Use /voice to speak your prompts — mix voice and text, choose push-to-talk or hands-free, and transcription is completely free.",
+      "date": "2026-04-22",
+      "tags": ["voice", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-022",
+      "title": "Routines: Claude Code Agents That Run While You Sleep",
+      "summary": "Set up routines to run Claude Code automatically on a schedule, via API, or in response to GitHub events — all on Anthropic's cloud.",
+      "date": "2026-04-24",
+      "tags": ["routines", "automation", "cloud"]
+    },
+    {
+      "slug": "lesson-023",
+      "title": "MCP Servers: Connect Claude Code to Slack, Databases, and Any API",
+      "summary": "Configure .mcp.json to give Claude Code access to Slack, Postgres, Sentry, and more — then share the setup with your whole team via git.",
+      "date": "2026-04-27",
+      "tags": ["MCP", "integrations", "configuration"]
+    },
+    {
+      "slug": "lesson-024",
+      "title": "Chrome Extension: Give Claude Eyes for Frontend Work",
+      "summary": "Use the Chrome extension and /chrome to let Claude Code see, click, and debug your UI — turning blind code generation into a visual feedback loop.",
+      "date": "2026-04-29",
+      "tags": ["chrome", "frontend", "workflow"]
+    },
+    {
+      "slug": "lesson-025",
+      "title": "/effort: Five Levels of Reasoning Depth on Demand",
+      "summary": "Use /effort to switch between low, medium, high, xhigh, and max reasoning depth — match token spend to task complexity in real time.",
+      "date": "2026-05-01",
+      "tags": ["effort", "performance", "advanced"]
+    }
+  ]
+}

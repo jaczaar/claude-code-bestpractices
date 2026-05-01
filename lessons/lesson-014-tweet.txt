@@ -1,0 +1,3 @@
+I switched Claude Code to "Learning" mode and it started leaving TODO(human) markers in my code, making me write the hard parts myself. It's like pair programming with a patient senior dev who won't let you copy-paste your way through.
+
+https://cclessons.jaczaar.com/lessons/lesson-014.html

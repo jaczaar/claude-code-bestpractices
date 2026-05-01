@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plugins: Extend Claude Code from the Built-in Marketplace — Claude Code Lessons</title>
+  <meta property="og:title" content="Plugins: Extend Claude Code from the Built-in Marketplace — Claude Code Lessons" />
+  <meta property="og:description" content="Use /plugin to browse, install, and manage plugin packages that bundle skills, hooks, and config — no restart required." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-017-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-017.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Plugins: Extend Claude Code from the Built-in Marketplace — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /plugin to browse, install, and manage plugin packages that bundle skills, hooks, and config — no restart required." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-017-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 017
+      </div>
+      <h1>Plugins: Extend Claude Code from the Built-in Marketplace</h1>
+      <div class="meta">
+        <div>2026-04-13</div>
+        <div class="tags"><span class="tag">plugins</span><span class="tag">skills</span><span class="tag">extensibility</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you discover and install plugins in Claude Code, and what are the three installation scopes?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Run <code>/plugin</code> to open the interactive browser with Discover, Installed, and Marketplaces tabs. When installing, choose between <strong>User</strong> scope (across all projects), <strong>Project</strong> scope (shared with collaborators via git), or <strong>Local</strong> scope (just you, just this repo).
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Is a Plugin?</h2>
+      <p>A plugin is a package that bundles one or more <strong>skills</strong> along with optional hooks and MCP server configurations. While individual skills are standalone SKILL.md files (covered in earlier lessons on custom commands and /simplify), plugins are the distribution format — the way skills get packaged, shared, and installed.</p>
+      <p>As Boris Cherny (<a href="https://x.com/bcherny">@bcherny</a>, Claude Code's creator) shared on X: Anthropic maintains an official plugin marketplace (<code>claude-plugins-official</code>) that ships with Claude Code and is available out of the box.</p>
+
+      <h2>Browsing and Installing</h2>
+      <p>The fastest way to get started is the interactive browser:</p>
+      <pre><code class="language-bash">/plugin</code></pre>
+      <p>This opens a three-tab interface:</p>
+      <ul>
+        <li><strong>Discover</strong> — browse available plugins from connected marketplaces</li>
+        <li><strong>Installed</strong> — see what you have, check status, and manage plugins</li>
+        <li><strong>Marketplaces</strong> — view and add plugin sources</li>
+      </ul>
+      <p>Press Enter on any plugin in the Discover tab to install it. Or use the CLI directly:</p>
+      <pre><code class="language-bash"># Install from the official marketplace
+/plugin install frontend-design@claude-plugins-official
+
+# Install from a GitHub repo
+/plugin install anthropics/skills/skills/skill-creator</code></pre>
+
+      <h2>Installation Scopes</h2>
+      <p>When you install a plugin, you pick one of three scopes:</p>
+      <ul>
+        <li><strong>User</strong> (default) — installed for you across all projects. Lives in your <code>~/.claude/</code> config.</li>
+        <li><strong>Project</strong> — installed for all collaborators on this repository. The plugin reference is committed to the repo, so your team gets it automatically.</li>
+        <li><strong>Local</strong> — installed for you in this repository only. Not shared with collaborators.</li>
+      </ul>
+      <p>To choose a scope interactively, use <code>/plugin</code> and select a plugin — you'll be prompted. For the CLI shortcut, scope is chosen during the install flow.</p>
+
+      <h2>Adding Third-Party Marketplaces</h2>
+      <p>The official Anthropic marketplace is loaded by default, but you can connect additional sources:</p>
+      <pre><code class="language-bash"># Add a community marketplace (any GitHub repo with a marketplace.json)
+/plugin marketplace add user-or-org/repo-name
+
+# Refresh catalog to get latest plugins
+/plugin marketplace update</code></pre>
+      <p>After adding a marketplace, its plugins appear alongside official ones in the Discover tab.</p>
+
+      <h2>After Installation</h2>
+      <p>Once installed, the plugin's skills are immediately available — no restart required. If you install mid-session, run <code>/reload-plugins</code> to activate them. Skills from plugins work exactly like built-in ones: they can auto-trigger based on task context, or you can invoke them manually via their slash command.</p>
+
+      <h3>Notable Plugins Worth Trying</h3>
+      <ul>
+        <li><strong>frontend-design</strong> — Anthropic's flagship plugin (277K+ installs) that gives Claude a real design system, avoiding generic-looking UIs</li>
+        <li><strong>code-simplifier</strong> — the agent the Claude Code team uses internally for code review, open-sourced by Boris Cherny</li>
+        <li><strong>skill-creator</strong> — a meta-plugin that helps you build your own skills with proper SKILL.md structure</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Run <code>/plugin</code> to browse, install, and manage plugin packages — use User scope for personal tools, Project scope to share with your team, and third-party marketplaces when the official catalog isn't enough.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

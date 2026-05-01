@@ -1,0 +1,3 @@
+I set up a Claude Code routine that auto-reviews every PR the moment it opens. No cron job, no CI glue code — just a prompt and a GitHub trigger running on Anthropic's cloud. It works while my laptop is off.
+
+https://cclessons.jaczaar.com/lessons/lesson-022.html

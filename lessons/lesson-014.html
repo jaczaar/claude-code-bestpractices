@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Output Styles: Change How Claude Code Talks to You — Claude Code Lessons</title>
+  <meta property="og:title" content="Output Styles: Change How Claude Code Talks to You — Claude Code Lessons" />
+  <meta property="og:description" content="Use /config to switch between Default, Explanatory, Learning, and Concise output styles — or create your own custom style." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-014-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-014.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Output Styles: Change How Claude Code Talks to You — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /config to switch between Default, Explanatory, Learning, and Concise output styles — or create your own custom style." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-014-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 014
+      </div>
+      <h1>Output Styles: Change How Claude Code Talks to You</h1>
+      <div class="meta">
+        <div>2026-04-06</div>
+        <div class="tags"><span class="tag">output-styles</span><span class="tag">config</span><span class="tag">customization</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What are the four built-in output styles in Claude Code, and how do you switch between them?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Run <code>/config</code> and select "Output style" to choose between <strong>Default</strong> (efficient task completion), <strong>Explanatory</strong> (adds design insights as it codes), <strong>Learning</strong> (asks you to write code with TODO(human) markers), and <strong>Concise</strong> (shorter, direct responses). You can also create custom styles as Markdown files.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: One Size Doesn't Fit All</h2>
+      <p>Claude Code's default mode is optimized for getting work done fast. But sometimes you're onboarding to a new codebase and want explanations. Other times you're learning and want to be coached. Output styles let you change Claude's communication mode without changing what it can do.</p>
+      <p>As shared by <a href="https://x.com/bcherny/status/2021701379409273093">@bcherny on X</a>: "Run /config and set an output style to have Claude respond using a different tone or format. We recommend enabling the 'explanatory' output style when getting familiar with a new codebase."</p>
+
+      <h2>The Four Built-in Styles</h2>
+      <p>Run <code>/config</code> and select <strong>Output style</strong> to pick one:</p>
+      <ul>
+        <li><strong>Default</strong> — Focused on efficient software engineering. Minimal commentary, maximum output.</li>
+        <li><strong>Explanatory</strong> — Adds "Insight" blocks between actions, explaining design choices, trade-offs, and codebase patterns. Perfect for onboarding or code review.</li>
+        <li><strong>Learning</strong> — A collaborative, learn-by-doing mode. Claude explains concepts <em>and</em> inserts <code>TODO(human)</code> markers where it wants you to write the code yourself. Great for building real skills.</li>
+        <li><strong>Concise</strong> — Shorter and more direct. Strips away extra explanation for experienced developers who just want results.</li>
+      </ul>
+
+      <h2>When to Use Each Style</h2>
+      <ul>
+        <li><strong>Joining a new team?</strong> Switch to Explanatory. Claude will teach you the codebase as it works.</li>
+        <li><strong>Mentoring a junior dev?</strong> Use Learning mode. Claude becomes a pair-programming tutor that makes them write the important parts.</li>
+        <li><strong>Shipping fast on familiar code?</strong> Stay on Default or switch to Concise to cut the noise.</li>
+      </ul>
+
+      <h2>Create Your Own Custom Style</h2>
+      <p>The built-in styles are just the start. You can create custom output styles as Markdown files:</p>
+      <pre><code class="language-bash"># Generate a custom style interactively
+/output-style:new
+
+# Or create one manually
+mkdir -p .claude/output-styles</code></pre>
+      <p>Create a Markdown file with frontmatter:</p>
+      <pre><code class="language-markdown">---
+name: security-reviewer
+description: Flag security issues as it codes
+---
+
+When making changes, always highlight potential security
+implications. Add a "Security Note" section when modifying
+authentication, authorization, input handling, or data storage.</code></pre>
+      <p>Save it to <code>.claude/output-styles/</code> for the project (shareable via git) or <code>~/.claude/output-styles/</code> for all your projects. The style will appear in <code>/config</code> automatically.</p>
+
+      <h2>How It Works Under the Hood</h2>
+      <p>Output styles modify Claude Code's system prompt. They change <em>how</em> Claude responds (tone, structure, verbosity) but don't restrict <em>what</em> it can do. Your selection is saved to <code>.claude/settings.local.json</code>, so it persists across sessions without affecting teammates.</p>
+      <p>Note: Explanatory and Learning styles produce longer responses by design, which increases output token usage.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Run <code>/config</code> and switch to Explanatory when learning a codebase, Learning when building skills, or Concise when shipping fast — or create your own custom style as a Markdown file to tailor Claude's communication to any workflow.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

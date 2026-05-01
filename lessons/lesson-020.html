@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/ultraplan: Plan in the Cloud, Execute Anywhere — Claude Code Lessons</title>
+  <meta property="og:title" content="/ultraplan: Plan in the Cloud, Execute Anywhere — Claude Code Lessons" />
+  <meta property="og:description" content="Use /ultraplan to offload complex planning to a cloud web UI with inline comments, then execute back in your terminal or in the cloud." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-020-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-020.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/ultraplan: Plan in the Cloud, Execute Anywhere — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /ultraplan to offload complex planning to a cloud web UI with inline comments, then execute back in your terminal or in the cloud." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-020-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 020
+      </div>
+      <h1>/ultraplan: Plan in the Cloud, Execute Anywhere</h1>
+      <div class="meta">
+        <div>2026-04-20</div>
+        <div class="tags"><span class="tag">ultraplan</span><span class="tag">planning</span><span class="tag">cloud</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What does /ultraplan do, and what are the three ways to trigger it?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        /ultraplan moves the planning phase to a cloud web UI where you can review, comment on, and refine the plan interactively. Trigger it with <code>/ultraplan &lt;prompt&gt;</code>, by including the word "ultraplan" in any message, or by choosing "Refine with Ultraplan" from a local plan's approval dialog.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>Why Plan in the Cloud?</h2>
+      <p>Local plan mode (Lesson 010) is great for straightforward tasks. But for complex multi-file refactors or architecture changes, reviewing a plan in a terminal can feel limiting. <code>/ultraplan</code> moves the planning phase to a full web UI running on Anthropic's Cloud Container Runtime, while your terminal stays free for other work.</p>
+      <p>As <a href="https://x.com/WesRoth/status/2042754510880432218">shared by @WesRoth on X</a>, ultraplan "shifts the complex planning phase of AI-assisted software development from the local command line directly to the cloud."</p>
+
+      <h2>Three Ways to Start an Ultraplan</h2>
+      <h3>1. The /ultraplan Command</h3>
+      <p>Type the command followed by your task description:</p>
+      <pre><code class="language-bash">/ultraplan migrate the auth service from sessions to JWTs</code></pre>
+      <p>Claude clones your GitHub repo into a temporary cloud container, reads the codebase, and drafts a structured implementation plan in the web UI.</p>
+
+      <h3>2. Keyword Detection</h3>
+      <p>Include the word "ultraplan" anywhere in a normal prompt:</p>
+      <pre><code class="language-bash">I need an ultraplan for refactoring payments to support multi-currency</code></pre>
+      <p>Claude detects the keyword and automatically starts a cloud planning session.</p>
+
+      <h3>3. From Local Plan Mode</h3>
+      <p>When Claude finishes a local plan and shows the approval dialog, choose <strong>"No, refine with Ultraplan on Claude Code on the web"</strong> to send the draft plan to the cloud for interactive review.</p>
+
+      <h2>The Interactive Review Experience</h2>
+      <p>Once your plan is ready, you open it in the browser. The web UI gives you tools that a terminal simply can't:</p>
+      <ul>
+        <li><strong>Inline comments</strong> — highlight specific sections and leave feedback</li>
+        <li><strong>Structured outline sidebar</strong> — jump between plan sections quickly</li>
+        <li><strong>Real-time revision</strong> — ask Claude to rework sections and watch updates live</li>
+      </ul>
+      <p>Your terminal shows a status indicator (<em>drafting</em>, <em>needs clarification</em>, or <em>ready</em>) so you always know where things stand.</p>
+
+      <h2>Execute Where You Want</h2>
+      <p>When you approve the plan, you choose where to run it:</p>
+      <ul>
+        <li><strong>Teleport back to terminal</strong> — click "Approve plan and teleport back to terminal" to implement locally with full access to your environment. Your terminal shows the plan with options: <em>Implement here</em>, <em>Start new session</em>, or <em>Cancel</em>.</li>
+        <li><strong>Execute in the cloud</strong> — let Claude implement the plan in the same web session where it was reviewed, then pull the changes.</li>
+      </ul>
+
+      <h2>Requirements</h2>
+      <ul>
+        <li>Claude Code v2.1.101 or later</li>
+        <li>A GitHub-hosted repository</li>
+        <li>Pro or Max subscription</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Use <code>/ultraplan</code> for complex tasks that need careful review — it gives you a full web UI to comment on and refine Claude's implementation plan before a single line of code is written.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

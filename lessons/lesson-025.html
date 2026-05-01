@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/effort: Five Levels of Reasoning Depth on Demand — Claude Code Lessons</title>
+  <meta property="og:title" content="/effort: Five Levels of Reasoning Depth on Demand — Claude Code Lessons" />
+  <meta property="og:description" content="Use /effort to switch between low, medium, high, xhigh, and max reasoning depth — match token spend to task complexity in real time." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-025-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-025.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/effort: Five Levels of Reasoning Depth on Demand — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /effort to switch between low, medium, high, xhigh, and max reasoning depth — match token spend to task complexity in real time." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-025-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 025
+      </div>
+      <h1>/effort: Five Levels of Reasoning Depth on Demand</h1>
+      <div class="meta">
+        <div>2026-05-01</div>
+        <div class="tags"><span class="tag">effort</span> <span class="tag">performance</span> <span class="tag">advanced</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What are Claude Code's five effort levels, and which one should you use for most coding tasks?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        The five levels are <strong>low</strong>, <strong>medium</strong>, <strong>high</strong>, <strong>xhigh</strong>, and <strong>max</strong>. For most coding and agentic work, <strong>xhigh</strong> is the sweet spot — it gives deeper reasoning than high without the runaway token cost of max.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: One Size Doesn't Fit All</h2>
+      <p>Not every prompt deserves the same amount of thinking. Asking Claude to rename a variable shouldn't burn the same tokens as designing a database migration strategy. The <code>/effort</code> command lets you dial reasoning depth up or down in real time, matching token spend to task complexity.</p>
+
+      <h2>The Five Effort Levels</h2>
+      <p>Switch levels mid-session by typing <code>/effort &lt;level&gt;</code>:</p>
+      <ul>
+        <li><strong>low</strong> — Minimal reasoning. Best for quick answers, formatting, classification, or simple extraction. Fastest and cheapest.</li>
+        <li><strong>medium</strong> — Balanced speed and quality. Good for straightforward code generation, tool-heavy workflows, and routine agentic tasks.</li>
+        <li><strong>high</strong> — Deep reasoning. The default for Opus 4.6 and Sonnet 4.6. Solid for most development work.</li>
+        <li><strong>xhigh</strong> — Extended exploration. The default for Opus 4.7. Best for complex agentic coding: API design, legacy migrations, large codebase reviews, and multi-step reasoning chains.</li>
+        <li><strong>max</strong> — Unconstrained reasoning with no token ceiling. Use sparingly for the hardest problems — architectural decisions, subtle bug hunts, or security audits. Session-only by default.</li>
+      </ul>
+
+      <h2>How to Set It</h2>
+      <p>Three ways to control effort:</p>
+      <pre><code class="language-bash"># 1. Slash command (mid-session, persists across sessions)
+/effort xhigh
+
+# 2. CLI flag (per-session)
+claude --effort high
+
+# 3. Environment variable (global default)
+export CLAUDE_CODE_EFFORT_LEVEL=xhigh</code></pre>
+      <p>Levels set via <code>/effort</code> or the environment variable persist across sessions — except <strong>max</strong>, which resets to your default when you start a new session (unless forced via the env var).</p>
+
+      <h2>When to Shift Gears</h2>
+      <p>Think of effort like car gears:</p>
+      <ul>
+        <li><strong>Downshift</strong> to <code>low</code> or <code>medium</code> when you're doing bulk operations: renaming variables, formatting files, generating boilerplate, or running simple queries.</li>
+        <li><strong>Stay in</strong> <code>xhigh</code> for your normal coding flow — it's tuned for the kind of multi-step, tool-calling work Claude Code does best.</li>
+        <li><strong>Upshift</strong> to <code>max</code> when you hit a wall: a tricky race condition, a complex refactor, or when you need Claude to really think through trade-offs.</li>
+      </ul>
+      <p>The key insight: <strong>xhigh on trivial work wastes tokens</strong> because Claude's adaptive thinking runs longer on ambiguous prompts. Drop to <code>medium</code> or <code>low</code> for simple tasks, and you'll save significant token budget for the moments that actually need deep reasoning.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Use <code>/effort</code> to match reasoning depth to task complexity — downshift for simple tasks, stay at xhigh for coding, and upshift to max only when you need Claude to think hardest.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

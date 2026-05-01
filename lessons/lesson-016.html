@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/simplify: Auto-Refactor Your Changes Before You Ship — Claude Code Lessons</title>
+  <meta property="og:title" content="/simplify: Auto-Refactor Your Changes Before You Ship — Claude Code Lessons" />
+  <meta property="og:description" content="Run /simplify to have Claude review your changed code for reuse, quality, and efficiency — then fix issues automatically before you commit." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-016-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-016.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/simplify: Auto-Refactor Your Changes Before You Ship — Claude Code Lessons" />
+  <meta name="twitter:description" content="Run /simplify to have Claude review your changed code for reuse, quality, and efficiency — then fix issues automatically before you commit." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-016-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 016
+      </div>
+      <h1>/simplify: Auto-Refactor Your Changes Before You Ship</h1>
+      <div class="meta">
+        <div>2026-04-10</div>
+        <div class="tags"><span class="tag">simplify</span><span class="tag">code-quality</span><span class="tag">skills</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What does /simplify do, and how does it differ from /review?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        /simplify reviews your changed code for reuse, quality, and efficiency — then <em>automatically fixes</em> the issues it finds. Unlike /review, which only gives feedback, /simplify edits your code directly. It never changes behavior — only how the code achieves it.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Last Step Before You Commit</h2>
+      <p>You've just finished a feature. The tests pass. But you know there's cleanup to do — duplicated logic, verbose patterns, opportunities to reuse existing utilities. You could review it yourself, or you could let Claude do it in seconds.</p>
+      <p>The <code>/simplify</code> skill, introduced by Claude Code creator Boris Cherny alongside <code>/batch</code> (<a href="https://x.com/bcherny/status/2027534984534544489">@bcherny on X</a>), is a built-in skill that reviews your changed code for reuse opportunities, code quality issues, and efficiency improvements — then applies the fixes automatically.</p>
+
+      <h2>How It Works</h2>
+      <p>Just type <code>/simplify</code> after making changes:</p>
+      <pre><code class="language-bash">/simplify</code></pre>
+      <p>Claude scans your changed files (the diff, not the whole codebase), looking for three things:</p>
+      <ul>
+        <li><strong>Reuse:</strong> Are you re-implementing something that already exists in your codebase? Claude finds the existing utility and swaps it in.</li>
+        <li><strong>Quality:</strong> Overly complex conditionals, deeply nested logic, unclear naming — Claude restructures for clarity.</li>
+        <li><strong>Efficiency:</strong> Redundant computations, unnecessary allocations, or patterns that could be expressed more concisely.</li>
+      </ul>
+      <p>The key guarantee: <strong>/simplify never changes what your code does.</strong> If your function returns a specific value, handles certain edge cases, or produces particular side effects, all of that stays exactly the same. Only the <em>how</em> changes.</p>
+
+      <h2>/simplify vs. /review</h2>
+      <p>These two skills are complementary, not interchangeable:</p>
+      <ul>
+        <li><code>/review</code> gives you feedback — comments, suggestions, potential issues. You decide what to act on.</li>
+        <li><code>/simplify</code> takes action — it edits your code directly. Review the diff, accept or reject.</li>
+      </ul>
+      <p>A solid workflow: run <code>/simplify</code> first to clean up the obvious stuff, then <code>/review</code> for a deeper architectural pass.</p>
+
+      <h2>Supercharge It with CLAUDE.md</h2>
+      <p>Add a project-specific review checklist to your <code>CLAUDE.md</code> and /simplify will respect it:</p>
+      <pre><code class="language-markdown">## Code review checklist
+- Prefer early returns over nested if/else
+- Use our shared logger (src/utils/logger.ts), never console.log
+- Destructure props in function signatures
+- Max function length: 40 lines</code></pre>
+      <p>Now <code>/simplify</code> enforces your team's conventions automatically — not just generic best practices.</p>
+
+      <h2>Where /simplify Fits in Your Workflow</h2>
+      <ul>
+        <li><strong>Before committing:</strong> Run <code>/simplify</code> as your personal code cleanup pass</li>
+        <li><strong>Inside /batch:</strong> Each parallel agent runs /simplify automatically before creating its PR (as covered in Lesson 015)</li>
+        <li><strong>After prototyping:</strong> Write messy code fast to explore an idea, then <code>/simplify</code> to clean it up</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Run <code>/simplify</code> before every commit to automatically clean up reuse, quality, and efficiency issues in your changed code — pair it with a review checklist in CLAUDE.md to enforce your team's specific conventions.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

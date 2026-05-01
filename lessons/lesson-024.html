@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chrome Extension: Give Claude Eyes for Frontend Work — Claude Code Lessons</title>
+  <meta property="og:title" content="Chrome Extension: Give Claude Eyes for Frontend Work — Claude Code Lessons" />
+  <meta property="og:description" content="Use the Chrome extension to let Claude Code see, click, and debug your frontend — turning blind code generation into a visual feedback loop." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-024-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-024.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Chrome Extension: Give Claude Eyes for Frontend Work — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use the Chrome extension to let Claude Code see, click, and debug your frontend — turning blind code generation into a visual feedback loop." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-024-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 024
+      </div>
+      <h1>Chrome Extension: Give Claude Eyes for Frontend Work</h1>
+      <div class="meta">
+        <div>2026-04-29</div>
+        <div class="tags"><span class="tag">chrome</span> <span class="tag">frontend</span> <span class="tag">workflow</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you connect Claude Code to Chrome so it can visually verify frontend changes?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Install the "Claude in Chrome" extension (v1.0.36+), then run <code>/chrome</code> in Claude Code to connect. Claude can now navigate pages, take screenshots, read console errors, and click elements — creating a visual feedback loop that dramatically improves frontend output quality.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: Building Blind</h2>
+      <p>When Claude Code generates frontend code, it's working blind. It writes HTML, CSS, and JavaScript without ever seeing the result. As Boris Cherny (@bcherny), the creator of Claude Code, put it: "If you ask someone to build a website but they aren't allowed to use a browser, will the result look good? Probably not."</p>
+
+      <h2>The Fix: /chrome</h2>
+      <p>The Chrome extension gives Claude actual eyes on your UI. Install the <strong>Claude in Chrome</strong> extension from the Chrome Web Store (version 1.0.36 or higher), then connect it from Claude Code:</p>
+      <pre><code class="language-bash">/chrome</code></pre>
+      <p>That's it. Claude Code now has browser tools. No MCP server setup, no config files — one command.</p>
+
+      <h2>What Claude Can Do With a Browser</h2>
+      <p>Once connected, Claude can:</p>
+      <ul>
+        <li><strong>Navigate and screenshot</strong> — open your dev server URL, take a screenshot, and visually inspect the result</li>
+        <li><strong>Read console errors</strong> — catch runtime errors, failed network requests, and DOM issues without you copying logs</li>
+        <li><strong>Click and type</strong> — interact with your UI to test flows like form submission, navigation, and state changes</li>
+        <li><strong>Compare to mockups</strong> — paste a Figma screenshot and ask Claude to build the UI, then it opens the browser to compare</li>
+      </ul>
+
+      <h2>The Workflow: Write, See, Fix</h2>
+      <p>The real power is the iterative loop. Instead of generating code and hoping it looks right, Claude follows this cycle:</p>
+      <ol>
+        <li>Write or edit frontend code</li>
+        <li>Open the page in Chrome and take a screenshot</li>
+        <li>Visually verify the result against your description or a mockup</li>
+        <li>Fix issues and repeat until it looks right</li>
+      </ol>
+      <p>This is the same feedback loop that makes verification tips (lesson 012) so powerful, but applied specifically to visual output.</p>
+
+      <h2>Tips for Best Results</h2>
+      <ul>
+        <li><strong>Start your dev server first</strong> — Claude needs a URL to navigate to. Run <code>npm run dev</code> before connecting</li>
+        <li><strong>Tell Claude the URL</strong> — include it in your prompt: "Build a signup form and verify it at http://localhost:3000/signup"</li>
+        <li><strong>Reconnect if idle</strong> — the Chrome extension's service worker can go idle during long sessions. Run <code>/chrome</code> and select "Reconnect extension" to fix it</li>
+        <li><strong>Works in VS Code too</strong> — type <code>@browser</code> in the VS Code extension to access the same browser tools</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Connect Claude Code to Chrome with <code>/chrome</code> so it can see, click, and debug your frontend — turning blind code generation into a visual write-see-fix loop that dramatically improves UI quality.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

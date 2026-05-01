@@ -1,0 +1,1 @@
+Claude Code's creator writes most of his code from his phone. /remote-control bridges your local terminal to the mobile app — your code never leaves your machine, only messages travel through. https://cclessons.jaczaar.com/lessons/lesson-011.html
