@@ -1,0 +1,3 @@
+TIL Claude Code has a status line showing model, cost, and context % below your prompt. Type "/statusline show model, branch, cost" and it generates the script for you. I spent months not knowing how full my context window was.
+
+https://cclessons.jaczaar.com/lessons/lesson-026.html
