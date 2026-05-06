@@ -1,0 +1,3 @@
+TIL Claude Code has a hidden "swarm mode" — one lead session breaks your task into subtasks, spawns teammates with their own context windows, and they message each other to coordinate. It's like having a mini engineering team that self-assigns tickets.
+
+https://cclessons.jaczaar.com/lessons/lesson-027.html
