@@ -91,9 +91,9 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: ${{ steps.build.outputs.subject }}
-          to: ${{ secrets.SMTP_USERNAME }}
+          to: jac@jaczaar.com
           bcc: ${{ steps.subs.outputs.list }}
-          from: Claude Code Lessons <${{ secrets.SMTP_USERNAME }}>
+          from: Claude Code Lessons <jac@jaczaar.com>
           html_body: file:///tmp/newsletter-email.html
 
       - name: Mark PR as sent
