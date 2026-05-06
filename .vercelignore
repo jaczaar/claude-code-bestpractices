@@ -1,0 +1,15 @@
+node_modules
+dist
+research
+src
+public
+bestpractices
+scripts
+.github
+*.md
+*.html
+!index.html
+package-lock.json
+tsconfig.json
+vite.config.ts
+start-dev.sh

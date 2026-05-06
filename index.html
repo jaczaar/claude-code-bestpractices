@@ -35,13 +35,14 @@
       <form class="newsletter-form" id="newsletter-form" novalidate>
         <label class="newsletter-field-label" for="newsletter-email">Email address</label>
         <input type="email" id="newsletter-email" name="email" placeholder="you@example.com" required autocomplete="email" />
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0" />
         <div class="newsletter-error" id="newsletter-error" hidden></div>
         <button type="submit" class="newsletter-submit">Subscribe</button>
-        <p class="newsletter-fineprint">You'll be redirected to GitHub to confirm your subscription. A GitHub account is required.</p>
+        <p class="newsletter-fineprint">No spam. Unsubscribe anytime by replying to any email.</p>
       </form>
       <div class="newsletter-success" id="newsletter-success" hidden>
-        <strong>Almost there!</strong>
-        <p>A new GitHub issue is opening in a new tab — click <em>Submit new issue</em> to confirm. Your email will be added to the list automatically.</p>
+        <strong>You're subscribed!</strong>
+        <p>New lessons will land in your inbox the moment they're published.</p>
       </div>
     </div>
   </div>
@@ -111,13 +112,14 @@
   </script>
   <script>
     (function() {
-      var REPO = 'jaczaar/claude-code-bestpractices';
+      var SUBSCRIBE_URL = 'https://claude-code-bestpractices.vercel.app/api/subscribe';
       var modal = document.getElementById('newsletter-modal');
       var openBtn = document.querySelector('.newsletter-btn');
       var form = document.getElementById('newsletter-form');
       var emailInput = document.getElementById('newsletter-email');
       var errorEl = document.getElementById('newsletter-error');
       var successEl = document.getElementById('newsletter-success');
+      var submitBtn = form.querySelector('.newsletter-submit');
       var formEl = form;
       var lastFocused = null;
 
@@ -157,23 +159,39 @@
 
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      form.addEventListener('submit', function(e) {
+      form.addEventListener('submit', async function(e) {
         e.preventDefault();
         clearError();
         var email = (emailInput.value || '').trim();
+        var honeypot = (form.elements.website && form.elements.website.value) || '';
         if (!email || !EMAIL_RE.test(email)) {
           showError('Please enter a valid email address.');
           return;
         }
-        var title = 'Newsletter subscribe: ' + email;
-        var body = 'email: ' + email + '\n\nSubscribing to the Claude Code Lessons newsletter.';
-        var url = 'https://github.com/' + REPO + '/issues/new?'
-          + 'title=' + encodeURIComponent(title)
-          + '&body=' + encodeURIComponent(body)
-          + '&labels=' + encodeURIComponent('newsletter-subscribe');
-        window.open(url, '_blank', 'noopener');
-        formEl.hidden = true;
-        successEl.hidden = false;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Subscribing…';
+        try {
+          var res = await fetch(SUBSCRIBE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, website: honeypot }),
+          });
+          if (!res.ok) {
+            var data = {};
+            try { data = await res.json(); } catch (_) {}
+            showError(data.error === 'invalid_email'
+              ? 'Please enter a valid email address.'
+              : 'Something went wrong. Please try again in a moment.');
+            return;
+          }
+          formEl.hidden = true;
+          successEl.hidden = false;
+        } catch (err) {
+          showError('Network error. Please try again.');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Subscribe';
+        }
       });
     })();
   </script>
