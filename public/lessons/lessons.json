@@ -181,6 +181,13 @@
       "summary": "Use /statusline to display model, cost, context usage, and git branch in a persistent bar below your Claude Code prompt.",
       "date": "2026-05-04",
       "tags": ["statusline", "customization", "productivity"]
+    },
+    {
+      "slug": "lesson-027",
+      "title": "Agent Teams: Orchestrate a Swarm of Claude Sessions on One Task",
+      "summary": "Enable Agent Teams to coordinate multiple Claude Code sessions with shared task lists, dependency tracking, and inter-agent messaging for cross-layer features.",
+      "date": "2026-05-06",
+      "tags": ["agent-teams", "workflow", "multi-agent"]
     }
   ]
 }
