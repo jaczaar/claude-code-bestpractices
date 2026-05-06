@@ -14,7 +14,37 @@
   </style>
 </head>
 <body>
-  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="top-actions">
+    <button class="newsletter-btn" type="button" aria-haspopup="dialog" aria-controls="newsletter-modal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>Newsletter</span>
+    </button>
+    <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  </div>
+
+  <div class="newsletter-modal" id="newsletter-modal" role="dialog" aria-modal="true" aria-labelledby="newsletter-title" hidden>
+    <div class="newsletter-modal-backdrop" data-newsletter-close></div>
+    <div class="newsletter-modal-card" role="document">
+      <button class="newsletter-modal-close" type="button" aria-label="Close" data-newsletter-close>&times;</button>
+      <div class="newsletter-modal-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Newsletter
+      </div>
+      <h2 id="newsletter-title">Get new lessons by email</h2>
+      <p class="newsletter-modal-desc">Each new lesson lands in your inbox the moment it's published — Mon / Wed / Fri. No spam, unsubscribe anytime.</p>
+      <form class="newsletter-form" id="newsletter-form" novalidate>
+        <label class="newsletter-field-label" for="newsletter-email">Email address</label>
+        <input type="email" id="newsletter-email" name="email" placeholder="you@example.com" required autocomplete="email" />
+        <div class="newsletter-error" id="newsletter-error" hidden></div>
+        <button type="submit" class="newsletter-submit">Subscribe</button>
+        <p class="newsletter-fineprint">You'll be redirected to GitHub to confirm your subscription. A GitHub account is required.</p>
+      </form>
+      <div class="newsletter-success" id="newsletter-success" hidden>
+        <strong>Almost there!</strong>
+        <p>A new GitHub issue is opening in a new tab — click <em>Submit new issue</em> to confirm. Your email will be added to the list automatically.</p>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="header">
       <div class="header-label">
@@ -77,6 +107,74 @@
             </div>
           </a>`;
       }).join('');
+    })();
+  </script>
+  <script>
+    (function() {
+      var REPO = 'jaczaar/claude-code-bestpractices';
+      var modal = document.getElementById('newsletter-modal');
+      var openBtn = document.querySelector('.newsletter-btn');
+      var form = document.getElementById('newsletter-form');
+      var emailInput = document.getElementById('newsletter-email');
+      var errorEl = document.getElementById('newsletter-error');
+      var successEl = document.getElementById('newsletter-success');
+      var formEl = form;
+      var lastFocused = null;
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+      }
+      function clearError() {
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+      }
+      function openModal() {
+        lastFocused = document.activeElement;
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        clearError();
+        formEl.hidden = false;
+        successEl.hidden = true;
+        formEl.reset();
+        setTimeout(function() { emailInput.focus(); }, 30);
+      }
+      function closeModal() {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      openBtn.addEventListener('click', openModal);
+
+      modal.querySelectorAll('[data-newsletter-close]').forEach(function(el) {
+        el.addEventListener('click', closeModal);
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.hidden) closeModal();
+      });
+
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        clearError();
+        var email = (emailInput.value || '').trim();
+        if (!email || !EMAIL_RE.test(email)) {
+          showError('Please enter a valid email address.');
+          return;
+        }
+        var title = 'Newsletter subscribe: ' + email;
+        var body = 'email: ' + email + '\n\nSubscribing to the Claude Code Lessons newsletter.';
+        var url = 'https://github.com/' + REPO + '/issues/new?'
+          + 'title=' + encodeURIComponent(title)
+          + '&body=' + encodeURIComponent(body)
+          + '&labels=' + encodeURIComponent('newsletter-subscribe');
+        window.open(url, '_blank', 'noopener');
+        formEl.hidden = true;
+        successEl.hidden = false;
+      });
     })();
   </script>
   <script>
