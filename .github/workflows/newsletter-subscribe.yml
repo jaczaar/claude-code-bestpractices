@@ -1,0 +1,99 @@
+name: Newsletter Subscribe
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: newsletter-subscribe
+  cancel-in-progress: false
+
+jobs:
+  subscribe:
+    if: contains(github.event.issue.labels.*.name, 'newsletter-subscribe')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract email and update subscribers list
+        id: subscribe
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+
+          # Extract first email-looking string from title or body
+          EMAIL=$(printf "%s\n%s" "$ISSUE_TITLE" "$ISSUE_BODY" \
+            | grep -oE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' \
+            | head -1 || true)
+
+          if [ -z "$EMAIL" ]; then
+            echo "status=invalid" >> "$GITHUB_OUTPUT"
+            echo "No email found in issue body."
+            exit 0
+          fi
+
+          # Lowercase for de-duplication
+          EMAIL_LC=$(echo "$EMAIL" | tr '[:upper:]' '[:lower:]')
+          echo "email=$EMAIL_LC" >> "$GITHUB_OUTPUT"
+
+          mkdir -p .github
+          if [ ! -f .github/subscribers.json ]; then
+            echo '{"subscribers": []}' > .github/subscribers.json
+          fi
+
+          # Check if already subscribed
+          EXISTS=$(jq --arg e "$EMAIL_LC" '.subscribers | map(ascii_downcase) | index($e)' .github/subscribers.json)
+          if [ "$EXISTS" != "null" ]; then
+            echo "status=duplicate" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          TODAY=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          jq --arg e "$EMAIL_LC" --arg d "$TODAY" \
+            '.subscribers += [$e] | .updated = $d' \
+            .github/subscribers.json > .github/subscribers.json.tmp
+          mv .github/subscribers.json.tmp .github/subscribers.json
+
+          echo "status=added" >> "$GITHUB_OUTPUT"
+
+      - name: Commit updated subscribers
+        if: steps.subscribe.outputs.status == 'added'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/subscribers.json
+          git commit -m "Add newsletter subscriber (issue #${{ github.event.issue.number }})"
+          git push origin HEAD:master
+
+      - name: Comment and close — added
+        if: steps.subscribe.outputs.status == 'added'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "You're subscribed! New lessons will be sent to your email when they're published. Closing this issue — reply here or open a new one to unsubscribe."
+          gh issue close ${{ github.event.issue.number }} --reason completed
+          gh issue lock ${{ github.event.issue.number }} --reason resolved || true
+
+      - name: Comment and close — duplicate
+        if: steps.subscribe.outputs.status == 'duplicate'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "This email is already subscribed. Closing this issue."
+          gh issue close ${{ github.event.issue.number }} --reason "not planned"
+          gh issue lock ${{ github.event.issue.number }} --reason resolved || true
+
+      - name: Comment and close — invalid
+        if: steps.subscribe.outputs.status == 'invalid'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "Couldn't find a valid email in this issue. Please use the Newsletter button on the site to subscribe."
+          gh issue close ${{ github.event.issue.number }} --reason "not planned"

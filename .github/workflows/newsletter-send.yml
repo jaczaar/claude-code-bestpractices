@@ -1,0 +1,108 @@
+name: Newsletter Send
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  send:
+    if: github.event.review.state == 'approved'
+    runs-on: self-hosted
+    steps:
+      - name: Check out PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect lesson PR and skip if already sent
+        id: detect
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          # Confirm this PR touches a lesson HTML file in public/lessons/
+          CHANGED=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json files --jq '.files[].path' | grep -E '^public/lessons/lesson-[0-9]+\.html$' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "Not a lesson PR — skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Skip if newsletter was already sent for this PR (marker comment)
+          ALREADY=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json comments \
+            --jq '[.comments[] | select(.body | contains("<!-- newsletter-sent -->"))] | length')
+          if [ "$ALREADY" -gt 0 ]; then
+            echo "Newsletter already sent for this PR — skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Read subscribers
+        if: steps.detect.outputs.skip == 'false'
+        id: subs
+        run: |
+          set -euo pipefail
+          if [ ! -f .github/subscribers.json ]; then
+            echo "No subscribers file — skipping."
+            echo "count=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Comma-separated list, BCC-ready
+          LIST=$(jq -r '.subscribers | join(",")' .github/subscribers.json)
+          COUNT=$(jq -r '.subscribers | length' .github/subscribers.json)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "list<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$LIST" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node
+        if: steps.detect.outputs.skip == 'false' && steps.subs.outputs.count != '0'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build newsletter email
+        if: steps.detect.outputs.skip == 'false' && steps.subs.outputs.count != '0'
+        id: build
+        run: |
+          set -euo pipefail
+          OUTPUT=$(node scripts/build-newsletter-email.mjs /tmp/newsletter-email.html)
+          # Pass through `subject=...` and `num=...` lines
+          while IFS= read -r line; do
+            echo "$line" >> "$GITHUB_OUTPUT"
+          done <<< "$OUTPUT"
+
+      - name: Send newsletter to subscribers
+        if: steps.detect.outputs.skip == 'false' && steps.subs.outputs.count != '0'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          secure: false
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: ${{ steps.build.outputs.subject }}
+          to: ${{ secrets.SMTP_USERNAME }}
+          bcc: ${{ steps.subs.outputs.list }}
+          from: Claude Code Lessons <${{ secrets.SMTP_USERNAME }}>
+          html_body: file:///tmp/newsletter-email.html
+
+      - name: Mark PR as sent
+        if: steps.detect.outputs.skip == 'false' && steps.subs.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          COUNT: ${{ steps.subs.outputs.count }}
+        run: |
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "📬 Newsletter sent to $COUNT subscriber(s).
+          <!-- newsletter-sent -->"
