@@ -188,6 +188,13 @@
       "summary": "Enable Agent Teams to coordinate multiple Claude Code sessions with shared task lists, dependency tracking, and inter-agent messaging for cross-layer features.",
       "date": "2026-05-06",
       "tags": ["agent-teams", "workflow", "multi-agent"]
+    },
+    {
+      "slug": "lesson-028",
+      "title": "Security Review: AI-Powered SAST on Every Pull Request",
+      "summary": "Add the Claude Code Security Review GitHub Action to catch logic-level vulnerabilities that pattern-based scanners miss — setup takes about 10 minutes.",
+      "date": "2026-05-08",
+      "tags": ["security", "github-actions", "CI/CD"]
     }
   ]
 }

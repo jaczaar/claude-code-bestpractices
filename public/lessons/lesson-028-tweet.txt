@@ -1,0 +1,3 @@
+I added one YAML file to our repo and now every PR gets a security review that actually traces data flow across files. It caught a broken access-control bug on its first run that our existing SAST tool had missed for months. ~$1 per scan.
+
+https://cclessons.jaczaar.com/lessons/lesson-028.html
