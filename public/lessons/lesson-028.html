@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/security-review: Find Vulnerabilities Before They Ship — Claude Code Lessons</title>
+  <meta property="og:title" content="/security-review: Find Vulnerabilities Before They Ship — Claude Code Lessons" />
+  <meta property="og:description" content="Use /security-review to scan your codebase for real vulnerabilities — SQL injection, XSS, broken auth — with multi-agent verification and suggested patches." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-028-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-028.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/security-review: Find Vulnerabilities Before They Ship — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /security-review to scan your codebase for real vulnerabilities — SQL injection, XSS, broken auth — with multi-agent verification and suggested patches." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-028-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 028
+      </div>
+      <h1>/security-review: Find Vulnerabilities Before They Ship</h1>
+      <div class="meta">
+        <div>2026-05-11</div>
+        <div class="tags"><span class="tag">security</span><span class="tag">workflow</span><span class="tag">code-quality</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How does /security-review differ from traditional static analysis tools like linters?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Instead of matching known patterns, <code>/security-review</code> traces data flows across files, understands business logic, and uses multi-agent verification to challenge its own findings — catching complex vulnerabilities like broken access control that rule-based scanners miss.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>Why Another Security Scanner?</h2>
+      <p>Traditional static analysis catches low-hanging fruit — exposed passwords, outdated encryption, known CVE patterns. But it struggles with vulnerabilities that span multiple files: broken access control, business logic flaws, and subtle injection paths where user input flows through several layers before reaching a dangerous sink.</p>
+      <p><code>/security-review</code> reasons about your code the way a human security researcher would. It reads your git history, traces data flows across modules, and understands how components interact. And it's built right into Claude Code — no extra tools to install.</p>
+
+      <h2>How to Use It</h2>
+      <p>Open Claude Code in your project directory and run:</p>
+      <pre><code class="language-bash">/security-review</code></pre>
+      <p>Claude dispatches multiple agents in parallel to scan your codebase. Each finding goes through multi-stage verification — Claude challenges its own results before surfacing them, which keeps false positives low. You'll get a report with:</p>
+      <ul>
+        <li><strong>Severity and confidence level</strong> for each finding</li>
+        <li><strong>A clear explanation</strong> of the vulnerability and its impact</li>
+        <li><strong>Steps to reproduce</strong> the issue</li>
+        <li><strong>A suggested patch</strong> you can apply directly</li>
+      </ul>
+      <p>After the scan, you can ask Claude to implement the fixes right there in your session — no context switching required.</p>
+
+      <h2>What It Catches</h2>
+      <p><code>/security-review</code> checks for the OWASP top 10 and beyond:</p>
+      <ul>
+        <li>SQL injection and NoSQL injection</li>
+        <li>Cross-site scripting (XSS) — stored, reflected, and DOM-based</li>
+        <li>Authentication and authorization flaws</li>
+        <li>Insecure data handling and secrets exposure</li>
+        <li>Business logic vulnerabilities that span multiple files</li>
+      </ul>
+      <p>Using this approach, Anthropic's team found over 500 vulnerabilities in production open-source codebases — bugs that had gone undetected for decades despite years of expert review.</p>
+
+      <h2>Automate It in CI</h2>
+      <p>For continuous protection, add the companion GitHub Action to your workflow:</p>
+      <pre><code class="language-yaml">- uses: anthropics/claude-code-security-review@v1
+  with:
+    anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}</code></pre>
+      <p>This runs the same security analysis on every PR automatically, commenting findings directly on the diff. It pairs well with the Code Review feature (Lesson 007) to catch both logic errors and security issues before merge.</p>
+
+      <h2>Tips for Better Results</h2>
+      <ul>
+        <li><strong>Scope it down</strong> — ask Claude to focus on specific areas: <code>/security-review focus on the auth module</code></li>
+        <li><strong>Add context in CLAUDE.md</strong> — document your auth patterns, trusted inputs, and security boundaries so Claude knows what's intentional</li>
+        <li><strong>Run it before major releases</strong> — make it part of your pre-release checklist alongside tests and code review</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Run <code>/security-review</code> before you ship — it traces data flows across your entire codebase to catch the complex vulnerabilities that linters and pattern matchers miss.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -188,6 +188,13 @@
       "summary": "Enable Agent Teams to coordinate multiple Claude Code sessions with shared task lists, dependency tracking, and inter-agent messaging for cross-layer features.",
       "date": "2026-05-06",
       "tags": ["agent-teams", "workflow", "multi-agent"]
+    },
+    {
+      "slug": "lesson-028",
+      "title": "/security-review: Find Vulnerabilities Before They Ship",
+      "summary": "Use /security-review to scan your codebase for real vulnerabilities — SQL injection, XSS, broken auth — with multi-agent verification and suggested patches.",
+      "date": "2026-05-11",
+      "tags": ["security", "workflow", "code-quality"]
     }
   ]
 }
