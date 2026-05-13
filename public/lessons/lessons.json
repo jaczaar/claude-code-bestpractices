@@ -195,6 +195,13 @@
       "summary": "Use /security-review to scan your codebase for real vulnerabilities — SQL injection, XSS, broken auth — with multi-agent verification and suggested patches.",
       "date": "2026-05-11",
       "tags": ["security", "workflow", "code-quality"]
+    },
+    {
+      "slug": "lesson-029",
+      "title": "The Interview Pattern: Let Claude Ask the Questions Before You Build",
+      "summary": "Write a one-line spec, tell Claude to interview you with AskUserQuestionTool, and get a thorough implementation plan without crafting the perfect prompt.",
+      "date": "2026-05-13",
+      "tags": ["workflow", "planning", "best-practices"]
     }
   ]
 }
