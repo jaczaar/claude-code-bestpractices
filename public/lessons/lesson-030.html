@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/goal: Define Done, Then Walk Away — Claude Code Lessons</title>
+  <meta property="og:title" content="/goal: Define Done, Then Walk Away — Claude Code Lessons" />
+  <meta property="og:description" content="Use /goal to set a completion condition so Claude keeps working across turns until the job is verifiably done." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-030-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-030.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="/goal: Define Done, Then Walk Away — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /goal to set a completion condition so Claude keeps working across turns until the job is verifiably done." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-030-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 030
+      </div>
+      <h1>/goal: Define Done, Then Walk Away</h1>
+      <div class="meta">
+        <div>2026-05-13</div>
+        <div class="tags"><span class="tag">goal</span><span class="tag">workflow</span><span class="tag">productivity</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How does /goal differ from /loop for keeping Claude working autonomously?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        <code>/goal</code> starts the next turn immediately after the previous one finishes and stops when a separate evaluator model confirms your condition is met. <code>/loop</code> starts the next turn on a time interval and stops when you cancel or Claude decides the work is done.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The Problem: Claude Stops When You Don't Want It To</h2>
+      <p>You ask Claude to migrate a module to a new API. It makes progress, then stops and says "I've updated the first three files." You prompt it again. It does three more. You prompt again. This back-and-forth is the #1 friction point for substantial tasks.</p>
+      <p><code>/goal</code> eliminates that friction. You define what "done" looks like, and Claude keeps working across as many turns as it takes to get there.</p>
+
+      <h2>How It Works</h2>
+      <p>Type <code>/goal</code> followed by a completion condition:</p>
+      <pre><code class="language-bash">/goal all tests in test/auth pass and the lint step is clean</code></pre>
+      <p>Claude starts working immediately. After each turn, a small fast model (Haiku by default) evaluates whether your condition is met by reading the conversation transcript. If not, Claude gets the evaluator's reason and starts another turn. If yes, the goal clears and control returns to you.</p>
+      <p>A <code>&#9678; /goal active</code> indicator shows elapsed time, turns, and token spend while it runs.</p>
+
+      <h2>Writing Conditions That Actually Work</h2>
+      <p>The evaluator judges from what Claude has surfaced in the conversation &mdash; it doesn't run commands itself. Write conditions around outputs Claude will produce:</p>
+      <ul>
+        <li><strong>Measurable end state:</strong> <code>/goal npm test exits 0 and no TypeScript errors remain</code></li>
+        <li><strong>Stated check:</strong> <code>/goal every file in src/legacy/ is deleted and the build still passes</code></li>
+        <li><strong>With constraints:</strong> <code>/goal all API endpoints return JSON, no existing tests are modified</code></li>
+        <li><strong>With a budget:</strong> <code>/goal resolve all TODO comments in src/auth or stop after 15 turns</code></li>
+      </ul>
+
+      <h2>/goal vs. /loop vs. Stop Hooks</h2>
+      <p>All three keep Claude running autonomously, but they trigger differently:</p>
+      <ul>
+        <li><strong><code>/goal</code></strong> &mdash; next turn fires immediately after the previous one ends. Stops when the evaluator confirms your condition. Session-scoped.</li>
+        <li><strong><code>/loop</code></strong> &mdash; next turn fires on a time interval. Stops when you cancel or Claude decides it's done. Best for polling tasks.</li>
+        <li><strong>Stop hooks</strong> &mdash; next turn fires immediately after the previous one ends. Your own script or prompt decides. Lives in settings, applies across sessions.</li>
+      </ul>
+      <p>Combine <code>/goal</code> with auto mode for fully unattended execution: auto mode approves tool calls within each turn, while <code>/goal</code> starts new turns.</p>
+
+      <h2>Practical Tips</h2>
+      <ul>
+        <li>Check progress anytime with <code>/goal</code> (no arguments) to see turns, tokens, and the evaluator's latest reason.</li>
+        <li>Cancel early with <code>/goal clear</code> (or <code>stop</code>, <code>off</code>, <code>cancel</code>).</li>
+        <li>Goals survive session resume &mdash; if you close and <code>--resume</code>, the goal picks up where it left off.</li>
+        <li>Works in headless mode: <code>claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"</code></li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Use <code>/goal</code> to define a verifiable completion condition and let Claude work autonomously across as many turns as needed &mdash; no babysitting, no re-prompting.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
