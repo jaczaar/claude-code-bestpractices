@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Teams: Orchestrate a Swarm of Claude Sessions on One Task — Claude Code Lessons</title>
+  <meta property="og:title" content="Agent Teams: Orchestrate a Swarm of Claude Sessions on One Task — Claude Code Lessons" />
+  <meta property="og:description" content="Enable Agent Teams to coordinate multiple Claude Code sessions with shared tasks, messaging, and dependency tracking." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-027-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-027.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Agent Teams: Orchestrate a Swarm of Claude Sessions on One Task — Claude Code Lessons" />
+  <meta name="twitter:description" content="Enable Agent Teams to coordinate multiple Claude Code sessions with shared tasks, messaging, and dependency tracking." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-027-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 027
+      </div>
+      <h1>Agent Teams: Orchestrate a Swarm of Claude Sessions on One Task</h1>
+      <div class="meta">
+        <div>2026-05-06</div>
+        <div class="tags"><span class="tag">agent-teams</span> <span class="tag">workflow</span> <span class="tag">multi-agent</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do Agent Teams differ from subagents, and when should you use them?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Subagents run inside one session and can only report back to the parent. Agent Teams spawn separate Claude Code instances with their own context windows, a shared task list with dependency tracking, and a mailbox for direct inter-agent messaging. Use them when your task has clearly separable domains (frontend, backend, tests) that benefit from parallel, coordinated work.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Are Agent Teams?</h2>
+      <p>Agent Teams — also called "swarm mode" — let you coordinate multiple Claude Code sessions on a single task. One session acts as the <strong>lead</strong>, breaking the work into subtasks and assigning them to <strong>teammates</strong>. Each teammate gets its own context window, can read and write files, run commands, and talk directly to other teammates.</p>
+      <p>As shared by <a href="https://x.com/bcherny/status/2019472394696683904">@bcherny on X</a>, Agent Teams shipped as an experimental feature alongside the Opus 4.6 release in February 2026.</p>
+
+      <h2>How to Enable It</h2>
+      <p>Agent Teams are experimental and off by default. Enable them in one of two ways:</p>
+      <pre><code class="language-bash"># Option 1: Environment variable
+CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude
+
+# Option 2: Add to your .claude/settings.json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}</code></pre>
+      <p>Requires Claude Code v2.1.32 or later.</p>
+
+      <h2>How It Works</h2>
+      <p>Three primitives make teams different from plain subagents:</p>
+      <ul>
+        <li><strong>Shared task list with dependencies.</strong> The lead creates tasks that can block each other. When a blocking task completes, downstream tasks automatically unblock. Teammates self-claim the next available task when they finish.</li>
+        <li><strong>Mailbox messaging.</strong> The lead can message any teammate, teammates can message the lead, and teammates can message each other directly. This two-way communication is what separates teams from fire-and-forget subagents.</li>
+        <li><strong>Independent context windows.</strong> Each teammate has its own full context, so a frontend agent and a backend agent never compete for the same token budget.</li>
+      </ul>
+
+      <h2>When to Use Teams</h2>
+      <p>Agent Teams burn more tokens than a single session. Use them when the payoff justifies the cost:</p>
+      <ul>
+        <li><strong>Cross-layer features</strong> — frontend, backend, and test changes each owned by a different teammate.</li>
+        <li><strong>Research and review</strong> — multiple teammates investigate different aspects of a problem, then share and challenge findings.</li>
+        <li><strong>Debugging with competing hypotheses</strong> — teammates test different theories in parallel and converge on the answer.</li>
+      </ul>
+      <p>For routine single-domain tasks, a regular session (or worktrees with separate sessions) is more cost-effective.</p>
+
+      <h2>Best Practice: Clean Domain Separation</h2>
+      <p>Teams work best when you can cleanly separate domains. Give each teammate a clear scope — one handles <code>src/api/</code>, another handles <code>src/components/</code>, a third writes tests. Overlap leads to merge conflicts and wasted tokens. Think of it like assigning tickets to engineers: clear ownership, minimal overlap.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Agent Teams turn Claude Code into a coordinated squad — use them for cross-layer features and parallel research where clean domain separation makes the extra tokens worthwhile.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

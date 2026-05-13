@@ -1,0 +1,3 @@
+TIL Claude Code has /goal and it completely changed how I handle big tasks. Instead of re-prompting every time Claude pauses, I just define "done" upfront and walk away. A separate model evaluates each turn — Claude keeps going until the condition holds.
+
+https://cclessons.jaczaar.com/lessons/lesson-030.html

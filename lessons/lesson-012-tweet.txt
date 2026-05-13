@@ -1,0 +1,3 @@
+Biggest Claude Code unlock: don't just tell it what to build — give it a way to check its own work. Tests, browser, simulator, whatever. Goes from "one guess and done" to iterating until it's actually right. Night and day difference.
+
+https://cclessons.jaczaar.com/lessons/lesson-012.html

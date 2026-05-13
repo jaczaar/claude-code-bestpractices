@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCP Servers: Connect Claude Code to Slack, Databases, and Any API — Claude Code Lessons</title>
+  <meta property="og:title" content="MCP Servers: Connect Claude Code to Slack, Databases, and Any API — Claude Code Lessons" />
+  <meta property="og:description" content="Configure .mcp.json to give Claude Code access to Slack, Postgres, Sentry, and more — then share the setup with your whole team via git." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-023-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-023.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MCP Servers: Connect Claude Code to Slack, Databases, and Any API — Claude Code Lessons" />
+  <meta name="twitter:description" content="Configure .mcp.json to give Claude Code access to Slack, Postgres, Sentry, and more — then share the setup with your whole team via git." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-023-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 023
+      </div>
+      <h1>MCP Servers: Connect Claude Code to Slack, Databases, and Any API</h1>
+      <div class="meta">
+        <div>2026-04-27</div>
+        <div class="tags"><span class="tag">MCP</span> <span class="tag">integrations</span> <span class="tag">configuration</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you give your whole team the same MCP server connections in Claude Code?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Add servers with <code>claude mcp add --scope project</code>, which writes to <code>.mcp.json</code> at the project root. Commit that file to git, and every team member gets the same MCP tools. Use <code>${VAR}</code> syntax for secrets so credentials stay out of version control.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Are MCP Servers?</h2>
+      <p>MCP (Model Context Protocol) servers are external tools that Claude Code can connect to — databases, Slack, Sentry, file systems, or any API that speaks the MCP protocol. Once connected, Claude can query your production database, search Slack threads, pull error logs, and more — all from the same terminal session.</p>
+      <p>As Boris Cherny (<a href="https://x.com/bcherny/status/2007179856266789204">@bcherny on X</a>) shared: "Claude Code uses all my tools for me. It often searches and posts to Slack, runs BigQuery queries, grabs error logs from Sentry." The secret is a committed <code>.mcp.json</code> file shared across the team.</p>
+
+      <h2>Adding an MCP Server</h2>
+      <p>Use the CLI to add servers. All flags go <strong>before</strong> the server name, and <code>--</code> separates the name from the command:</p>
+      <pre><code class="language-bash"># Add a Postgres database (project-scoped, shared via git)
+claude mcp add --scope project --transport stdio db \
+  -- npx -y @bytebase/dbhub --dsn "postgresql://readonly:${DB_PASS}@prod.db:5432/analytics"
+
+# Add Slack via HTTP + OAuth
+claude mcp add --scope project --transport http slack \
+  https://mcp.slack.com/mcp
+
+# Add a personal utility (user-scoped, not shared)
+claude mcp add --scope user --transport stdio notes \
+  -- npx -y @modelcontextprotocol/server-filesystem ~/notes</code></pre>
+
+      <h2>The .mcp.json File</h2>
+      <p>Project-scoped servers live in <code>.mcp.json</code> at your repo root. This is the file you commit:</p>
+      <pre><code class="language-json">{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp",
+      "oauth": {
+        "scopes": "channels:read chat:write search:read"
+      }
+    },
+    "db": {
+      "command": "npx",
+      "args": ["-y", "@bytebase/dbhub", "--dsn", "${DATABASE_URL}"],
+      "env": {}
+    }
+  }
+}</code></pre>
+      <p>Environment variables use <code>${VAR}</code> syntax with optional defaults: <code>${VAR:-fallback}</code>. Secrets stay in each developer's environment, not in the repo.</p>
+
+      <h2>Three Scopes</h2>
+      <ul>
+        <li><strong>Project</strong> (<code>--scope project</code>) — stored in <code>.mcp.json</code>, shared via git. Use for team-wide tools.</li>
+        <li><strong>User</strong> (<code>--scope user</code>) — stored in <code>~/.claude.json</code>, available across all projects. Use for personal utilities.</li>
+        <li><strong>Local</strong> (default) — stored in <code>~/.claude.json</code> under the project path. Private and project-specific.</li>
+      </ul>
+
+      <h2>Three Transport Types</h2>
+      <ul>
+        <li><strong>stdio</strong> — local process, communicates via stdin/stdout. Best for CLI tools and local servers.</li>
+        <li><strong>http</strong> — remote server using Streamable HTTP. Supports OAuth and custom headers.</li>
+        <li><strong>sse</strong> — remote server using Server-Sent Events. Similar to HTTP but uses SSE streaming.</li>
+      </ul>
+
+      <h2>Managing Servers</h2>
+      <pre><code class="language-bash"># List all configured servers
+claude mcp list
+
+# Get details for a specific server
+claude mcp get slack
+
+# Remove a server
+claude mcp remove db</code></pre>
+      <p>MCP tools follow the naming pattern <code>mcp__&lt;server&gt;__&lt;tool&gt;</code>. You can pre-approve tools in your CLAUDE.md with <code>allowedTools: ["mcp__slack__*"]</code> to avoid permission prompts.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Commit a <code>.mcp.json</code> to your repo with <code>${VAR}</code> placeholders for secrets, and every team member instantly gets Claude Code connected to your Slack, databases, and APIs — zero individual setup required.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

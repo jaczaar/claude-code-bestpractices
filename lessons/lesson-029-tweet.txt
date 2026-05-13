@@ -1,0 +1,3 @@
+TIL instead of writing a detailed prompt, you can tell Claude Code "interview me using AskUserQuestionTool." It asked 40+ questions I'd never think of and produced a 400-line plan from a one-line spec.
+
+https://cclessons.jaczaar.com/lessons/lesson-029.html

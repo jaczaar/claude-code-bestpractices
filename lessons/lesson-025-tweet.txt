@@ -1,0 +1,3 @@
+TIL Claude Code has five effort gears. I was running xhigh for everything — switching to /effort low for renames and formatting saves a ton of tokens. Treat it like car gears: downshift for simple stuff, upshift to max for hard problems.
+
+https://cclessons.jaczaar.com/lessons/lesson-025.html
