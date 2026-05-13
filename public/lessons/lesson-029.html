@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Interview Pattern: Let Claude Ask the Questions Before You Build — Claude Code Lessons</title>
+  <meta property="og:title" content="The Interview Pattern: Let Claude Ask the Questions Before You Build — Claude Code Lessons" />
+  <meta property="og:description" content="Write a one-line spec, tell Claude to interview you, and get a thorough plan with zero prompt engineering." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-029-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-029.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Interview Pattern: Let Claude Ask the Questions Before You Build — Claude Code Lessons" />
+  <meta name="twitter:description" content="Write a one-line spec, tell Claude to interview you, and get a thorough plan with zero prompt engineering." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-029-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 029
+      </div>
+      <h1>The Interview Pattern: Let Claude Ask the Questions Before You Build</h1>
+      <div class="meta">
+        <div>2026-05-13</div>
+        <div class="tags"><span class="tag">workflow</span> <span class="tag">planning</span> <span class="tag">best-practices</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>Instead of writing a detailed prompt, how can you get Claude Code to extract requirements from you?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Write a minimal spec and add "interview me in detail using the AskUserQuestionTool." Claude will ask dozens of targeted questions about requirements, edge cases, and trade-offs, then produce a plan far more thorough than most hand-written prompts.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>Stop Writing Perfect Prompts</h2>
+      <p>Most people spend 10 minutes crafting a detailed prompt before they let Claude start working. The interview pattern flips this: you write a one-line spec and let Claude extract the details from you through conversation.</p>
+      <p>The trick is the <code>AskUserQuestionTool</code> &mdash; the same tool Claude Code uses in Plan Mode to ask clarifying questions. You can explicitly tell Claude to use it, and it will systematically interview you about every aspect of your feature before writing a single line of code.</p>
+
+      <h2>How It Works</h2>
+      <p>Start with a minimal description of what you want, then add the interview instruction:</p>
+      <pre><code class="language-markdown">I want to add a real-time chat interface for our support team.
+
+Interview me in detail using the AskUserQuestionTool about technical
+implementation, UI/UX, edge cases, security, and trade-offs before
+writing any code.</code></pre>
+      <p>Claude will ask targeted questions one at a time: "Should messages persist after the session ends?" "Do you need typing indicators?" "What's your auth system?" You answer naturally, and Claude builds up a comprehensive picture of what you actually need.</p>
+
+      <h3>Make It a Reusable Command</h3>
+      <p>Create a custom slash command so you can trigger this pattern on any spec file:</p>
+      <pre><code class="language-bash">mkdir -p .claude/commands
+cat &gt; .claude/commands/interview.md &lt;&lt; 'EOF'
+---
+description: Interview me about the plan
+argument-hint: [plan-file]
+model: opus
+---
+Read the plan file $ARGUMENTS and interview me in detail using the
+AskUserQuestionTool about technical implementation, UI/UX, concerns,
+trade-offs, and anything else relevant. After the interview, produce
+a comprehensive implementation plan.
+EOF</code></pre>
+      <p>Now run <code>/interview spec.md</code> on any spec file. One developer reported that a single-line plan document generated 75 clarifying questions and produced a 400-line implementation plan.</p>
+
+      <h3>The Two-Session Workflow</h3>
+      <p>For best results, split planning and execution into separate sessions:</p>
+      <ol>
+        <li><strong>Session 1 (interview):</strong> Run <code>/interview</code> with your spec. Answer all the questions. Claude produces a detailed plan. Save it.</li>
+        <li><strong>Session 2 (build):</strong> Start a fresh session with full context budget. Hand Claude the plan and let it execute.</li>
+      </ol>
+      <p>This keeps the execution session's context window clean &mdash; no interview back-and-forth eating into the tokens Claude needs for implementation.</p>
+
+      <h3>Why This Works Better Than Prompt Engineering</h3>
+      <ul>
+        <li><strong>You don't know what you don't know.</strong> Claude asks about edge cases and trade-offs you wouldn't think to include in a prompt.</li>
+        <li><strong>It's faster.</strong> Answering questions is faster than writing a spec from scratch &mdash; Claude does the structured thinking for you.</li>
+        <li><strong>It's more thorough.</strong> The resulting plan covers auth, error handling, accessibility, and deployment concerns that hand-written prompts usually miss.</li>
+      </ul>
+      <p>Tip originally shared by multiple members of the Claude Code team on X, including the pattern of using a dedicated <code>/interview</code> command.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Don't write the perfect prompt — write a one-line spec and tell Claude to interview you with AskUserQuestionTool. You'll get a better plan in less time.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
