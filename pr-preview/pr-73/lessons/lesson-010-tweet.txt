@@ -1,0 +1,1 @@
+Claude Code's creator starts almost every session in Plan Mode. Claude reads your code but can't edit anything — you iterate on the approach first, then one-shot the implementation. Shift+Tab or /plan to try it. https://cclessons.jaczaar.com/lessons/lesson-010.html

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Status Lines: A Live Dashboard Below Your Prompt — Claude Code Lessons</title>
+  <meta property="og:title" content="Custom Status Lines: A Live Dashboard Below Your Prompt — Claude Code Lessons" />
+  <meta property="og:description" content="Use /statusline to display model, cost, context usage, and git branch in a live bar below your Claude Code prompt." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-026-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-026.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Custom Status Lines: A Live Dashboard Below Your Prompt — Claude Code Lessons" />
+  <meta name="twitter:description" content="Use /statusline to display model, cost, context usage, and git branch in a live bar below your Claude Code prompt." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-026-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 026
+      </div>
+      <h1>Custom Status Lines: A Live Dashboard Below Your Prompt</h1>
+      <div class="meta">
+        <div>2026-05-04</div>
+        <div class="tags"><span class="tag">statusline</span><span class="tag">customization</span><span class="tag">productivity</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you add a persistent info bar showing model, cost, and context usage below your Claude Code prompt?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Run <code>/statusline</code> and describe what you want in plain English, e.g. "show model, git branch, cost, and context usage." Claude generates a shell script, saves it, and wires it into your settings automatically.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Is the Status Line?</h2>
+      <p>The status line is a persistent bar that sits directly below your Claude Code prompt. It updates on every tick and can display anything you want: the active model, session cost, context window usage, git branch, working directory, or custom data from any shell command. As <a href="https://x.com/bcherny/status/2021700784019452195" target="_blank">Boris Cherny shared on X</a>, "everyone on the Claude Code team has a different statusline."</p>
+
+      <h2>The Fast Way: /statusline</h2>
+      <p>The easiest way to set one up is with the built-in command:</p>
+      <pre><code class="language-bash">/statusline show model, git branch, session cost, and context percentage</code></pre>
+      <p>Claude generates a shell script, saves it to <code>~/.claude/statusline.sh</code>, and adds the configuration to your settings. Done.</p>
+
+      <h2>How It Works Under the Hood</h2>
+      <p>Claude Code pipes a JSON blob to your script via stdin on every tick. Your script reads the JSON, extracts what it needs, and prints a single line of text. That text becomes the status line.</p>
+      <p>Here's a minimal example using <code>jq</code>:</p>
+      <pre><code class="language-bash">#!/bin/bash
+# ~/.claude/statusline.sh
+read -r json
+model=$(echo "$json" | jq -r '.model // "unknown"')
+context=$(echo "$json" | jq -r '.context_percent // 0')
+cost=$(echo "$json" | jq -r '.session.cost // "0.00"')
+branch=$(git branch --show-current 2>/dev/null || echo "n/a")
+echo "$model | $branch | \$$cost | ctx: ${context}%"</code></pre>
+
+      <h3>Wiring It Into Settings</h3>
+      <p>If you create the script manually, add this to <code>~/.claude/settings.json</code>:</p>
+      <pre><code class="language-json">{
+  "statusline": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline.sh"
+  }
+}</code></pre>
+
+      <h2>Available Fields</h2>
+      <p>The JSON blob includes everything you'd want:</p>
+      <ul>
+        <li><code>model</code> &mdash; currently active model name</li>
+        <li><code>context_percent</code> &mdash; how full your context window is</li>
+        <li><code>session.cost</code> &mdash; running dollar cost for this session</li>
+        <li><code>session.tokens_in</code> / <code>session.tokens_out</code> &mdash; token counts</li>
+        <li><code>cwd</code> &mdash; current working directory</li>
+        <li><code>rate_limits.five_hour</code> &mdash; rate limit data (v1.2.80+)</li>
+      </ul>
+
+      <h2>Tips for a Great Status Line</h2>
+      <ul>
+        <li><strong>Keep it single-line.</strong> Multi-line status lines with escape codes are prone to rendering glitches.</li>
+        <li><strong>Use /statusline to iterate.</strong> Run the command again with a new description to regenerate the script.</li>
+        <li><strong>Track context aggressively.</strong> Watching <code>context_percent</code> climb tells you when it's time to <code>/compact</code>.</li>
+        <li><strong>Combine with worktrees.</strong> Add the directory or branch to your status line so you always know which worktree you're in when running parallel sessions.</li>
+      </ul>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Run <code>/statusline</code> with a plain-English description to get a persistent, auto-updating dashboard below your prompt — no manual config needed.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

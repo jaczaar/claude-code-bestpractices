@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Give Claude a Feedback Loop to 2-3x Output Quality — Claude Code Lessons</title>
+  <meta property="og:title" content="Give Claude a Feedback Loop to 2-3x Output Quality — Claude Code Lessons" />
+  <meta property="og:description" content="The #1 tip from Claude Code's creator: let Claude verify its own work with tests, browser, or simulators to dramatically improve results." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-012-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-012.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Give Claude a Feedback Loop to 2-3x Output Quality — Claude Code Lessons" />
+  <meta name="twitter:description" content="The #1 tip from Claude Code's creator: let Claude verify its own work with tests, browser, or simulators to dramatically improve results." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-012-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 012
+      </div>
+      <h1>Give Claude a Feedback Loop to 2-3x Output Quality</h1>
+      <div class="meta">
+        <div>2026-04-01</div>
+        <div class="tags"><span class="tag">workflow</span><span class="tag">verification</span><span class="tag">best-practices</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>What is the single most important thing you can do to improve Claude Code's output quality?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Give Claude a way to verify its own work. When Claude can run tests, check a browser, or use a simulator, it iterates until the result is correct — improving output quality by 2-3x.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>The #1 Tip From Claude Code's Creator</h2>
+      <p>Boris Cherny (<a href="https://x.com/bcherny">@bcherny</a>), who created Claude Code, has shared this tip repeatedly because it's the single biggest quality lever: <strong>give Claude a way to verify its output</strong>. When Claude can close the feedback loop — see that a test passes, a page renders correctly, or an app launches — it will iterate autonomously until the result actually works.</p>
+      <p>Think of it like working with any engineer: if you ask someone to build a feature but never let them run the code, the result will be rough. Give them a way to test, and they'll polish it.</p>
+
+      <h2>Three Ways to Close the Loop</h2>
+
+      <h3>1. Tests (Backend &amp; Logic)</h3>
+      <p>The simplest feedback loop. Tell Claude to run your test suite after changes, or ask it to write tests first and then implement until they pass.</p>
+      <pre><code class="language-bash"># In your CLAUDE.md or prompt:
+"After making changes, run `npm test` to verify. Fix any failures before finishing."</code></pre>
+      <p>Claude will run the tests, read failures, and fix its own code — often across multiple iterations — until green.</p>
+
+      <h3>2. Chrome Extension (Frontend &amp; UI)</h3>
+      <p>For web development, the Claude Code Chrome extension lets Claude see what it ships. It opens a browser, inspects the rendered page, and iterates on layout, styling, and interactivity.</p>
+      <pre><code class="language-bash"># Connect Claude Code to your browser:
+/chrome</code></pre>
+      <p>Boris uses this on every frontend task: "Using Claude Code + the Chrome extension for web development feels like using Claude Code to run your unit tests for the first time." Once Claude can see its UI output, quality jumps dramatically.</p>
+
+      <h3>3. Simulators (Mobile)</h3>
+      <p>For mobile work, point Claude at an iOS Simulator or Android emulator. Claude can build the app, launch it in the simulator, screenshot the result, and fix issues — the same verify-and-iterate loop, but for native apps.</p>
+
+      <h2>Why This Works</h2>
+      <p>Without verification, Claude does one pass and stops. With it, Claude enters an <strong>iterate-until-correct</strong> cycle:</p>
+      <ol>
+        <li>Make a change</li>
+        <li>Run verification (test, browser, simulator)</li>
+        <li>Read the result</li>
+        <li>Fix issues and repeat</li>
+      </ol>
+      <p>This is the same tight loop that makes any developer productive. The difference is that Claude can run through these cycles extremely fast.</p>
+
+      <h2>Making It a Habit</h2>
+      <p>Add verification instructions to your <code>CLAUDE.md</code> so every session gets the feedback loop automatically:</p>
+      <pre><code class="language-markdown"># Verification
+- After code changes, run `pytest` and fix failures before responding
+- For frontend changes, use /chrome to visually verify the result
+- Always verify your work before marking a task complete</code></pre>
+      <p>Once this is in your project config, you don't need to remember to ask — Claude will verify by default.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Invest in giving Claude a verification method for your domain — tests, browser, or simulator — and it will iterate to correct results instead of guessing once and stopping.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

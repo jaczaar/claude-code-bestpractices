@@ -1,0 +1,3 @@
+TIL Claude Code has /security-review — it traces data flows across files instead of pattern matching. Found a broken access control bug in my auth layer that three linters missed. A security researcher in your terminal.
+
+https://cclessons.jaczaar.com/lessons/lesson-028.html

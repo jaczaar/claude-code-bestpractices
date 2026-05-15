@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code — Lessons &amp; Tips</title>
+  <meta name="description" content="Bite-sized Claude Code lessons delivered Mon/Wed/Fri. Flashcard-style tips on features, releases, and best practices." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/lessons/lesson.css" />
+  <style>
+    /* Index uses wider container */
+    .container { max-width: 860px; }
+    body { line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="top-actions">
+    <button class="newsletter-btn" type="button" aria-haspopup="dialog" aria-controls="newsletter-modal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>Newsletter</span>
+    </button>
+    <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  </div>
+
+  <div class="newsletter-modal" id="newsletter-modal" role="dialog" aria-modal="true" aria-labelledby="newsletter-title" hidden>
+    <div class="newsletter-modal-backdrop" data-newsletter-close></div>
+    <div class="newsletter-modal-card" role="document">
+      <button class="newsletter-modal-close" type="button" aria-label="Close" data-newsletter-close>&times;</button>
+      <div class="newsletter-modal-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Newsletter
+      </div>
+      <h2 id="newsletter-title">Get new lessons by email</h2>
+      <p class="newsletter-modal-desc">Each new lesson lands in your inbox the moment it's published — Mon / Wed / Fri. No spam, unsubscribe anytime.</p>
+      <form class="newsletter-form" id="newsletter-form" novalidate>
+        <label class="newsletter-field-label" for="newsletter-email">Email address</label>
+        <input type="email" id="newsletter-email" name="email" placeholder="you@example.com" required autocomplete="email" />
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0" />
+        <div class="newsletter-error" id="newsletter-error" hidden></div>
+        <button type="submit" class="newsletter-submit">Subscribe</button>
+        <p class="newsletter-fineprint">No spam. Unsubscribe anytime by replying to any email.</p>
+      </form>
+      <div class="newsletter-success" id="newsletter-success" hidden>
+        <strong>You're subscribed!</strong>
+        <p>New lessons will land in your inbox the moment they're published.</p>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="header">
+      <div class="header-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lessons &amp; Tips
+      </div>
+      <h1><span class="accent">Claude Code</span> Lessons</h1>
+      <p>Bite-sized tips &amp; insights, delivered Mon / Wed / Fri</p>
+      <div class="stats">
+        <span><strong id="lesson-count">0</strong> lessons</span>
+        <span>Updated <strong id="last-updated">—</strong></span>
+      </div>
+    </div>
+
+    <div id="lessons-container" class="lessons-grid"></div>
+
+    <div class="footer">
+      <a href="/bestpractices/">
+        Best Practices
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (async () => {
+      const res = await fetch('/lessons/lessons.json');
+      const data = await res.json();
+      const lessons = data.lessons || [];
+
+      document.getElementById('lesson-count').textContent = lessons.length;
+
+      if (lessons.length === 0) {
+        document.getElementById('lessons-container').innerHTML = `
+          <div class="empty-state">
+            <div class="icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <p>First lesson drops soon.<br>Check back Monday, Wednesday, or Friday!</p>
+          </div>`;
+        return;
+      }
+
+      const lastDate = lessons[lessons.length - 1].date;
+      document.getElementById('last-updated').textContent = lastDate;
+
+      const sorted = [...lessons].reverse();
+
+      document.getElementById('lessons-container').innerHTML = sorted.map((l, i) => {
+        const num = lessons.length - i;
+        const numStr = String(num).padStart(3, '0');
+        const tags = (l.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+        return `
+          <a class="lesson-card" href="/lessons/${l.slug}.html">
+            <div class="card-number">#${numStr}</div>
+            <div class="card-body">
+              <div class="date">${l.date}</div>
+              <div class="title">${l.title}</div>
+              <div class="summary">${l.summary}</div>
+              <div class="meta">${tags}</div>
+            </div>
+          </a>`;
+      }).join('');
+    })();
+  </script>
+  <script>
+    (function() {
+      var SUBSCRIBE_URL = 'https://claude-code-bestpractices.vercel.app/api/subscribe';
+      var modal = document.getElementById('newsletter-modal');
+      var openBtn = document.querySelector('.newsletter-btn');
+      var form = document.getElementById('newsletter-form');
+      var emailInput = document.getElementById('newsletter-email');
+      var errorEl = document.getElementById('newsletter-error');
+      var successEl = document.getElementById('newsletter-success');
+      var submitBtn = form.querySelector('.newsletter-submit');
+      var formEl = form;
+      var lastFocused = null;
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+      }
+      function clearError() {
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+      }
+      function openModal() {
+        lastFocused = document.activeElement;
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        clearError();
+        formEl.hidden = false;
+        successEl.hidden = true;
+        formEl.reset();
+        setTimeout(function() { emailInput.focus(); }, 30);
+      }
+      function closeModal() {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      openBtn.addEventListener('click', openModal);
+
+      modal.querySelectorAll('[data-newsletter-close]').forEach(function(el) {
+        el.addEventListener('click', closeModal);
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.hidden) closeModal();
+      });
+
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        clearError();
+        var email = (emailInput.value || '').trim();
+        var honeypot = (form.elements.website && form.elements.website.value) || '';
+        if (!email || !EMAIL_RE.test(email)) {
+          showError('Please enter a valid email address.');
+          return;
+        }
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Subscribing…';
+        try {
+          var res = await fetch(SUBSCRIBE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, website: honeypot }),
+          });
+          if (!res.ok) {
+            var data = {};
+            try { data = await res.json(); } catch (_) {}
+            showError(data.error === 'invalid_email'
+              ? 'Please enter a valid email address.'
+              : 'Something went wrong. Please try again in a moment.');
+            return;
+          }
+          formEl.hidden = true;
+          successEl.hidden = false;
+        } catch (err) {
+          showError('Network error. Please try again.');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Subscribe';
+        }
+      });
+    })();
+  </script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

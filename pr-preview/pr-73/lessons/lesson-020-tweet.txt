@@ -1,0 +1,3 @@
+TIL /ultraplan lets you review Claude's implementation plan in a full web UI with inline comments — then teleport it back to your terminal for execution. Planning complex refactors in a terminal felt wrong. This is how it should've always worked.
+
+https://cclessons.jaczaar.com/lessons/lesson-020.html

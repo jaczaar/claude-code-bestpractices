@@ -1,0 +1,3 @@
+I added one env var to my shell profile and Claude Code stopped flickering entirely. CLAUDE_CODE_NO_FLICKER=1 switches to an alternate-screen renderer like vim — flat memory, mouse support, zero jumpiness. Long sessions feel completely different.
+
+https://cclessons.jaczaar.com/lessons/lesson-013.html

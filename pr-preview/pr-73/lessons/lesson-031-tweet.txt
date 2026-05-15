@@ -1,0 +1,3 @@
+I set up a Telegram bot that talks to my local Claude Code session. Now I text it questions from my phone and it reads my actual codebase, runs commands, and replies in the same chat. Five minute setup, feels like magic.
+
+https://cclessons.jaczaar.com/lessons/lesson-031.html
