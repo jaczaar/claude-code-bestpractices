@@ -209,6 +209,13 @@
       "summary": "Use /goal to set a completion condition so Claude keeps working across turns until the job is verifiably done.",
       "date": "2026-05-13",
       "tags": ["goal", "workflow", "productivity"]
+    },
+    {
+      "slug": "lesson-031",
+      "title": "Channels: Message Claude Code From Telegram, Discord, or iMessage",
+      "summary": "Push messages from Telegram, Discord, or iMessage into a running Claude Code session — and get replies right in the same chat.",
+      "date": "2026-05-15",
+      "tags": ["channels", "integrations", "advanced"]
     }
   ]
 }

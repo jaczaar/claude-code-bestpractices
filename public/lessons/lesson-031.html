@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Channels: Message Claude Code From Telegram, Discord, or iMessage — Claude Code Lessons</title>
+  <meta property="og:title" content="Channels: Message Claude Code From Telegram, Discord, or iMessage — Claude Code Lessons" />
+  <meta property="og:description" content="Push messages from Telegram, Discord, or iMessage into a running Claude Code session — and get replies right in the same chat." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://cclessons.jaczaar.com/lessons/lesson-031-og.png" />
+  <meta property="og:url" content="https://cclessons.jaczaar.com/lessons/lesson-031.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Channels: Message Claude Code From Telegram, Discord, or iMessage — Claude Code Lessons" />
+  <meta name="twitter:description" content="Push messages from Telegram, Discord, or iMessage into a running Claude Code session — and get replies right in the same chat." />
+  <meta name="twitter:image" content="https://cclessons.jaczaar.com/lessons/lesson-031-og.png" />
+  <meta name="twitter:site" content="@Jaczaar" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="lesson.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body>
+  <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">&#9790;</button>
+  <div class="container">
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      All Lessons
+    </a>
+
+    <div class="lesson-header">
+      <div class="lesson-number">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Lesson 031
+      </div>
+      <h1>Channels: Message Claude Code From Telegram, Discord, or iMessage</h1>
+      <div class="meta">
+        <div>2026-05-15</div>
+        <div class="tags"><span class="tag">channels</span><span class="tag">integrations</span><span class="tag">advanced</span></div>
+      </div>
+    </div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flashcard — click to reveal answer" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flashcard-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Quick Quiz
+      </div>
+      <div class="flashcard-front">
+        <strong>How do you push messages from Telegram or Discord into a running Claude Code session?</strong>
+        <div class="flip-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/></svg>
+          Click to reveal answer
+        </div>
+      </div>
+      <div class="flashcard-back">
+        Install a channel plugin with <code>/plugin install telegram@claude-plugins-official</code>, configure your bot token, then restart Claude Code with <code>claude --channels plugin:telegram@claude-plugins-official</code>. Messages you send to the bot arrive in your session, and Claude replies back in the same chat.
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>What Are Channels?</h2>
+      <p>Channels are MCP servers that <strong>push</strong> events into your running Claude Code session. Unlike Remote Control (which lets you drive a session from the web), channels create a two-way bridge between a messaging app and your terminal. You text Claude from Telegram while walking the dog, and it reads files, runs commands, and replies right in the same chat&mdash;all against your real local codebase.</p>
+      <p>Three platforms ship as official plugins: <strong>Telegram</strong>, <strong>Discord</strong>, and <strong>iMessage</strong>. You can also build custom channels for CI webhooks, error trackers, or deploy pipelines.</p>
+
+      <h2>Quick Setup: Telegram in 5 Minutes</h2>
+      <p>Create a bot via <a href="https://t.me/BotFather" target="_blank" rel="noopener">BotFather</a> on Telegram and copy the token. Then:</p>
+      <pre><code class="language-bash"># Install the plugin
+/plugin install telegram@claude-plugins-official
+/reload-plugins
+
+# Save your bot token
+/telegram:configure &lt;your-token&gt;
+
+# Restart with the channel enabled
+claude --channels plugin:telegram@claude-plugins-official</code></pre>
+      <p>Send any message to your bot in Telegram. It replies with a pairing code. Back in Claude Code, run:</p>
+      <pre><code class="language-bash"># Pair your account and lock it down
+/telegram:access pair &lt;code&gt;
+/telegram:access policy allowlist</code></pre>
+      <p>That's it. Only your Telegram account can now push messages into this session.</p>
+
+      <h2>Discord and iMessage</h2>
+      <p>Discord follows the same pattern: create a bot in the <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">Developer Portal</a>, install with <code>/plugin install discord@claude-plugins-official</code>, configure with <code>/discord:configure &lt;token&gt;</code>, and restart with <code>--channels</code>.</p>
+      <p>iMessage is even simpler&mdash;no bot token needed. On macOS, grant Full Disk Access to your terminal, install the plugin, and text yourself. Self-chat bypasses access control automatically.</p>
+
+      <h2>Security: Sender Allowlists</h2>
+      <p>Every channel maintains an <strong>allowlist</strong>. Only paired sender IDs can push messages; everyone else is silently dropped. Being listed in <code>.mcp.json</code> isn't enough to receive events&mdash;a server must also be named in <code>--channels</code>. For team deployments, admins control availability with the <code>channelsEnabled</code> managed setting.</p>
+
+      <h2>Beyond Chat: Webhook Receivers</h2>
+      <p>Channels aren't just for texting. You can build a custom channel that listens on a local HTTP port and forwards webhook payloads from CI, Sentry, or deploy pipelines straight into Claude's session. Claude already has your files open and remembers what you were debugging&mdash;the alert arrives in context.</p>
+    </div>
+
+    <div class="key-takeaway">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.343 6.343 2.828 2.828"/><path d="M2 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+        Key Takeaway
+      </h3>
+      <p>Channels turn Telegram, Discord, and iMessage into two-way bridges to your local Claude Code session&mdash;text a question from your phone and get answers powered by your real codebase.</p>
+    </div>
+
+    <div class="nav-footer">
+      <a href="/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        All Lessons
+      </a>
+      <a href="/bestpractices/">
+        Best Practices
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      var btn = document.querySelector('.theme-toggle');
+      function update() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.innerHTML = d ? '&#9788;' : '&#9790;';
+        btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click', function() {
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (d) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+        else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>
